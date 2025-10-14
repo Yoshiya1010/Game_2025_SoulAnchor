@@ -6,6 +6,7 @@
 #include <btBulletDynamicsCommon.h>
 #include"modelRenderer.h"
 
+
 class GroundBlock :public GameObject {
 private:
 	ID3D11VertexShader* m_VertexShader;	// 頂点シェーダーオブジェクト
@@ -13,7 +14,8 @@ private:
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
 
-	class ModelRenderer* m_ModelRenderer; // 前方宣言
+	//モデル
+	unique_ptr<ModelRenderer> m_ModelRenderer = nullptr;
 
 public:
 	void Init() override;

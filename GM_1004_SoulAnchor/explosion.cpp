@@ -42,11 +42,6 @@ void Explosion::Init()
 
     // テクスチャ読み込み
     m_Texture = TextureManager::Load("asset\\texture\\Explosion.png");
-    //TexMetadata metadata;
-    //ScratchImage image;
-    //LoadFromWICFile(L"asset\\texture\\Explosion.png", WIC_FLAGS_NONE, &metadata, image);
-    //CreateShaderResourceView(Renderer::GetDevice(), image.GetImages(), image.GetImageCount(), metadata, &m_Texture);
-    //assert(m_Texture);
 
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
         "shader\\unlitTextureVS.cso");

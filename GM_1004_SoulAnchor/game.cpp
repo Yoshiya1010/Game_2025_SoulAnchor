@@ -47,13 +47,13 @@ void Game::Init()
 	AddGameObject<Player>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
 	//AddGameObject<Enemy>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
 	//AddGameObject<Enemy>(OBJECT)->SetPosition({ 0.0f,0.0f,3.0f });
-	AddGameObject<Enemy>(OBJECT)->SetPosition({ 2.0f,0.0f,3.0f });
+	/*AddGameObject<Enemy>(OBJECT)->SetPosition({ 2.0f,0.0f,3.0f });*/
 
-	AddGameObject<GroundBlock>(OBJECT);
+	/*AddGameObject<GroundBlock>(OBJECT);*/
 
 	AddGameObject<Wave>(FIELD)->SetPosition({ 0.0f,0.5f,0.0f });
 	AddGameObject<Score>(UI)->SetPosition({ 50.0f,50.0f,0.0f });
-
+	
 	
 
 	// ImGui初期化（Renderer::Init()の後）
@@ -70,9 +70,9 @@ void Game::Update()
 {
 	Scene::Update();
 
-	if (Scene::GetGameObject<Enemy>() == nullptr) {
-		Manager::SetScene<Result>();
-	}
+	//if (Scene::GetGameObject<Enemy>() == nullptr) {
+	//	Manager::SetScene<Result>();
+	//}
 
 	// 物理世界の更新
 	PhysicsManager::Update();

@@ -7,6 +7,8 @@
 #include"json.hpp"
 #include <fstream>
 #include"GroundBlock.h"
+#include"gameObject.h"
+
 
 int EditorObjectCreator::s_CreatedObjectCount = 0;
 

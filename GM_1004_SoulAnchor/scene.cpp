@@ -82,7 +82,7 @@ void Scene::Draw()
 	for (auto& list : m_GameObjects) {
 		for (auto& gameObject : list) {
 			gameObject->Draw();
-			PhysicsManager::DrawDebugWorld();
+			/*PhysicsManager::DrawDebugWorld();*/
 			
 		}
 	}

@@ -13,11 +13,11 @@
 
 void Player::Init()
 {
-    m_ModelRenderer = new ModelRenderer();
+    m_ModelRenderer = make_unique<ModelRenderer>();
     m_ModelRenderer->Load("asset\\model\\player.obj");
 
     // モデルのロード
-    m_AnimationModel = new AnimationModel();
+    m_AnimationModel = make_unique<AnimationModel>();
     m_AnimationModel->Load("asset\\model\\Akai.fbx");
 
     // モデルのアニメーションをロード
@@ -32,7 +32,7 @@ void Player::Init()
         "shader\\unlitTexturePS.cso");
 
     // Audioの初期化
-    m_SE = new Audio();
+    m_SE = make_unique<Audio>();
     m_SE->Load("asset\\audio\\wan.wav");
 
     m_Scale = Vector3(0.015f, 0.015f, 0.015f);
@@ -47,7 +47,7 @@ void Player::Init()
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
         // ボックス形状のコライダー
-        m_CollisionShape = new btBoxShape(btVector3(m_Scale.x, m_Scale.y, m_Scale.z));
+        m_CollisionShape = make_unique<btBoxShape>(btVector3(m_Scale.x, m_Scale.y, m_Scale.z));
 
         // 初期トランスフォーム
         btTransform startTransform;
@@ -55,7 +55,7 @@ void Player::Init()
         startTransform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
         // MotionStateを作成（これで位置同期が可能に）
-        m_MotionState = new btDefaultMotionState(startTransform);
+        m_MotionState =make_unique< btDefaultMotionState>(startTransform);
 
 
         // 質量と慣性
@@ -67,11 +67,11 @@ void Player::Init()
 
         // リジッドボディ作成
         btRigidBody::btRigidBodyConstructionInfo rbInfo(
-            mass, m_MotionState, m_CollisionShape, localInertia);
-        m_RigidBody = new btRigidBody(rbInfo);
+            mass, m_MotionState.get(), m_CollisionShape.get(), localInertia);
+        m_RigidBody = make_unique<btRigidBody>(rbInfo);
 
         // 物理世界に追加
-        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody);
+        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody.get());
 
         printf("Enemy physics body added with MotionState at: %.2f, %.2f, %.2f\n",
             m_Position.x, m_Position.y, m_Position.z);
@@ -83,11 +83,11 @@ void Player::Init()
 void Player::Uninit()
 {
     m_SE->Uninit();
-    delete m_SE;
+    m_SE.reset();
 
     //delete m_ModelRenderer;
     m_AnimationModel->Uninit();
-    delete m_AnimationModel;
+    m_AnimationModel.reset();
 
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();

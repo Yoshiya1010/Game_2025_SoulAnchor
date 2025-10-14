@@ -3,6 +3,9 @@
 #include "main.h"
 #include "renderer.h"
 #include "gameObject.h"
+#include"audio.h"
+#include"animationModel.h"
+#include"modelRenderer.h"
 
 class Player :public GameObject {
 private:
@@ -10,10 +13,10 @@ private:
 	ID3D11PixelShader* m_PixelShader;		// ピクセルシェーダーオブジェクト
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
-	class ModelRenderer* m_ModelRenderer; // 前方宣言
-	class AnimationModel* m_AnimationModel;
+	unique_ptr <ModelRenderer> m_ModelRenderer; // 前方宣言
+	unique_ptr<AnimationModel> m_AnimationModel;
 
-	class Audio* m_SE;
+	unique_ptr<Audio> m_SE;
 
 	unsigned int m_Frame;
 

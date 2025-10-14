@@ -5,6 +5,12 @@
 #include"PhysicsManager.h"
 #include <btBulletDynamicsCommon.h>
 #include <DirectXMath.h>
+#include<memory>
+
+#include <iostream>
+using std::unique_ptr;
+using std::make_unique;
+
 // オブジェクトタグの定義（フィルタリング/識別に使用）
 enum class GameObjectTag {
 	None,
@@ -32,6 +38,9 @@ enum CollisionGroup {
 };
 class GameObject {
 protected:
+
+	
+
 	// 基本トランスフォーム
 	Vector3 m_Position{ 0.0f, 0.0f, 0.0f };
 	Vector3 m_Rotation{ 0.0f, 0.0f, 0.0f }; // RPY（ロール/ピッチ/ヨー）想定
@@ -43,12 +52,12 @@ protected:
 
 
 	// 物理（Bullet）関連
-	btRigidBody* m_RigidBody = nullptr; // 所有（Uninit で破棄）
-	btCollisionShape* m_CollisionShape = nullptr; // 所有（Uninit で破棄）
+	unique_ptr<btRigidBody> m_RigidBody = nullptr; // 所有（Uninit で破棄）
+	unique_ptr<btCollisionShape> m_CollisionShape = nullptr; // 所有（Uninit で破棄）
 	Vector3           m_ColliderOffset{ 0.0f, 0.0f, 0.0f }; // 見た目中心に対するコライダーのオフセット
 
 	//あたり判定に必要
-	btDefaultMotionState* m_MotionState = nullptr;
+	unique_ptr <btDefaultMotionState> m_MotionState = nullptr;
 	// 識別・分類
 	GameObjectTag m_Tag = GameObjectTag::None;
 	std::string   m_Name = "";
@@ -75,19 +84,14 @@ public:
 	// ・Bullet のワールドから剛体を外す
 	// ・MotionState / RigidBody / CollisionShape を delete
 	virtual void Uninit() {
-		// ★ RigidBodyとPhysicsManagerの両方をチェック
-		if (m_RigidBody && PhysicsManager::GetWorld()) {
-			PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody);
-			delete m_RigidBody->getMotionState();
-			delete m_RigidBody;
-			m_RigidBody = nullptr;
+		auto* world = PhysicsManager::GetWorld();
+		if (m_RigidBody && world) {
+			world->removeRigidBody(m_RigidBody.get());
 		}
-
-		// ★ CollisionShapeも安全にチェック
-		if (m_CollisionShape) {
-			delete m_CollisionShape;
-			m_CollisionShape = nullptr;
-		}
+		// 所有物をまとめて解放
+		m_RigidBody.reset();
+		m_MotionState.reset();
+		m_CollisionShape.reset();
 	}
 
 	// 毎フレーム更新
@@ -127,7 +131,7 @@ public:
 	void CreateBoxColliderAt(Vector3 position, Vector3 size, float mass = 0.0f, Vector3 offset = Vector3(0.0f, 0.0f, 0.0f)) {
 		m_Position = position;
 		m_ColliderOffset = offset;
-		m_CollisionShape = new btBoxShape(btVector3(size.x, size.y, size.z));
+		m_CollisionShape = make_unique<btBoxShape>(btVector3(size.x, size.y, size.z));
 		CreateRigidBody(mass);
 	}
 
@@ -135,7 +139,7 @@ public:
 	void CreateSphereColliderAt(Vector3 position, float radius, float mass = 0.0f, Vector3 offset = Vector3(0.0f, 0.0f, 0.0f)) {
 		m_Position = position;
 		m_ColliderOffset = offset;
-		m_CollisionShape = new btSphereShape(radius);
+		m_CollisionShape = make_unique<btSphereShape>(radius);
 		CreateRigidBody(mass);
 	}
 
@@ -143,7 +147,7 @@ public:
 	void CreateCapsuleColliderAt(Vector3 position, float radius, float height, float mass = 0.0f, Vector3 offset = Vector3(0.0f, 0.0f, 0.0f)) {
 		m_Position = position;
 		m_ColliderOffset = offset;
-		m_CollisionShape = new btCapsuleShape(radius, height);
+		m_CollisionShape = make_unique<btCapsuleShape>(radius, height);
 		CreateRigidBody(mass);
 	}
 
@@ -217,8 +221,8 @@ public:
 		}
 	}
 	//剛体の取得
-	btRigidBody* GetRigidBody() const { return m_RigidBody; }
-	btCollisionShape* GetCollisionShape() const { return m_CollisionShape; }
+	btRigidBody* GetRigidBody() const { return m_RigidBody.get(); }
+	btCollisionShape* GetCollisionShape() const { return m_CollisionShape.get(); }
 
 	// ----- アクセサ（チェーン用に一部は this を返す） ---------------------
 	Vector3 GetPosition() { return m_Position; }
@@ -311,13 +315,13 @@ public:
 		}
 	}
 
-	// ★ カスタムレイヤー設定（必要な時だけ呼ぶ）
+	//  カスタムレイヤー設定（必要な時だけ呼ぶ）
 	void SetCollisionLayer(CollisionGroup group, int mask) {
 		m_CollisionGroup = group;
 		m_CollisionMask = mask;
 	}
 
-	// ★ 衝突無効化（UI要素等で使用）
+	//  衝突無効化（UI要素等で使用）
 	void DisableCollision() {
 		m_CollisionGroup = COL_NOTHING;
 		m_CollisionMask = 0;
@@ -328,75 +332,65 @@ private:
 	// ・回転済みオフセットを適用した位置に原点を取る
 	// ・質量が 0 の場合は静的剛体
 	void CreateRigidBody(float mass) {
-		if (!m_CollisionShape || !PhysicsManager::GetWorld()) return;
+		auto* world = PhysicsManager::GetWorld();
+		if (!m_CollisionShape || !world) return;
 
 		btTransform transform;
 		transform.setIdentity();
 
-		// 回転行列（見た目の Euler から）
+		// 回転行列（見た目 Euler）
 		XMMATRIX rotMatrix = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
 
-		// オフセットを回転してから原点へ加算
+		// 回転済みオフセット
 		XMFLOAT3 offsetFloat3(m_ColliderOffset.x, m_ColliderOffset.y, m_ColliderOffset.z);
 		XMVECTOR offsetVec = XMLoadFloat3(&offsetFloat3);
 		XMVECTOR rotatedOffset = XMVector3Transform(offsetVec, rotMatrix);
 
-		XMFLOAT3 rotatedOffsetFloat;
+		XMFLOAT3 rotatedOffsetFloat{};
 		XMStoreFloat3(&rotatedOffsetFloat, rotatedOffset);
 
 		Vector3 colliderPos = m_Position + Vector3(rotatedOffsetFloat.x, rotatedOffsetFloat.y, rotatedOffsetFloat.z);
 		transform.setOrigin(btVector3(colliderPos.x, colliderPos.y, colliderPos.z));
 
-		// 慣性計算（動的剛体のみ）
+		// 慣性（動的のみ）
 		btVector3 inertia(0, 0, 0);
 		if (mass != 0.0f) {
 			m_CollisionShape->calculateLocalInertia(mass, inertia);
 		}
 
-		// MotionState（所有）
-		btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+		// MotionState / RigidBody 生成（所有）
+		m_MotionState = std::make_unique<btDefaultMotionState>(transform);
 
-		// 剛体生成
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, m_CollisionShape, inertia);
-		m_RigidBody = new btRigidBody(rbInfo);
-
-		//ポインターを設定
+		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, m_MotionState.get(), m_CollisionShape.get(), inertia);
+		m_RigidBody = std::make_unique<btRigidBody>(rbInfo);
 		m_RigidBody->setUserPointer(this);
 
-		//  タグベースで自動設定
+		// タグに応じて自動設定
 		SetupCollisionLayer();
 
-		// レイヤー指定でワールドに追加
-		PhysicsManager::GetWorld()->addRigidBody(
-			m_RigidBody,
-			m_CollisionGroup,
-			m_CollisionMask
-		);
+		// ワールドに登録
+		world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
+
 
 	}
 
 	// 物理ボディを無効化（Nullチェック付き）
 	void DisablePhysicsBody() {
-		if (m_RigidBody && PhysicsManager::GetWorld()) {
-			// 1. 衝突検知から除外
+		auto* world = PhysicsManager::GetWorld();
+		// 1. ワールドが有効で、リジッドボディが存在する場合
+		if (world && m_RigidBody) {
+			// ワールドからRigidBodyを削除
+			world->removeRigidBody(m_RigidBody.get());
+
+			// UserPointerを解除（Bulletの衝突コールバック対策）
 			m_RigidBody->setUserPointer(nullptr);
-
-			// 2. 物理世界から完全に削除
-			PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody);
-
-			// 3. メモリ解放
-			delete m_RigidBody->getMotionState();
-			delete m_RigidBody;
-			m_RigidBody = nullptr;
-
-			printf("Physics body completely removed for %s\n", m_Name.c_str());
 		}
 
-		// CollisionShapeも削除
-		if (m_CollisionShape) {
-			delete m_CollisionShape;
-			m_CollisionShape = nullptr;
-		}
+		// 2. 物理オブジェクトをまとめて解放
+		m_RigidBody.reset();
+		m_MotionState.reset();
+		m_CollisionShape.reset();
+
 	}
 
 };

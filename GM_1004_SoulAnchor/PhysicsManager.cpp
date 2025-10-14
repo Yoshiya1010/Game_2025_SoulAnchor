@@ -93,7 +93,7 @@ void PhysicsManager::DrawDebugWorld()
     if (s_DebugDrawer && s_DynamicsWorld)
     {
         s_DebugDrawer->Begin();
-        s_DynamicsWorld->debugDrawWorld(); //‚±‚ê‚ªd—vI
+        s_DynamicsWorld->debugDrawWorld();
         s_DebugDrawer->End();
     }
 }

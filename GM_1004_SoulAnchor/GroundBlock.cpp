@@ -9,7 +9,7 @@
 
 void GroundBlock::Init()
 {
-    m_ModelRenderer = new ModelRenderer();
+    m_ModelRenderer = make_unique<ModelRenderer>();
     m_ModelRenderer->Load("asset\\model\\player.obj");
 
 
@@ -31,35 +31,29 @@ void GroundBlock::Start()
 
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        // ボックス形状のコライダー
-        m_CollisionShape = new btBoxShape(btVector3(m_Scale.x, m_Scale.y,m_Scale.z));
+        m_CollisionShape = std::make_unique<btBoxShape>(
+            btVector3(m_Scale.x, m_Scale.y, m_Scale.z)
+        );
 
-        // 初期トランスフォーム
         btTransform startTransform;
         startTransform.setIdentity();
         startTransform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
-        // MotionStateを作成（これで位置同期が可能に）
-        m_MotionState = new btDefaultMotionState(startTransform);
+        m_MotionState = std::make_unique<btDefaultMotionState>(startTransform);
 
-
-        // 質量と慣性
         btScalar mass = 1.0f;
         btVector3 localInertia(0, 0, 0);
-        if (mass != 0.0f) {
+        if (mass != 0.0f)
             m_CollisionShape->calculateLocalInertia(mass, localInertia);
-        }
 
-        // リジッドボディ作成
-        btRigidBody::btRigidBodyConstructionInfo rbInfo(
-            mass, m_MotionState, m_CollisionShape, localInertia);
-        m_RigidBody = new btRigidBody(rbInfo);
+        auto rbInfo = btRigidBody::btRigidBodyConstructionInfo(
+            mass, m_MotionState.get(), m_CollisionShape.get(), localInertia
+        );
 
-        // 物理世界に追加
-        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody);
+        m_RigidBody = std::make_unique<btRigidBody>(rbInfo);
+        m_RigidBody->setUserPointer(this);
 
-        printf("Enemy physics body added with MotionState at: %.2f, %.2f, %.2f\n",
-            m_Position.x, m_Position.y, m_Position.z);
+        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody.get());
     }
 
     SetName("GroundBlock");
@@ -70,12 +64,15 @@ void GroundBlock::Uninit()
 {
     // 物理オブジェクトの削除
     if (m_RigidBody && PhysicsManager::GetWorld()) {
-        PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody);
-        delete m_RigidBody;
+        PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody.get());
+        m_RigidBody->setUserPointer(nullptr);
     }
 
+    m_RigidBody.reset();
+    m_MotionState.reset();
+    m_CollisionShape.reset();
 
-    delete m_ModelRenderer;
+    m_ModelRenderer.reset();
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();
     if (m_PixelShader)      m_PixelShader->Release();
@@ -86,6 +83,8 @@ void GroundBlock::Update()
     CheckAndCallStart();
     if (m_Started)
     {
+        if (!m_RigidBody || !m_RigidBody->getMotionState()) return;
+
         // 物理エンジンから位置を手動で取得
         btTransform trans = m_RigidBody->getCenterOfMassTransform();
         m_Position.x = trans.getOrigin().getX();
