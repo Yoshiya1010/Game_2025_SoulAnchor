@@ -32,6 +32,14 @@ void PhysicsManager::Init() {
     // 重力設定（海戦ゲームなので下向き）
     s_DynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 
+    btTransform worldTransform;
+    worldTransform.setIdentity();
+    worldTransform.setBasis(btMatrix3x3(
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, -1  // Z反転で左手化
+    ));
+
     // デバッグドローワー作成・設定
     s_DebugDrawer = new BulletDebugDrawer();
     s_DebugDrawer->Init();

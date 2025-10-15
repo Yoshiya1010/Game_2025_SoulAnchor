@@ -1,16 +1,20 @@
 #include"GroundBlock.h"
 #include "manager.h"
-#include "modelRenderer.h"
+
 #include "camera.h"
 #include "input.h"
 #include"explosion.h"
 #include "PhysicsManager.h"
 #include <btBulletDynamicsCommon.h>
+#include "animationModel.h"
 
 void GroundBlock::Init()
 {
-    m_ModelRenderer = make_unique<ModelRenderer>();
-    m_ModelRenderer->Load("asset\\model\\player.obj");
+  
+
+    // モデルのロード
+    m_ModelRenderer = make_unique<AnimationModel>();
+    m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
 
 
     // シェーダー読み込み
@@ -90,25 +94,29 @@ void GroundBlock::Update()
         m_Position.x = trans.getOrigin().getX();
         m_Position.y = trans.getOrigin().getY();
         m_Position.z = trans.getOrigin().getZ();
+
+
     }
 }
 
 void GroundBlock::Draw()
 {
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
 
-    // シェーダー設定
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
+    btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
+    // 右手系→左手系変換: Z軸を反転
+    XMVECTOR rotationQuaternion = XMVectorSet(
+        quaternion.x(),
+        quaternion.y(),
+        quaternion.z(),
+        quaternion.w()
+    );
+   
+    XMMATRIX S_p = XMMatrixScaling(m_Scale.x*m_modelScale, m_Scale.y * m_modelScale, m_Scale.z*m_modelScale);
+    XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
+    XMMATRIX T_p = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+    XMMATRIX parentWorld = S_p * R_p * T_p;
 
-    // マトリクス設定
-    XMMATRIX world, scale, rot, trans;
-    scale = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
-    rot = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y + XM_PI, m_Rotation.z);
-    trans = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
-    world = scale * rot * trans;
-    Renderer::SetWorldMatrix(world);
-
+    Renderer::SetWorldMatrix(parentWorld);
     // モデルの描画
     m_ModelRenderer->Draw();
 

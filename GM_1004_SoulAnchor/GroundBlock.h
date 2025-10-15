@@ -4,7 +4,9 @@
 #include "renderer.h"
 #include "gameObject.h"
 #include <btBulletDynamicsCommon.h>
-#include"modelRenderer.h"
+#include"animationModel.h"
+#include<memory>
+
 
 
 class GroundBlock :public GameObject {
@@ -15,7 +17,8 @@ private:
 
 
 	//ƒ‚ƒfƒ‹
-	unique_ptr<ModelRenderer> m_ModelRenderer = nullptr;
+	unique_ptr<AnimationModel> m_ModelRenderer = nullptr;
+	const float m_modelScale = 2.0f;
 
 public:
 	void Init() override;

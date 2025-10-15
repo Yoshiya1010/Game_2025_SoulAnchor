@@ -1,7 +1,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
-
+#include "input.h"
 #include "scene.h"
 #include "camera.h"
 
@@ -9,9 +9,11 @@
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
 
+bool Scene::debugFlag;
+
 void Scene::Init()
 {
-
+	debugFlag = true;
 }
 
 
@@ -53,13 +55,13 @@ void Scene::Update()
 			return object->Destroy();
 			});
 	}
-	//for (int i = 0; i < 3; i++) {
 
-	//	m_GameObjects[i].remove_if([](GameObject* object) {
-	//		return object->Destroy();
-	//		});
-	//}
 
+
+	if (Input::GetKeyPress(KK_Z))
+	{
+		debugFlag = !debugFlag;
+	}
 
 }
 
@@ -80,13 +82,16 @@ void Scene::Draw()
 
 	/// ƒJƒƒ‰‚ðÅ‰‚É•`‰æ‚·‚é‚±‚ÆB
 	for (auto& list : m_GameObjects) {
-		for (auto& gameObject : list) {
+		for (auto& gameObject : list)
+		{
 			gameObject->Draw();
-			/*PhysicsManager::DrawDebugWorld();*/
-			
+
+			if(debugFlag)
+			PhysicsManager::DrawDebugWorld();
 		}
 	}
-	PhysicsManager::DrawDebugWorld();
+	
+	
 
 }
 

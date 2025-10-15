@@ -61,14 +61,14 @@ void BulletDebugDrawer::End()
         VERTEX_LINE v1{};
         v1.Position = line.from;
         v1.Color = line.color;
-        v1.Normal = XMFLOAT3(0, 1, 0);   // ダミー
-        v1.TexCoord = XMFLOAT2(0, 0);    // ダミー
+        v1.Normal = XMFLOAT3(0, 1, 0);   
+        v1.TexCoord = XMFLOAT2(0, 0);    
 
         VERTEX_LINE v2{};
         v2.Position = line.to;
         v2.Color = line.color;
-        v2.Normal = XMFLOAT3(0, 1, 0);   // ダミー
-        v2.TexCoord = XMFLOAT2(0, 0);    // ダミー
+        v2.Normal = XMFLOAT3(0, 1, 0);   
+        v2.TexCoord = XMFLOAT2(0, 0);    
 
         vertices.push_back(v1);
         vertices.push_back(v2);
@@ -120,7 +120,8 @@ void BulletDebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVect
     btVector3 to = PointOnB + normalOnB * 0.5f;
     drawLine(from, to, color);
 
-    // 小さな十字マーク
+    // 小さな十字マーク（法線方向も考慮）
+    // XY平面の十字
     btVector3 cross1 = PointOnB + btVector3(0.1f, 0, 0);
     btVector3 cross2 = PointOnB - btVector3(0.1f, 0, 0);
     btVector3 cross3 = PointOnB + btVector3(0, 0.1f, 0);
@@ -128,6 +129,15 @@ void BulletDebugDrawer::drawContactPoint(const btVector3& PointOnB, const btVect
 
     drawLine(cross1, cross2, color);
     drawLine(cross3, cross4, color);
+
+    // XZ平面の十字（オプション：より見やすくするため）
+    btVector3 cross5 = PointOnB + btVector3(0.1f, 0, 0);
+    btVector3 cross6 = PointOnB - btVector3(0.1f, 0, 0);
+    btVector3 cross7 = PointOnB + btVector3(0, 0, 0.1f);
+    btVector3 cross8 = PointOnB - btVector3(0, 0, 0.1f);
+
+    drawLine(cross5, cross6, btVector3(color.x() * 0.7f, color.y() * 0.7f, color.z() * 0.7f));
+    drawLine(cross7, cross8, btVector3(color.x() * 0.7f, color.y() * 0.7f, color.z() * 0.7f));
 }
 
 void BulletDebugDrawer::reportErrorWarning(const char* warningString)

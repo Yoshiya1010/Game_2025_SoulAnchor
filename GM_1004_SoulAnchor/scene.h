@@ -5,6 +5,7 @@
 #include <list>
 #include "gameObject.h"
 
+
 enum LAYER {
 	SYSTEM = 0,
 	FIELD,
@@ -21,6 +22,9 @@ private:
 
 	static void UpdateDeltaTime();
 
+
+	static bool debugFlag;
+	
 public:
 	virtual void Init();
 	virtual void Uninit();
