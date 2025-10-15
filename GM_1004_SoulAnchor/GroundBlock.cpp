@@ -103,7 +103,7 @@ void GroundBlock::Draw()
 {
 
     btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
-    // ‰EèŒn¨¶èŒn•ÏŠ·: Z²‚ğ”½“]
+
     XMVECTOR rotationQuaternion = XMVectorSet(
         quaternion.x(),
         quaternion.y(),

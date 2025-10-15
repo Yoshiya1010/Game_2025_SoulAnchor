@@ -37,7 +37,7 @@ void PhysicsManager::Init() {
     worldTransform.setBasis(btMatrix3x3(
         1, 0, 0,
         0, 1, 0,
-        0, 0, -1  // Z反転で左手化
+        0, 0, -1  // Z反転で左手化にして描画と揃えた
     ));
 
     // デバッグドローワー作成・設定

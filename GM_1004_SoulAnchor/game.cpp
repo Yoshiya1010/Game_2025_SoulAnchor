@@ -51,6 +51,7 @@ void Game::Init()
 
 	/*AddGameObject<GroundBlock>(OBJECT);*/
 
+	AddGameObject<Wave>(FIELD)->SetPosition({ 0.0f,0.5f,0.0f });
 	AddGameObject<Score>(UI)->SetPosition({ 50.0f,50.0f,0.0f });
 	
 	
