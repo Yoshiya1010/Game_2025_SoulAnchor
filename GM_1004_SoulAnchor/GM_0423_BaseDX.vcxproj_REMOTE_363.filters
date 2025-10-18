@@ -141,11 +141,7 @@
     <ClCompile Include="EditorObjectCreator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="Json.cpp">
-=======
     <ClCompile Include="DrawImgui.cpp">
->>>>>>> develop_Imgui_SelectObject
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
