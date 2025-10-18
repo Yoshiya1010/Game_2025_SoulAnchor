@@ -44,38 +44,7 @@ void Player::Init()
     m_AnimationBlend = 0.0f;
 
 
-    // 物理コライダーの設定
-    if (PhysicsManager::GetWorld()) {
-        // ボックス形状のコライダー
-        m_CollisionShape = make_unique<btBoxShape>(btVector3(m_Scale.x, m_Scale.y, m_Scale.z));
-
-        // 初期トランスフォーム
-        btTransform startTransform;
-        startTransform.setIdentity();
-        startTransform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
-
-        // MotionStateを作成（これで位置同期が可能に）
-        m_MotionState =make_unique< btDefaultMotionState>(startTransform);
-
-
-        // 質量と慣性
-        btScalar mass = 1.0f;
-        btVector3 localInertia(0, 0, 0);
-        if (mass != 0.0f) {
-            m_CollisionShape->calculateLocalInertia(mass, localInertia);
-        }
-
-        // リジッドボディ作成
-        btRigidBody::btRigidBodyConstructionInfo rbInfo(
-            mass, m_MotionState.get(), m_CollisionShape.get(), localInertia);
-        m_RigidBody = make_unique<btRigidBody>(rbInfo);
-
-        // 物理世界に追加
-        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody.get());
-
-        printf("Enemy physics body added with MotionState at: %.2f, %.2f, %.2f\n",
-            m_Position.x, m_Position.y, m_Position.z);
-    }
+    
 
     SetName("GroundBlock");
 }
@@ -204,8 +173,7 @@ void Player::Update()
     }
 
 
-    //Vector3 rotation = camera->GetRotation();
-    //m_Rotation.y = rotation.y;
+   
 }
 
 void Player::Draw()

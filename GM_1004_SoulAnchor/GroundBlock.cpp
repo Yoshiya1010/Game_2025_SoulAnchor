@@ -34,7 +34,7 @@ void GroundBlock::Init()
 }
 void GroundBlock::Start()
 {
-
+    if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
         m_CollisionShape = std::make_unique<btBoxShape>(
@@ -147,9 +147,6 @@ void GroundBlock::FromJson(const json& j)
     // スケール設定
     m_Scale = { 1.0f, 1.0f, 1.0f };
     // m_modelScale は const なので変更不可（読み込み時は定数でOK）
-
-    // 物理生成
-    CreateBoxColliderAt(m_Position, { 1.0f, 1.0f, 1.0f }, 0.0f);
 
     SetName("GroundBlock");
 }

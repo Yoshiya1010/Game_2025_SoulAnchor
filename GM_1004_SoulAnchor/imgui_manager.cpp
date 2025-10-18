@@ -10,6 +10,10 @@ bool ImGuiManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceConte
 
     ImGui::StyleColorsDark();
 
+   
+
+  
+
     if (!ImGui_ImplWin32_Init(hwnd)) {
         return false;
     }
@@ -18,6 +22,14 @@ bool ImGuiManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceConte
         ImGui_ImplWin32_Shutdown();
         return false;
     }
+
+  
+
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\meiryo.ttc", 18.0f, nullptr,
+        io.Fonts->GetGlyphRangesJapanese());
+
+    ImGui_ImplDX11_InvalidateDeviceObjects();
+    ImGui_ImplDX11_CreateDeviceObjects();
 
     m_initialized = true;
     return true;

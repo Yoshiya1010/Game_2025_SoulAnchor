@@ -74,6 +74,7 @@ void Game::Update()
 	//	Manager::SetScene<Result>();
 	//}
 
+	if (Scene::IsPaused()==true) return;
 	// •¨—¢ŠE‚ÌXV
 	PhysicsManager::Update();
 

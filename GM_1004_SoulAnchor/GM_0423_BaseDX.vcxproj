@@ -210,6 +210,7 @@
     <ClInclude Include="modelRenderer.h" />
     <ClInclude Include="PhysicsCollisionManager.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="renderer.h" />

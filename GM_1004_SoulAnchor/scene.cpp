@@ -6,6 +6,8 @@
 #include "camera.h"
 #include <fstream>
 #include "GroundBlock.h"
+#include <iostream>
+#include <filesystem> 
 
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
@@ -13,6 +15,7 @@ float Scene::m_deltaTime;
 
 bool Scene::debugFlag;
 
+bool Scene::m_isPaused = false;
 
 
 void Scene::Init()
@@ -40,7 +43,7 @@ void Scene::Uninit()
 
 void Scene::Update()
 {
-
+	if (m_isPaused) return; 
 	UpdateDeltaTime();
 
 	for (auto& list : m_GameObjects) {
@@ -54,6 +57,7 @@ void Scene::Update()
 	for (auto& list : m_GameObjects) {
 		list.remove_if([](GameObject* object) {
 			return object->Destroy();
+			delete object;
 			});
 	}
 
@@ -62,7 +66,7 @@ void Scene::Update()
 	if (Input::GetKeyPress(KK_Z))
 	{
 		debugFlag = !debugFlag;
-		SaveScene();
+		
 	}
 
 }
@@ -109,7 +113,7 @@ void Scene::UpdateDeltaTime()
 }
 
 
-void Scene::SaveScene()
+void Scene::SaveScene(const std::string& fileName)
 {
 	json root;
 
@@ -122,13 +126,16 @@ void Scene::SaveScene()
 		}
 	}
 
-	std::ofstream("JsonSaveData/scene.json") << root.dump(4);
+	std::string path = "JsonSaveData/" + fileName + ".json";
+	std::ofstream(path) << root.dump(4);
 	
 }
 
-void Scene::LoadScene()
+void Scene::LoadScene(const std::string& fileName)
 {
-	std::ifstream ifs("JsonSaveData/scene.json");
+
+	
+	std::ifstream ifs("JsonSaveData/"+fileName);
 	if (!ifs.is_open()) {
 		//Jsonファイルないわ
 		return;
@@ -136,14 +143,12 @@ void Scene::LoadScene()
 
 	json root;
 	ifs >> root;
+	Scene::SetPaused(true);
 
-	// 既存オブジェクトを削除
 	for (auto& list : m_GameObjects) {
 		for (auto& obj : list) {
-			obj->Uninit();
-			delete obj;
+			obj->SetDestroy(); // ← ここで予約
 		}
-		list.clear();
 	}
 
 	// 新しいオブジェクトを生成
@@ -151,6 +156,7 @@ void Scene::LoadScene()
 		auto obj = CreateGameObjectFromJson(item);
 		AddExistingGameObject(OBJECT, obj.release());
 	}
+	Scene::SetPaused(false);
 
 	
 }

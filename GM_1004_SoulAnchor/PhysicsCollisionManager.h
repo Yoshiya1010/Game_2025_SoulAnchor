@@ -126,8 +126,8 @@ private:
     void HandlePlayerBulletHitShip(GameObject* bullet, GameObject* ship, const Vector3& hitPoint) {
         printf("Player bullet hit ship!\n");
 
-        // Shipにダメージ
-        ship->TakeDamage(25.0f, bullet);
+        
+      
 
         // 弾丸を消滅
         bullet->SetDestroy();
@@ -136,8 +136,7 @@ private:
     void HandleEnemyBulletHitPlayer(GameObject* bullet, GameObject* player, const Vector3& hitPoint) {
         printf("Enemy bullet hit player!\n");
 
-        // プレイヤーにダメージ
-        player->TakeDamage(15.0f, bullet);
+      
 
         // 弾丸を消滅
         bullet->SetDestroy();
@@ -146,17 +145,13 @@ private:
     void HandlePlayerHitShip(GameObject* player, GameObject* ship, const Vector3& hitPoint) {
         printf("Player collided with ship!\n");
 
-        // 両方にダメージ
-        player->TakeDamage(30.0f, ship);
-        ship->TakeDamage(25.0f, player);
+       
     }
 
     void HandleShipHitShip(GameObject* shipA, GameObject* shipB, const Vector3& hitPoint) {
         printf("Ship-to-ship collision!\n");
 
-        // 両方にダメージ
-        shipA->TakeDamage(20.0f, shipB);
-        shipB->TakeDamage(20.0f, shipA);
+      
     }
 
     void HandlePlayerCollectItem(GameObject* player, GameObject* item, const Vector3& hitPoint) {

@@ -6,10 +6,11 @@
 #include <btBulletDynamicsCommon.h>
 #include"animationModel.h"
 #include<memory>
+#include"PhysicsObject.h"
 
 
 
-class GroundBlock :public GameObject {
+class GroundBlock :public PhysicsObject {
 private:
 	ID3D11VertexShader* m_VertexShader;	// 頂点シェーダーオブジェクト
 	ID3D11PixelShader* m_PixelShader;		// ピクセルシェーダーオブジェクト

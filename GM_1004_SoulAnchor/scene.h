@@ -4,7 +4,8 @@
 #include <vector>
 #include <list>
 #include "gameObject.h"
-
+#include"json.hpp"
+using json = nlohmann::json;
 
 
 
@@ -17,7 +18,8 @@ enum LAYER {
 	LAYER_NUM, // この列挙体の要素数
 };
 
-class Scene {
+class Scene
+{
 private:
 	static std::list<GameObject*> m_GameObjects[LAYER_NUM];
 	static float m_deltaTime;
@@ -27,15 +29,20 @@ private:
 
 	static bool debugFlag;
 	
+	static bool m_isPaused;   // ポーズ中フラグ
+
 public:
 	virtual void Init();
 	virtual void Uninit();
 	virtual void Update();
 	virtual void Draw();
 
+	static void SetPaused(bool pause) { m_isPaused = pause; }
+	static bool IsPaused() { return m_isPaused; }
 
-	void SaveScene();
-	void LoadScene();
+
+	void SaveScene(const std::string& fileName);
+	void LoadScene(const std::string& fileName);
 
 	void AddExistingGameObject(int Layer, GameObject* obj)
 	{
