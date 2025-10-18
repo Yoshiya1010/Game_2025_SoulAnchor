@@ -6,10 +6,12 @@
 #include <btBulletDynamicsCommon.h>
 #include <DirectXMath.h>
 #include<memory>
-
+#include"json.hpp"
 #include <iostream>
 using std::unique_ptr;
 using std::make_unique;
+
+using json = nlohmann::json;
 
 // オブジェクトタグの定義（フィルタリング/識別に使用）
 enum class GameObjectTag {
@@ -43,8 +45,12 @@ protected:
 
 	// 基本トランスフォーム
 	Vector3 m_Position{ 0.0f, 0.0f, 0.0f };
-	Vector3 m_Rotation{ 0.0f, 0.0f, 0.0f }; // RPY（ロール/ピッチ/ヨー）想定
+	Vector3 m_Rotation{ 0.0f, 0.0f, 0.0f }; 
 	Vector3 m_Scale{ 1.0f, 1.0f, 1.0f };
+
+
+	Vector3 m_FirstPosition{ 0.0f,0.0f,0.0f };
+	Vector3 m_FirstRotation{ 0.0f,0.0f,0.0f };
 
 	// ライフサイクル管理フラグ
 	bool m_Started = false; // Start() が呼ばれたかどうか
@@ -392,5 +398,30 @@ private:
 		m_CollisionShape.reset();
 
 	}
+
+
+	public:
+		virtual json ToJson() const {
+			json j;
+			j["Type"] = "GameObject";
+			j["Name"] = m_Name;
+			j["Position"] = { m_Position.x, m_Position.y, m_Position.z };
+			j["Rotation"] = { m_Rotation.x, m_Rotation.y, m_Rotation.z };
+			j["Scale"] = { m_Scale.x, m_Scale.y, m_Scale.z };
+			return j;
+		}
+
+
+		virtual void FromJson(const json& j) {
+			m_Name = j.value("Name", "");
+			auto p = j["Position"];
+			m_Position = { p[0], p[1], p[2] };
+
+			auto r = j["Rotation"];
+			m_Rotation = { r[0], r[1], r[2] };
+
+			auto s = j["Scale"];
+			m_Scale = { s[0], s[1], s[2] };
+		}
 
 };

@@ -26,30 +26,7 @@ GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, float size)
     sprintf_s(name, "EditorGround_%03d", s_CreatedObjectCount);
 
 
-    nlohmann::json m_json = {
-    {"Name","Ground"},
-    {"Position.x",cube->GetPosition().x},
-    {"Position.y",cube->GetPosition().y},
-    {"Position.z",cube->GetPosition().z},
-    {"size",cube->GetScale().x},
-    {"size",cube->GetScale().y},
-    {"size",cube->GetScale().z},
-    {"Tag",cube->GetTag()}
-    };
-
-
-    //ここでファイルを作成
-    
-
-    std::string filename = m_json["Name"];
-    std::string Extension = ".json";
-    filename += Extension;
-
-    //作成したファイルに内容を書き込む
-    std::ofstream writing_file;
-    writing_file.open(filename, std::ios::out);
-    writing_file << m_json.dump() << std::endl;
-    writing_file.close();
+   
 
     return cube;
 }

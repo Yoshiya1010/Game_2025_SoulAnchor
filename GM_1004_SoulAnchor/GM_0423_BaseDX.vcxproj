@@ -159,6 +159,7 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui_manager.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="Json.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />

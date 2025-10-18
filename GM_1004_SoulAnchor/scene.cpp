@@ -4,12 +4,16 @@
 #include "input.h"
 #include "scene.h"
 #include "camera.h"
+#include <fstream>
+#include "GroundBlock.h"
 
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
 
 bool Scene::debugFlag;
+
+
 
 void Scene::Init()
 {
@@ -36,9 +40,6 @@ void Scene::Uninit()
 
 void Scene::Update()
 {
-	//for (int i = 0; i < 4; i++) {
-	//	g_GameObjects[i]->Update();
-	//}
 
 	UpdateDeltaTime();
 
@@ -61,6 +62,7 @@ void Scene::Update()
 	if (Input::GetKeyPress(KK_Z))
 	{
 		debugFlag = !debugFlag;
+		SaveScene();
 	}
 
 }
@@ -104,4 +106,63 @@ void Scene::UpdateDeltaTime()
 	prevTime = currentTime;
 
 	m_deltaTime = delta.count();
+}
+
+
+void Scene::SaveScene()
+{
+	json root;
+
+	// LAYER_NUMすべてを走査
+	for (auto& list : m_GameObjects)
+	{
+		for (auto& obj : list)
+		{
+			root["Objects"].push_back(obj->ToJson());
+		}
+	}
+
+	std::ofstream("JsonSaveData/scene.json") << root.dump(4);
+	
+}
+
+void Scene::LoadScene()
+{
+	std::ifstream ifs("JsonSaveData/scene.json");
+	if (!ifs.is_open()) {
+		//Jsonファイルないわ
+		return;
+	}
+
+	json root;
+	ifs >> root;
+
+	// 既存オブジェクトを削除
+	for (auto& list : m_GameObjects) {
+		for (auto& obj : list) {
+			obj->Uninit();
+			delete obj;
+		}
+		list.clear();
+	}
+
+	// 新しいオブジェクトを生成
+	for (auto& item : root["Objects"]) {
+		auto obj = CreateGameObjectFromJson(item);
+		AddExistingGameObject(OBJECT, obj.release());
+	}
+
+	
+}
+
+std::unique_ptr<GameObject> CreateGameObjectFromJson(const json& j)
+{
+	std::string type = j.value("Type", "GameObject");
+	std::unique_ptr<GameObject> obj;
+
+	if (type == "GroundBlock")      obj = std::make_unique<GroundBlock>();
+	else                            obj = std::make_unique<GameObject>();
+
+	obj->FromJson(j);
+	return obj;
 }

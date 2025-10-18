@@ -6,6 +6,8 @@
 #include "gameObject.h"
 
 
+
+
 enum LAYER {
 	SYSTEM = 0,
 	FIELD,
@@ -30,6 +32,15 @@ public:
 	virtual void Uninit();
 	virtual void Update();
 	virtual void Draw();
+
+
+	void SaveScene();
+	void LoadScene();
+
+	void AddExistingGameObject(int Layer, GameObject* obj)
+	{
+		m_GameObjects[Layer].push_back(obj);
+	}
 
 	template <typename T>
 	T* AddGameObject(int Layer)
@@ -82,3 +93,5 @@ public:
 
 	static float GetDeltaTime() { return m_deltaTime; }
 };
+
+std::unique_ptr<GameObject> CreateGameObjectFromJson(const json& j);
