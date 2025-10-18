@@ -8,6 +8,10 @@
 #include "GroundBlock.h"
 #include <iostream>
 #include <filesystem> 
+#include"player.h"
+#include"wave.h"
+#include"score.h"
+#include"enemy.h"
 
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
@@ -43,7 +47,14 @@ void Scene::Uninit()
 
 void Scene::Update()
 {
-	if (m_isPaused) return; 
+	for (auto& list : m_GameObjects) {
+		list.remove_if([](GameObject* object) {
+			return object->Destroy();
+			delete object;
+			});
+	}
+
+	
 	UpdateDeltaTime();
 
 	for (auto& list : m_GameObjects) {
@@ -52,15 +63,6 @@ void Scene::Update()
 			gameObject->Update();
 		}
 	}
-
-
-	for (auto& list : m_GameObjects) {
-		list.remove_if([](GameObject* object) {
-			return object->Destroy();
-			delete object;
-			});
-	}
-
 
 
 	if (Input::GetKeyPress(KK_Z))
@@ -134,41 +136,33 @@ void Scene::SaveScene(const std::string& fileName)
 void Scene::LoadScene(const std::string& fileName)
 {
 
-	
-	std::ifstream ifs("JsonSaveData/"+fileName);
-	if (!ifs.is_open()) {
-		//Jsonファイルないわ
-		return;
-	}
+	std::ifstream ifs("JsonSaveData/" + fileName);
+	if (!ifs.is_open()) return;
 
 	json root;
 	ifs >> root;
-	Scene::SetPaused(true);
 
-	for (auto& list : m_GameObjects) {
-		for (auto& obj : list) {
-			obj->SetDestroy(); // ← ここで予約
-		}
+	for (auto& list : m_GameObjects)
+		for (auto& obj : list)
+			obj->SetDestroy();
+
+	for (auto& item : root["Objects"])
+	{
+		std::string type = item.value("Type", "GameObject");
+		int layer = item.value("Layer", OBJECT);
+
+		GameObject* obj = nullptr;
+
+		if (type == "Player") obj = AddGameObject<Player>(layer);
+		else if (type == "Camera") obj = AddGameObject<Camera>(layer);
+		else if (type == "Wave") obj = AddGameObject<Wave>(layer);
+		else if (type == "Score") obj = AddGameObject<Score>(layer);
+		else if (type == "GroundBlock") obj = AddGameObject<GroundBlock>(layer);
+		else obj = AddGameObject<GameObject>(layer);
+
+		if (obj)
+			obj->FromJson(item);
 	}
-
-	// 新しいオブジェクトを生成
-	for (auto& item : root["Objects"]) {
-		auto obj = CreateGameObjectFromJson(item);
-		AddExistingGameObject(OBJECT, obj.release());
-	}
-	Scene::SetPaused(false);
-
 	
 }
 
-std::unique_ptr<GameObject> CreateGameObjectFromJson(const json& j)
-{
-	std::string type = j.value("Type", "GameObject");
-	std::unique_ptr<GameObject> obj;
-
-	if (type == "GroundBlock")      obj = std::make_unique<GroundBlock>();
-	else                            obj = std::make_unique<GameObject>();
-
-	obj->FromJson(j);
-	return obj;
-}

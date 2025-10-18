@@ -204,6 +204,7 @@
     <ClInclude Include="imgui_manager.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="Layer.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="meshField.h" />

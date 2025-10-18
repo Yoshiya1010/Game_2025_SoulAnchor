@@ -8,6 +8,9 @@
 #include<memory>
 #include"json.hpp"
 #include <iostream>
+#include"Layer.h"
+
+
 using std::unique_ptr;
 using std::make_unique;
 
@@ -51,6 +54,9 @@ protected:
 
 	std::string m_Name = "";
 	GameObjectTag m_Tag = GameObjectTag::None;
+
+	//レイヤー情報
+	int m_Layer = 0;
 public:
 	// 初期化（生成直後に1回想定）
 	virtual void Init() {}
@@ -81,7 +87,8 @@ public:
 	// 描画（派生で実装）
 	virtual void Draw() {}
 
-
+	void SetLayer(int layer) { m_Layer = layer; }
+	int  GetLayer() const { return m_Layer; }
 	
 
 
@@ -105,8 +112,13 @@ public:
 		//Json周り
 		virtual json ToJson() const {
 			json j;
-			j["Type"] = "GameObject";
+			std::string rawType = typeid(*this).name();
+			size_t pos = rawType.find_last_of(' ');
+			std::string cleanType = (pos != std::string::npos) ? rawType.substr(pos + 1) : rawType;
+
+			j["Type"] = cleanType;
 			j["Name"] = m_Name;
+			j["Layer"] = m_Layer;
 			j["Position"] = { m_Position.x, m_Position.y, m_Position.z };
 			j["Rotation"] = { m_Rotation.x, m_Rotation.y, m_Rotation.z };
 			j["Scale"] = { m_Scale.x, m_Scale.y, m_Scale.z };
@@ -116,12 +128,11 @@ public:
 
 		virtual void FromJson(const json& j) {
 			m_Name = j.value("Name", "");
+			m_Layer = j.value("Layer", OBJECT);
 			auto p = j["Position"];
 			m_Position = { p[0], p[1], p[2] };
-
 			auto r = j["Rotation"];
 			m_Rotation = { r[0], r[1], r[2] };
-
 			auto s = j["Scale"];
 			m_Scale = { s[0], s[1], s[2] };
 		}

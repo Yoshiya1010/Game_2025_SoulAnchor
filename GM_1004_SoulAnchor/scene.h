@@ -5,18 +5,12 @@
 #include <list>
 #include "gameObject.h"
 #include"json.hpp"
+#include"Layer.h"
 using json = nlohmann::json;
 
 
 
-enum LAYER {
-	SYSTEM = 0,
-	FIELD,
-	OBJECT,
-	EFFECT,
-	UI,
-	LAYER_NUM, // Ç±ÇÃóÒãìëÃÇÃóvëfêî
-};
+
 
 class Scene
 {
@@ -44,17 +38,18 @@ public:
 	void SaveScene(const std::string& fileName);
 	void LoadScene(const std::string& fileName);
 
-	void AddExistingGameObject(int Layer, GameObject* obj)
-	{
-		m_GameObjects[Layer].push_back(obj);
-	}
+	
 
 	template <typename T>
 	T* AddGameObject(int Layer)
 	{
 		T* gameObject = new T();
 		gameObject->Init();
+		gameObject->SetLayer(Layer);
+
 		m_GameObjects[Layer].push_back(gameObject);
+
+	
 
 		return gameObject;
 	}
@@ -101,4 +96,3 @@ public:
 	static float GetDeltaTime() { return m_deltaTime; }
 };
 
-std::unique_ptr<GameObject> CreateGameObjectFromJson(const json& j);

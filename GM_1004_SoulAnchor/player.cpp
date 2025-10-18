@@ -46,7 +46,7 @@ void Player::Init()
 
     
 
-    SetName("GroundBlock");
+    SetName("Player");
 }
 
 void Player::Uninit()

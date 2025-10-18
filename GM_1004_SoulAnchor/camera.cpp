@@ -21,6 +21,8 @@ void	Camera::Init()
 	m_cameraDistance = 7.0f;
 	m_cameraHeight = 2.0f;
 	m_sensitivity = 2.0f;  // スティック感度
+
+	SetName("Camera");
 }
 
 void	Camera::Uninit()
