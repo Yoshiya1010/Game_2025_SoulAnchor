@@ -26,4 +26,7 @@ public:
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+
+	json ToJson() const override;
+	void FromJson(const json& j);
 };

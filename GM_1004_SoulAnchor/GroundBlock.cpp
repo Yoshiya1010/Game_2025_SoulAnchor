@@ -28,6 +28,8 @@ void GroundBlock::Init()
 
     m_Started = false;
 
+    SetName("GroundBlock");
+
 
 }
 void GroundBlock::Start()
@@ -60,7 +62,7 @@ void GroundBlock::Start()
         PhysicsManager::GetWorld()->addRigidBody(m_RigidBody.get());
     }
 
-    SetName("GroundBlock");
+ 
 }
 
 
@@ -120,4 +122,34 @@ void GroundBlock::Draw()
     // モデルの描画
     m_ModelRenderer->Draw();
 
+}
+
+json GroundBlock::ToJson() const {
+    json j = GameObject::ToJson();
+    j["Type"] = "GroundBlock";
+    j["Model"] = "asset\\model\\GroundBlock.fbx";
+    j["ModelScale"] = m_modelScale;
+    return j;
+}
+
+void GroundBlock::FromJson(const json& j)
+{
+    GameObject::FromJson(j);
+
+    // モデルとスケール情報
+    std::string modelPath = j.value("Model", "asset\\model\\GroundBlock.fbx");
+    float scale = j.value("ModelScale", 2.0f);
+
+    // モデル読み込み
+    m_ModelRenderer = std::make_unique<AnimationModel>();
+    m_ModelRenderer->Load(modelPath.c_str());
+
+    // スケール設定
+    m_Scale = { 1.0f, 1.0f, 1.0f };
+    // m_modelScale は const なので変更不可（読み込み時は定数でOK）
+
+    // 物理生成
+    CreateBoxColliderAt(m_Position, { 1.0f, 1.0f, 1.0f }, 0.0f);
+
+    SetName("GroundBlock");
 }
