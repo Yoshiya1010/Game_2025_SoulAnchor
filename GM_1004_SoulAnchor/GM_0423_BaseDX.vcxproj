@@ -164,6 +164,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="meshField.cpp" />
+    <ClCompile Include="ModelFBX.cpp" />
     <ClCompile Include="modelRenderer.cpp" />
     <ClCompile Include="PhysicsCollisionManager.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="meshField.h" />
+    <ClInclude Include="ModelFBX.h" />
     <ClInclude Include="modelRenderer.h" />
     <ClInclude Include="PhysicsCollisionManager.h" />
     <ClInclude Include="PhysicsManager.h" />

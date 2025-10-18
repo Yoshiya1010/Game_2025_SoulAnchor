@@ -7,13 +7,14 @@
 #include "PhysicsManager.h"
 #include <btBulletDynamicsCommon.h>
 #include "animationModel.h"
+#include"ModelFBX.h"
 
 void GroundBlock::Init()
 {
   
 
     // モデルのロード
-    m_ModelRenderer = make_unique<AnimationModel>();
+    m_ModelRenderer = std::make_unique<StaticFBXModel>();
     m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
 
 
@@ -103,6 +104,7 @@ void GroundBlock::Update()
 
 void GroundBlock::Draw()
 {
+    
 
     btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
 
@@ -141,7 +143,7 @@ void GroundBlock::FromJson(const json& j)
     float scale = j.value("ModelScale", 2.0f);
 
     // モデル読み込み
-    m_ModelRenderer = std::make_unique<AnimationModel>();
+    m_ModelRenderer = std::make_unique<StaticFBXModel>();
     m_ModelRenderer->Load(modelPath.c_str());
 
     // スケール設定

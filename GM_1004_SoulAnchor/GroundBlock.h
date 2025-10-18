@@ -4,7 +4,7 @@
 #include "renderer.h"
 #include "gameObject.h"
 #include <btBulletDynamicsCommon.h>
-#include"animationModel.h"
+#include"ModelFBX.h"
 #include<memory>
 #include"PhysicsObject.h"
 
@@ -18,7 +18,7 @@ private:
 
 
 	//ƒ‚ƒfƒ‹
-	unique_ptr<AnimationModel> m_ModelRenderer = nullptr;
+	unique_ptr<StaticFBXModel> m_ModelRenderer = nullptr;
 	const float m_modelScale = 2.0f;
 
 public:
