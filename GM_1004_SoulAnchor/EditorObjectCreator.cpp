@@ -9,25 +9,27 @@
 #include"GroundBlock.h"
 #include"gameObject.h"
 #include"PhysicsObject.h"
+#include"camera.h"
 
 
 int EditorObjectCreator::s_CreatedObjectCount = 0;
 
-GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, float size) {
+GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, Vector3 size) {
     
     
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
     auto* cube = scene->AddGameObject<GroundBlock>(OBJECT);
+    cube->SetMass(1.0f);
+    cube->SetPosition(position);
+    cube->SetScale(size);
 
     // 名前設定
     s_CreatedObjectCount++;
     char name[64];
     sprintf_s(name, "EditorGround_%03d", s_CreatedObjectCount);
 
-
-   
 
     return cube;
 }
@@ -146,5 +148,5 @@ Vector3 EditorObjectCreator::GetSafeSpawnPosition() {
     //}
 
     //// デフォルト位置
-    return Vector3(0, 20, 0);
+    return Vector3(0, 3, 0);
 }

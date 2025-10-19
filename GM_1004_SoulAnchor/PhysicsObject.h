@@ -24,7 +24,44 @@ protected:
     int m_CollisionMask = -1;
 
     float m_mass=0;
+
+    float DEG2RAD = 3.14159265358979323846f / 180.0f;
 public:
+    float GetMass() { return m_mass; }
+    virtual PhysicsObject* SetMass(float mass)
+    {
+        m_mass = mass;
+
+        if (!m_RigidBody || !m_CollisionShape) return this;
+
+        auto* world = PhysicsManager::GetWorld();
+        if (!world) return this;
+
+        // 一旦物理世界から削除
+        world->removeRigidBody(m_RigidBody.get());
+
+        btVector3 inertia(0, 0, 0);
+        if (mass > 0.f)
+            m_CollisionShape->calculateLocalInertia(mass, inertia);
+
+        //剛体情報を再設定
+        m_RigidBody->setMassProps(mass, inertia);
+        m_RigidBody->updateInertiaTensor();
+
+        // 速度をリセットして安定化
+        m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
+        m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
+        //再登録
+        world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
+        m_RigidBody->activate(true);
+
+        return this;
+    }
+
+
+
+
     virtual ~PhysicsObject() = default;
 
     // 剛体生成 ここでボディを作ってる
@@ -69,6 +106,33 @@ public:
         CreateRigidBody(mass);
     }
 
+    void RecreateCollider()
+    {
+        if (!m_CollisionShape) return;
+        auto* world = PhysicsManager::GetWorld();
+        if (!world) return;
+
+        // 既存の剛体を一旦削除
+        if (m_RigidBody)
+        {
+            world->removeRigidBody(m_RigidBody.get());
+            m_RigidBody->setUserPointer(nullptr);
+        }
+
+        // 形状タイプを調べて再生成
+        std::string shapeType = GetShapeTypeName(m_CollisionShape.get());
+
+        if (shapeType == "Box")
+            m_CollisionShape = std::make_unique<btBoxShape>(btVector3(m_Scale.x, m_Scale.y, m_Scale.z));
+        else if (shapeType == "Sphere")
+            m_CollisionShape = std::make_unique<btSphereShape>(m_Scale.x);
+        else if (shapeType == "Capsule")
+            m_CollisionShape = std::make_unique<btCapsuleShape>(m_Scale.x, m_Scale.y);
+
+        // 剛体を再登録
+        CreateRigidBody(m_mass);
+    }
+
     // 同期関数
     void SyncFromPhysics() {
         if (m_RigidBody && m_RigidBody->getMotionState()) {
@@ -80,12 +144,25 @@ public:
     }
 
     void SyncToPhysics() {
-        if (m_RigidBody) {
-            btTransform transform;
-            transform.setIdentity();
-            transform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
-            m_RigidBody->setWorldTransform(transform);
-        }
+        if (!m_RigidBody) return;
+
+        btTransform t = m_RigidBody->getWorldTransform();
+        t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+
+        // Bulletは ZYX（yaw, pitch, roll）の順で受け取る
+        btQuaternion q;
+        q.setEulerZYX(
+            m_Rotation.y * DEG2RAD, // yaw (Y)
+            m_Rotation.x * DEG2RAD, // pitch (X)
+            m_Rotation.z * DEG2RAD  // roll (Z)
+        );
+        t.setRotation(q);
+
+        m_RigidBody->setWorldTransform(t);
+        if (m_RigidBody->getMotionState())
+            m_RigidBody->getMotionState()->setWorldTransform(t);
+
+        m_RigidBody->activate(true);
     }
 
     // 終了処理（物理のみ）
@@ -99,6 +176,8 @@ public:
         m_MotionState.reset();
         m_CollisionShape.reset();
     }
+
+
 
 
     XMMATRIX UpdatePhysicsWithModel(float ModelScale)

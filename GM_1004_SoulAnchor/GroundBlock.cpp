@@ -38,29 +38,12 @@ void GroundBlock::Start()
     if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        m_CollisionShape = std::make_unique<btBoxShape>(
-            btVector3(m_Scale.x, m_Scale.y, m_Scale.z)
-        );
+        // 衝突レイヤー設定（任意）
+        SetupCollisionLayer();
 
-        btTransform startTransform;
-        startTransform.setIdentity();
-        startTransform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+        // 物理コライダー生成
+        CreateBoxCollider(m_Scale, 0.0f);  
 
-        m_MotionState = std::make_unique<btDefaultMotionState>(startTransform);
-
-        btScalar mass = 1.0f;
-        btVector3 localInertia(0, 0, 0);
-        if (mass != 0.0f)
-            m_CollisionShape->calculateLocalInertia(mass, localInertia);
-
-        auto rbInfo = btRigidBody::btRigidBodyConstructionInfo(
-            mass, m_MotionState.get(), m_CollisionShape.get(), localInertia
-        );
-
-        m_RigidBody = std::make_unique<btRigidBody>(rbInfo);
-        m_RigidBody->setUserPointer(this);
-
-        PhysicsManager::GetWorld()->addRigidBody(m_RigidBody.get());
     }
 
  

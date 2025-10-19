@@ -14,7 +14,7 @@ public:
     static GameObject* CreateStaticCube(Vector3 position, Vector3 size);
     static GameObject* CreateDynamicCube(Vector3 position, Vector3 size, float mass = 1.0f);
 
-    static GameObject* CreateGroundBlock(Vector3 position, float size);
+    static GameObject* CreateGroundBlock(Vector3 position, Vector3 scale);
 
     // ユーティリティメソッド
     static Vector3 GetSafeSpawnPosition();

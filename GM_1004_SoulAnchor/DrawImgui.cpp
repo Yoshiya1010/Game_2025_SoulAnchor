@@ -1,4 +1,4 @@
-#include "game.h"
+ï»¿#include "game.h"
 #include "camera.h"
 #include "field.h"
 #include "player.h"
@@ -27,35 +27,42 @@
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
-
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã¾ãŸã¯é™çš„å¤‰æ•°ã¨ã—ã¦ä¿æŒ
+static GameObject* selectedObject = nullptr;
 
 void DrawImguiWindow()
 {
 
-	// ƒfƒ‚ƒEƒBƒ“ƒhƒEiƒeƒXƒg—pj
+	// ãƒ‡ãƒ¢ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆãƒ†ã‚¹ãƒˆç”¨ï¼‰
 	static bool showDemo = true;
-	static bool showSceneHierarchy = false;
-	static bool showProperties = false;
+
+
 	static bool showDebugWindow = false;
 
-	//ƒZ[ƒu‚ÌƒEƒBƒ“ƒhƒE
-	static bool saveSceneWindow = false;
-	//ƒ[ƒh‚ÌƒEƒBƒ“ƒhƒE
-	static bool loadSceneWindow = false;
+
+	//ã‚·ãƒ¼ãƒ³ã®ãƒ’ã‚¨ãƒ©ãƒ«ã‚­ãƒ¼ã®è¡¨ç¤º
+	static bool showSceneHierarchyWindowFlag = true;
+	
+	static bool showPropertiesWindowFlag = true;
+
+	//ã‚»ãƒ¼ãƒ–ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+	static bool saveSceneWindowFlag = false;
+	//ãƒ­ãƒ¼ãƒ‰ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+	static bool loadSceneWindowFlag = false;
 	if (showDemo) {
 	
 		
 		
-		// ƒƒCƒ“ƒƒjƒ…[ƒo[
+		// ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 			
-				if (ImGui::MenuItem("Save Scene", nullptr, &saveSceneWindow));
+				if (ImGui::MenuItem("Save Scene", nullptr, &saveSceneWindowFlag));
 
-				if (ImGui::MenuItem("Load Scene", nullptr, &loadSceneWindow));
+				if (ImGui::MenuItem("Load Scene", nullptr, &loadSceneWindowFlag));
 				
 				
-				
+			
 					
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit")) {
@@ -66,8 +73,9 @@ void DrawImguiWindow()
 
 			if (ImGui::BeginMenu("View")) {
 				ImGui::MenuItem(" Window", nullptr, &showDemo);
-				ImGui::MenuItem("Scene Hierarchy", nullptr, &showSceneHierarchy);
-				ImGui::MenuItem("Properties", nullptr, &showProperties);
+				ImGui::MenuItem("Scene Hierarchy", nullptr, &showSceneHierarchyWindowFlag);
+				ImGui::MenuItem("Properties", nullptr, &showPropertiesWindowFlag);
+
 				ImGui::EndMenu();
 			}
 
@@ -75,23 +83,32 @@ void DrawImguiWindow()
 
 		}
 
-		//Windows‚È‚Ç‚ğ’Ç‰Á‚µ‚Ä‚¢‚­
+		//Windowsãªã©ã‚’è¿½åŠ ã—ã¦ã„ã
 
-		//ƒIƒuƒWƒFƒNƒg‚Ìì¬‚ÌWindow
+		//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã®Window
 		CreateObjectWindow();
 
-		if (saveSceneWindow)
+		if (saveSceneWindowFlag)
 		{
 			SaveSceneWindow();
 		}
 
-		if (loadSceneWindow)
+		if (loadSceneWindowFlag)
 		{
 			LoadSceneWindow();
 		}
 
 
-		
+		if (showSceneHierarchyWindowFlag)
+		{
+			ShowSceneHierarchyWindow();
+		}
+
+		if (showPropertiesWindowFlag)
+		{
+			ShowPropertiesWindow();
+		}
+
 	}
 	
 
@@ -104,14 +121,14 @@ void CreateObjectWindow()
 {
 	ImGui::Begin("AddCreateObject");
 
-	// Šù‘¶‚ÌƒIƒuƒWƒFƒNƒg•\¦ƒR[ƒh...i‘O‰ñ‚Æ“¯‚¶j
+	// æ—¢å­˜ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¡¨ç¤ºã‚³ãƒ¼ãƒ‰...ï¼ˆå‰å›ã¨åŒã˜ï¼‰
 
 	ImGui::Separator();
 	ImGui::Text("Create Objects:");
 
 	if (ImGui::Button("Add Ground")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		EditorObjectCreator::CreateGroundBlock(pos, 100.0f);
+		EditorObjectCreator::CreateGroundBlock(pos, Vector3(1.0f,1.0f,1.f));
 	}
 	if (ImGui::Button("Add Cube")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
@@ -143,22 +160,22 @@ void SaveSceneWindow(void)
 	ImGui::Begin("SaveScne");
 
 	ImGui::Separator();
-	ImGui::Text(u8"Scene‚É‚ ‚é‘S‚Ä‚ÌƒIƒuƒWƒFƒNƒg‚ğƒZ[ƒu‚µ‚Ü‚·B");
+	ImGui::Text(u8"Sceneã«ã‚ã‚‹å…¨ã¦ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚»ãƒ¼ãƒ–ã—ã¾ã™ã€‚");
 
 	ImGui::PushFont(nullptr, ImGui::GetFontSize() * 1.5f);
 	static char str0[128] = "";
-	ImGui::InputTextWithHint(".json",u8"•Û‘¶‚·‚éƒtƒ@ƒCƒ‹–¼", str0,IM_ARRAYSIZE(str0));
+	ImGui::InputTextWithHint(".json",u8"ä¿å­˜ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å", str0,IM_ARRAYSIZE(str0));
 	ImGui::SameLine();
 
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); // ’Êí
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.7f, 1.0f, 1.0f)); // ƒzƒo[
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.5f, 0.9f, 1.0f)); // ƒNƒŠƒbƒN
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); // é€šå¸¸æ™‚
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.7f, 1.0f, 1.0f)); // ãƒ›ãƒãƒ¼æ™‚
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.5f, 0.9f, 1.0f)); // ã‚¯ãƒªãƒƒã‚¯æ™‚
 	if (ImGui::Button("Save")) {
 		Scene* scene = Manager::GetScene();
 		if (scene) {
 			scene->SaveScene(str0);
 		}
-		strcpy_s(str0, "");//ƒŠƒZƒbƒg
+		strcpy_s(str0, "");//ãƒªã‚»ãƒƒãƒˆ
 	}
 	
 	ImGui::PopStyleColor(3);
@@ -178,9 +195,9 @@ void LoadSceneWindow(void)
 	ImGui::PushFont(nullptr, ImGui::GetFontSize() * 1.5f);
 	if (ImGui::Begin("Scene File Browser"))
 	{
-		const std::string folder_path = "JsonSaveData/";  // •\¦‚µ‚½‚¢ƒtƒHƒ‹ƒ_
+		const std::string folder_path = "JsonSaveData/";  // è¡¨ç¤ºã—ãŸã„ãƒ•ã‚©ãƒ«ãƒ€
 
-		// ƒtƒHƒ‹ƒ_“à‚Ìƒtƒ@ƒCƒ‹ˆê——‚ğƒ‹[ƒv
+		// ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§ã‚’ãƒ«ãƒ¼ãƒ—
 		for (const auto& entry : fs::directory_iterator(folder_path))
 		{
 			std::string name = entry.path().filename().string();
@@ -203,7 +220,7 @@ void LoadSceneWindow(void)
 	if (SelectFileName != "")
 	{
 		ImGui::Separator();
-		ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), u8"‘I‘ğ’†‚Ìƒtƒ@ƒCƒ‹");
+		ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), u8"é¸æŠä¸­ã®ãƒ•ã‚¡ã‚¤ãƒ«");
 		ImGui::SameLine();
 		ImGui::Text(SelectFileName.c_str());
 		ImGui::SameLine();
@@ -218,5 +235,98 @@ void LoadSceneWindow(void)
 	
 		
 	ImGui::PopFont();
+	ImGui::End();
+}
+
+void ShowSceneHierarchyWindow(void)
+{
+	ImGui::SetNextWindowSize(ImVec2(500, 1000), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Scene Hierarchy");
+	
+
+	auto* layers = Scene::GetAllGameObjects();
+
+	// ãƒ¬ã‚¤ãƒ¤ãƒ¼ã”ã¨ã«åŒºåˆ‡ã£ã¦è¡¨ç¤º
+	for (int i = 0; i < LAYER_NUM; i++)
+	{
+		// ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä¸­èº«ãŒç©ºãªã‚‰ã‚¹ã‚­ãƒƒãƒ—
+		if (layers[i].empty()) continue;
+
+		// è¦‹å‡ºã—ãƒ„ãƒªãƒ¼ï¼ˆæŠ˜ã‚ŠãŸãŸã¿å¼ï¼‰
+		std::string layerName = "Layer " + std::to_string(i);
+		if (ImGui::TreeNode(layerName.c_str()))
+		{
+			for (auto& obj : layers[i])
+			{
+				// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåãŒç©ºã®ã¨ãã«ImGuiãŒè½ã¡ã‚‹ã®ã‚’é˜²æ­¢
+				std::string objName = obj->GetName();
+				if (objName.empty()) objName = "Unnamed Object";
+
+				// é¸æŠå¯èƒ½ãªè¡Œã‚’æç”»
+				if (ImGui::Selectable(objName.c_str(), selectedObject == obj))
+				{
+					selectedObject = obj;
+				}
+			}
+
+			ImGui::TreePop();
+		}
+	}
+
+	ImGui::End();
+}
+
+void ShowPropertiesWindow(void)
+{
+	if (!selectedObject) return;
+
+	ImGui::Begin("Properties");
+
+	ImGui::Text("Editing: %s", selectedObject->GetName().c_str());
+	ImGui::Separator();
+
+	Vector3 pos = selectedObject->GetPosition();
+	Vector3 rot = selectedObject->GetRotation();
+	Vector3 scale = selectedObject->GetScale();
+
+	bool updated = false;
+
+	if (ImGui::DragFloat3("Position", (float*)&pos, 0.1f))
+	{
+		selectedObject->SetPosition(pos);
+		updated = true;
+	}
+
+	if (ImGui::DragFloat3("Rotation", (float*)&rot, 1.0f))
+	{
+		selectedObject->SetRotation(rot);
+		updated = true;
+	}
+
+	if (ImGui::DragFloat3("Scale", (float*)&scale, 0.1f,0.0f,100.f))
+	{
+		selectedObject->SetScale(scale);
+		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+			physics->RecreateCollider();
+		updated = true;
+	}
+
+	// ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãªã‚‰è³ªé‡ã‚‚ç·¨é›†ã§ãã‚‹
+	if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+	{
+		float mass = physics->GetMass();
+		if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.0f, 100.0f))
+		{
+			physics->SetMass(mass);
+			updated = true;
+		}
+
+		//ä½ç½®ã‚„ã‚¹ã‚±ãƒ¼ãƒ«ã‚’å¤‰æ›´ã—ãŸã‚‰Bulletã«ã‚‚åæ˜ ï¼
+		if (updated)
+		{
+			physics->SyncToPhysics();
+		}
+	}
+
 	ImGui::End();
 }

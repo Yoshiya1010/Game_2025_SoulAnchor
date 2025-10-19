@@ -92,6 +92,8 @@ public:
 
 		return finds;
 	}
+	static std::list<GameObject*>* GetAllGameObjects() { return m_GameObjects; }
+
 
 	static float GetDeltaTime() { return m_deltaTime; }
 };
