@@ -57,6 +57,10 @@ protected:
 
 	//レイヤー情報
 	int m_Layer = 0;
+
+
+	//モデル
+	std::string m_ModelPath;
 public:
 	// 初期化（生成直後に1回想定）
 	virtual void Init() {}
@@ -116,12 +120,23 @@ public:
 			size_t pos = rawType.find_last_of(' ');
 			std::string cleanType = (pos != std::string::npos) ? rawType.substr(pos + 1) : rawType;
 
+			//--------------------------------------------------------------------------
 			j["Type"] = cleanType;
 			j["Name"] = m_Name;
 			j["Layer"] = m_Layer;
+
+			//Transformとか
 			j["Position"] = { m_Position.x, m_Position.y, m_Position.z };
 			j["Rotation"] = { m_Rotation.x, m_Rotation.y, m_Rotation.z };
 			j["Scale"] = { m_Scale.x, m_Scale.y, m_Scale.z };
+
+			//ここまではゲームオブジェクト全体で共通
+			//--------------------------------------------------------------------------
+	
+			//モデルがあるやつ
+			if (!m_ModelPath.empty())
+				j["Model"] = m_ModelPath;
+
 			return j;
 		}
 

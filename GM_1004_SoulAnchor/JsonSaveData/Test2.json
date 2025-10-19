@@ -1,0 +1,177 @@
+{
+    "Objects": [
+        {
+            "Layer": 0,
+            "Name": "Camera",
+            "Position": [
+                0.2000003159046173,
+                4.0,
+                -12.399996757507324
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Camera"
+        },
+        {
+            "Layer": 1,
+            "Name": "",
+            "Position": [
+                0.0,
+                0.5,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Wave"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock",
+            "Position": [
+                0.0,
+                -711.2333374023438,
+                0.0
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 1.0
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GroundBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock",
+            "Position": [
+                3.726316477603575e-10,
+                -323.1917724609375,
+                -9.710155596254211e-11
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 1.0
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GroundBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock",
+            "Position": [
+                -3.726316477603575e-10,
+                -306.0558166503906,
+                9.710155596254211e-11
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 1.0
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GroundBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "Player",
+            "Position": [
+                0.2000003159046173,
+                0.0,
+                -5.399996757507324
+            ],
+            "Rotation": [
+                0.0,
+                3.1415927410125732,
+                0.0
+            ],
+            "Scale": [
+                0.014999999664723873,
+                0.014999999664723873,
+                0.014999999664723873
+            ],
+            "Type": "Player"
+        },
+        {
+            "Layer": 4,
+            "Name": "",
+            "Position": [
+                50.0,
+                50.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Score"
+        }
+    ]
+}

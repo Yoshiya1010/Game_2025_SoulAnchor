@@ -90,13 +90,7 @@ void GroundBlock::Update()
     CheckAndCallStart();
     if (m_Started)
     {
-        if (!m_RigidBody || !m_RigidBody->getMotionState()) return;
-
-        // 物理エンジンから位置を手動で取得
-        btTransform trans = m_RigidBody->getCenterOfMassTransform();
-        m_Position.x = trans.getOrigin().getX();
-        m_Position.y = trans.getOrigin().getY();
-        m_Position.z = trans.getOrigin().getZ();
+       
 
 
     }
@@ -104,51 +98,10 @@ void GroundBlock::Update()
 
 void GroundBlock::Draw()
 {
-    
-
-    btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
-
-    XMVECTOR rotationQuaternion = XMVectorSet(
-        quaternion.x(),
-        quaternion.y(),
-        quaternion.z(),
-        quaternion.w()
-    );
-   
-    XMMATRIX S_p = XMMatrixScaling(m_Scale.x*m_modelScale, m_Scale.y * m_modelScale, m_Scale.z*m_modelScale);
-    XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
-    XMMATRIX T_p = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
-    XMMATRIX parentWorld = S_p * R_p * T_p;
-
-    Renderer::SetWorldMatrix(parentWorld);
+    Renderer::SetWorldMatrix( 
+        //モデルと物理の座標を同期させる
+        UpdatePhysicsWithModel(m_modelScale));
     // モデルの描画
     m_ModelRenderer->Draw();
 
-}
-
-json GroundBlock::ToJson() const {
-    json j = GameObject::ToJson();
-    j["Type"] = "GroundBlock";
-    j["Model"] = "asset\\model\\GroundBlock.fbx";
-    j["ModelScale"] = m_modelScale;
-    return j;
-}
-
-void GroundBlock::FromJson(const json& j)
-{
-    GameObject::FromJson(j);
-
-    // モデルとスケール情報
-    std::string modelPath = j.value("Model", "asset\\model\\GroundBlock.fbx");
-    float scale = j.value("ModelScale", 2.0f);
-
-    // モデル読み込み
-    m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load(modelPath.c_str());
-
-    // スケール設定
-    m_Scale = { 1.0f, 1.0f, 1.0f };
-    // m_modelScale は const なので変更不可（読み込み時は定数でOK）
-
-    SetName("GroundBlock");
 }
