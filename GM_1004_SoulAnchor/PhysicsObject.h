@@ -149,7 +149,7 @@ public:
         btTransform t = m_RigidBody->getWorldTransform();
         t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
-        // Bulletは ZYX（yaw, pitch, roll）の順で受け取る
+        //Bulletは ZYX（yaw, pitch, roll）の順で受け取る
         btQuaternion q;
         q.setEulerZYX(
             m_Rotation.y * DEG2RAD, // yaw (Y)
@@ -243,7 +243,7 @@ public:
 			break;
 
 		default:
-			// ★ デフォルト：全てと衝突（UI、エフェクト等）
+			// デフォルト：全てと衝突（UI、エフェクト等）
 			m_CollisionGroup = COL_DEFAULT;
 			m_CollisionMask = -1;
 			break;

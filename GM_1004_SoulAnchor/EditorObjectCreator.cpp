@@ -20,18 +20,17 @@ GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, Vector3 siz
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
-    auto* cube = scene->AddGameObject<GroundBlock>(OBJECT);
-    cube->SetMass(1.0f);
-    cube->SetPosition(position);
-    cube->SetScale(size);
-
-    // 名前設定
-    s_CreatedObjectCount++;
-    char name[64];
-    sprintf_s(name, "EditorGround_%03d", s_CreatedObjectCount);
+    auto* block = scene->AddGameObject<GroundBlock>(OBJECT);
+    block->SetMass(1.0f);
+    block->SetPosition(position);
+    block->SetScale(size);
 
 
-    return cube;
+    // シーンからユニークな名前をもらう
+    block->SetName(scene->GenerateUniqueName("GroundBlock"));
+
+
+    return block;
 }
 
 GameObject* EditorObjectCreator::CreateCube(Vector3 position, float size) {
@@ -129,7 +128,7 @@ GameObject* EditorObjectCreator::CreateTerrain(Vector3 position) {
     s_CreatedObjectCount++;
     char name[64];
     sprintf_s(name, "Terrain_%03d", s_CreatedObjectCount);
-    terrain->SetName(name);
+    terrain->SetName(scene->GenerateUniqueName("GroundBlock"));
     terrain->SetPosition(position);
     terrain->SetScale(Vector3(1.0f, 1.0f, 1.0f));
     terrain->SetTag(GameObjectTag::Ground);

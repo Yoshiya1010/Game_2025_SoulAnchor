@@ -142,14 +142,41 @@ void Scene::LoadScene(const std::string& fileName)
 	json root;
 	ifs >> root;
 
+	//既存のシーンのオブジェクトを全部削除
 	for (auto& list : m_GameObjects)
+	{
 		for (auto& obj : list)
+		{
 			obj->SetDestroy();
+		}
+	}
+
 
 	for (auto& item : root["Objects"])
 	{
 		std::string type = item.value("Type", "GameObject");
 		int layer = item.value("Layer", OBJECT);
+
+
+		//ここでNameを取得
+		std::string name = item.value("Name", "Unnamed");
+
+		//名前からベース名と番号を抽出してカウンタ更新
+		auto pos = name.find_last_of('_');//最後のアンダーバーを探す
+		if (pos != std::string::npos)//アンダーバーがあったらそのあとをインデクスの番号と見なす
+		{
+			std::string base = name.substr(0, pos);//アンダーバーの前の名前を取り出す
+			int index = 0;
+			try {
+				index = std::stoi(name.substr(pos + 1));//整数に変換
+			}
+			catch (...) {
+				index = 0;
+			}
+			//既存の最大値と比較して更新
+			m_NameCounter[base] = std::max(m_NameCounter[base], index);
+		}
+
 
 		GameObject* obj = nullptr;
 
@@ -164,5 +191,14 @@ void Scene::LoadScene(const std::string& fileName)
 			obj->FromJson(item);
 	}
 	
+}
+
+std::string Scene::GenerateUniqueName(const std::string& baseName)
+{
+	int& count = m_NameCounter[baseName];
+	count++; // 1ずつ増えるだけ
+	char buffer[64];
+	sprintf_s(buffer, "%s_%03d", baseName.c_str(), count);
+	return buffer;
 }
 

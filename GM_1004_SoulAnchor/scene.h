@@ -6,6 +6,7 @@
 #include "gameObject.h"
 #include"json.hpp"
 #include"Layer.h"
+
 using json = nlohmann::json;
 
 
@@ -24,6 +25,10 @@ private:
 	static bool debugFlag;
 	
 	static bool m_isPaused;   // ポーズ中フラグ
+
+
+	
+	std::unordered_map<std::string, int> m_NameCounter; // 各種類の連番管理
 
 public:
 	virtual void Init();
@@ -96,5 +101,8 @@ public:
 
 
 	static float GetDeltaTime() { return m_deltaTime; }
+	
+	std::string GenerateUniqueName(const std::string& baseName);
+	
 };
 
