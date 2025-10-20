@@ -5,6 +5,8 @@
 #include <iostream>
 #include "DirectXTex.h"
 
+
+
 using namespace DirectX;
 
 
@@ -128,6 +130,48 @@ void StaticFBXModel::Load(const char* FileName)
             );
             if (SUCCEEDED(hr)) {
                 cache.textures[aitexture->mFilename.data] = texture;
+            }
+        }
+    }
+    for (unsigned int m = 0; m < scene->mNumMaterials; m++) {
+        aiMaterial* mat = scene->mMaterials[m];
+        aiString texPath;
+        if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &texPath) == AI_SUCCESS) {
+            std::string texFile = texPath.C_Str();
+
+            // FBXと同じディレクトリを基準にして完全パスにする
+            std::string dir = path.substr(0, path.find_last_of("\\/"));
+            std::string fullPath = dir + "/" + texFile;
+
+            // --- DirectXTexで読み込む ---
+            TexMetadata metadata;
+            ScratchImage image;
+            HRESULT hr = LoadFromWICFile(
+                std::wstring(fullPath.begin(), fullPath.end()).c_str(),
+                WIC_FLAGS_NONE,
+                &metadata,
+                image
+            );
+
+            if (SUCCEEDED(hr)) {
+                ID3D11ShaderResourceView* texture = nullptr;
+                hr = CreateShaderResourceView(
+                    Renderer::GetDevice(),
+                    image.GetImages(),
+                    image.GetImageCount(),
+                    metadata,
+                    &texture
+                );
+                if (SUCCEEDED(hr)) {
+                    cache.textures[texFile] = texture;
+                    std::cout << "Loaded texture: " << fullPath << std::endl;
+                }
+                else {
+                    std::cerr << "Failed to create SRV for: " << fullPath << std::endl;
+                }
+            }
+            else {
+                std::cerr << "Failed to load texture file: " << fullPath << std::endl;
             }
         }
     }

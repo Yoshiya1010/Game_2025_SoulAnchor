@@ -15,7 +15,7 @@ void GroundBlock::Init()
 
     // モデルのロード
     m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
+    m_ModelRenderer->Load("asset\\model\\tree_pineTallA.fbx");
 
 
     // シェーダー読み込み
