@@ -194,6 +194,8 @@ void Wave::Draw()
 	//Renderer::GetDeviceContext()->Draw(21 * 21, 0);
 	Renderer::GetDeviceContext()->DrawIndexed((22 * 2) * 20 - 2, 0, 0);
 
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 }
 
 

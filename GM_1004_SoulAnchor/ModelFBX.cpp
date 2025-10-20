@@ -192,6 +192,9 @@ void StaticFBXModel::Draw()
     //モデルがないならスキップする
     if (!m_AiScene) return;
 
+    ID3D11ShaderResourceView* nullSRV1 = nullptr;
+    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV1);
+
     Renderer::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     //一旦マテリアルを初期化で白に　セットしないと透明でみえない
@@ -199,45 +202,56 @@ void StaticFBXModel::Draw()
     ZeroMemory(&material, sizeof(material));
     material.Diffuse = { 1,1,1,1 };
     material.Ambient = { 1,1,1,1 };
-
+    material.TextureEnable = false;
 
     //正直理解仕切ってないけど　村瀬先生のやつ大体持ってきた
     for (unsigned int meshCount = 0; meshCount < m_AiScene->mNumMeshes; meshCount++) {
         aiMesh* mesh = m_AiScene->mMeshes[meshCount];
         aiMaterial* aimaterial = m_AiScene->mMaterials[mesh->mMaterialIndex];
 
-
         //マテリアルの色情報,不透明度,テクスチャパスを取得してるはず
         aiString texture;
-        aiColor3D diffuse;
-        float opacity;
-        aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texture);
+
+        // --- ここでマテリアルの色と不透明度を取る ---
+        aiColor3D diffuse(1.0f, 1.0f, 1.0f);
+        float opacity = 1.0f;
         aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
         aimaterial->Get(AI_MATKEY_OPACITY, opacity);
 
-        if (texture == aiString("")) {
-            material.TextureEnable = false;
-        }
-        else {
-            auto it = m_Texture.find(texture.data);
-            if (it != m_Texture.end()) {
-                Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &it->second);
-                material.TextureEnable = true;
-            }
-            else {
-                material.TextureEnable = false;
-            }
-        }
-
         material.Diffuse = { diffuse.r, diffuse.g, diffuse.b, opacity };
         material.Ambient = material.Diffuse;
+        material.TextureEnable = false; // 初期状態はfalse
+
+        // --- テクスチャの取得（FBXに貼られてる場合） ---
+        if (aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texture) == AI_SUCCESS)
+        {
+            std::string texKey = texture.C_Str();
+
+            // Assimpのパスが相対だったりするので、キー一致は部分一致で確認
+            for (auto& pair : m_Texture)
+            {
+                const std::string& key = pair.first;
+                ID3D11ShaderResourceView* tex = pair.second;
+
+                if (key.find(texKey) != std::string::npos)
+                {
+                    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &tex);
+                    material.TextureEnable = true;
+                    break;
+                }
+            }
+        }
+
+        // --- マテリアルをシェーダーに送る ---
         Renderer::SetMaterial(material);
 
+        // --- 頂点・インデックスバッファ設定 ---
         UINT stride = sizeof(VERTEX_3D);
         UINT offset = 0;
         Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer[meshCount], &stride, &offset);
         Renderer::GetDeviceContext()->IASetIndexBuffer(m_IndexBuffer[meshCount], DXGI_FORMAT_R32_UINT, 0);
 
+        // --- 描画実行 ---
         Renderer::GetDeviceContext()->DrawIndexed(mesh->mNumFaces * 3, 0, 0);
     }
 

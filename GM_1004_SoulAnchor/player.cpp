@@ -179,7 +179,9 @@ void Player::Update()
 void Player::Draw()
 {
  
-
+    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
+    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
+    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
     
     {
         XMMATRIX S_p = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);

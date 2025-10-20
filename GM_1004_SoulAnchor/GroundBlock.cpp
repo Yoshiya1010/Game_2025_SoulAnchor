@@ -15,7 +15,7 @@ void GroundBlock::Init()
 
     // モデルのロード
     m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load("asset\\model\\tree_pineTallA.fbx");
+    m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
 
 
     // シェーダー読み込み
@@ -81,6 +81,16 @@ void GroundBlock::Update()
 
 void GroundBlock::Draw()
 {
+
+    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
+    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
+    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
+    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+
+    // UnlitColor はテクスチャ使わないのでスロットをクリア（保険）
+    ID3D11ShaderResourceView* nullSRV = nullptr;
+    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
+
     Renderer::SetWorldMatrix( 
         //モデルと物理の座標を同期させる
         UpdatePhysicsWithModel(m_modelScale));
