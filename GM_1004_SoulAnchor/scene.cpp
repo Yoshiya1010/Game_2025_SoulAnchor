@@ -12,6 +12,9 @@
 #include"wave.h"
 #include"score.h"
 #include"enemy.h"
+#include"TreeBlock.h"
+#include"FPSCamera.h"
+#include"FPSPlayer.h"
 
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
@@ -185,6 +188,9 @@ void Scene::LoadScene(const std::string& fileName)
 		else if (type == "Wave") obj = AddGameObject<Wave>(layer);
 		else if (type == "Score") obj = AddGameObject<Score>(layer);
 		else if (type == "GroundBlock") obj = AddGameObject<GroundBlock>(layer);
+		else if (type == "TreeBlock") obj = AddGameObject<TreeBlock>(layer);
+		else if (type == "FPSCamera") obj = AddGameObject<FPSCamera>(layer);
+		else if (type == "FPSPlayer") obj = AddGameObject<FPSPlayer>(layer);
 		else obj = AddGameObject<GameObject>(layer);
 
 		if (obj)

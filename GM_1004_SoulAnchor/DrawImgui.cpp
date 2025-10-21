@@ -329,5 +329,14 @@ void ShowPropertiesWindow(void)
 		}
 	}
 
+	if (ImGui::Button(u8"選択してるオブジェクトを削除する"))
+	{
+		if (selectedObject)
+		{
+			selectedObject->SetDestroy();  // 削除フラグを立てる
+			
+		}
+	}
+
 	ImGui::End();
 }

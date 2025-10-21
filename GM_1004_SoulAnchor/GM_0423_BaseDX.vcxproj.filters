@@ -165,6 +165,12 @@
     <ClCompile Include="EditorObjectCreator.cpp">
       <Filter>ソース ファイル\エディター周り</Filter>
     </ClCompile>
+    <ClCompile Include="FPSPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCamera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -301,6 +307,12 @@
     </ClInclude>
     <ClInclude Include="TreeBlock.h">
       <Filter>ヘッダー ファイル\BulletObject</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSPlayer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

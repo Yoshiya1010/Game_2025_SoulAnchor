@@ -20,6 +20,8 @@
 #include"PhysicsManager.h"
 #include"EditorObjectCreator.h"
 #include"DrawImgui.h"
+#include"FPSCamera.h"
+#include"FPSPlayer.h"
 
 ImGuiManager Game::m_ImGuiManager;
 
@@ -42,9 +44,9 @@ void Game::Init()
 	m_BGM->Play(true); // ‹È‚ğÄ¶
 
 	/// ƒJƒƒ‰‚ğÅ‰‚É“ü‚ê‚é
-	AddGameObject<Camera>(SYSTEM);
+	AddGameObject<FPSCamera>(SYSTEM);
 	//AddGameObject<MeshField>(FIELD);
-	AddGameObject<Player>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
+	AddGameObject<FPSPlayer>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
 	//AddGameObject<Enemy>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
 	//AddGameObject<Enemy>(OBJECT)->SetPosition({ 0.0f,0.0f,3.0f });
 	/*AddGameObject<Enemy>(OBJECT)->SetPosition({ 2.0f,0.0f,3.0f });*/
