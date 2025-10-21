@@ -176,6 +176,7 @@
     <ClCompile Include="score.cpp" />
     <ClCompile Include="textureManager.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="TreeBlock.cpp" />
     <ClCompile Include="vector3.cpp" />
     <ClCompile Include="wave.cpp" />
   </ItemGroup>
@@ -222,6 +223,7 @@
     <ClInclude Include="score.h" />
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="TreeBlock.h" />
     <ClInclude Include="vector3.h" />
     <ClInclude Include="wave.h" />
   </ItemGroup>

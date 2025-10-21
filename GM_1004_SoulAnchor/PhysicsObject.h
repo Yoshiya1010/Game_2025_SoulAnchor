@@ -19,6 +19,7 @@ protected:
     std::unique_ptr<btCollisionShape> m_CollisionShape;
     std::unique_ptr<btDefaultMotionState> m_MotionState;
     Vector3 m_ColliderOffset{ 0, 0, 0 };
+    Vector3 m_OriginalColliderHalfSize{ 1,1,1 };
 
     CollisionGroup m_CollisionGroup = COL_DEFAULT;
     int m_CollisionMask = -1;
@@ -75,7 +76,9 @@ public:
 
         btTransform transform;
         transform.setIdentity();
-        transform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+        transform.setOrigin(btVector3(m_Position.x+m_ColliderOffset.x,
+                                      m_Position.y+m_ColliderOffset.y,
+                                      m_Position.z+m_ColliderOffset.z));
 
         btVector3 inertia(0, 0, 0);
         if (mass != 0.0f)
@@ -91,7 +94,29 @@ public:
 
     // 形状生成
     void CreateBoxCollider(Vector3 halfSize, float mass = 0.0f) {
-        m_CollisionShape = std::make_unique<btBoxShape>(btVector3(halfSize.x, halfSize.y, halfSize.z));
+
+        m_OriginalColliderHalfSize = halfSize;
+
+        // スケールを反映したサイズを算出
+        Vector3 scaledHalfSize = {
+            halfSize.x * m_Scale.x,
+            halfSize.y * m_Scale.y,
+            halfSize.z * m_Scale.z
+        };
+
+        // スケールを反映したオフセットも計算
+        Vector3 scaledOffset = {
+            m_ColliderOffset.x * m_Scale.x,
+            m_ColliderOffset.y * m_Scale.y,
+            m_ColliderOffset.z * m_Scale.z
+        };
+
+        m_CollisionShape = std::make_unique<btBoxShape>(
+            btVector3(scaledHalfSize.x, scaledHalfSize.y, scaledHalfSize.z)
+        );
+
+        // Rigidbody生成（オフセットを内部で使う）
+        m_ColliderOffset = scaledOffset;
         CreateRigidBody(mass);
     }
 
@@ -123,7 +148,19 @@ public:
         std::string shapeType = GetShapeTypeName(m_CollisionShape.get());
 
         if (shapeType == "Box")
-            m_CollisionShape = std::make_unique<btBoxShape>(btVector3(m_Scale.x, m_Scale.y, m_Scale.z));
+        {
+           
+            Vector3 scaledHalfSize = {
+                m_OriginalColliderHalfSize.x * m_Scale.x,
+                m_OriginalColliderHalfSize.y * m_Scale.y,
+                m_OriginalColliderHalfSize.z * m_Scale.z
+            };
+            m_CollisionShape = std::make_unique<btBoxShape>(btVector3(
+                scaledHalfSize.x,
+                scaledHalfSize.y,
+                scaledHalfSize.z
+            ));
+        }
         else if (shapeType == "Sphere")
             m_CollisionShape = std::make_unique<btSphereShape>(m_Scale.x);
         else if (shapeType == "Capsule")
@@ -200,9 +237,22 @@ public:
             quaternion.w()
         );
 
+
+        Vector3 scaledOffset = {
+        m_ColliderOffset.x * m_Scale.x * ModelScale,
+        m_ColliderOffset.y * m_Scale.y * ModelScale,
+        m_ColliderOffset.z * m_Scale.z * ModelScale
+        };
+       
+
         XMMATRIX S_p = XMMatrixScaling(m_Scale.x*ModelScale, m_Scale.y* ModelScale, m_Scale.z * ModelScale);
         XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
-        XMMATRIX T_p = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+        XMMATRIX T_p = XMMatrixTranslation(
+            m_Position.x - scaledOffset.x,
+            m_Position.y - scaledOffset.y,
+            m_Position.z - scaledOffset.z
+        );
+
 
         XMMATRIX parentWorld = S_p * R_p * T_p;
 

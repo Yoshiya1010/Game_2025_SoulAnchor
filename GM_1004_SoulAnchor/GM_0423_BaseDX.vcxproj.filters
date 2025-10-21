@@ -31,6 +31,15 @@
     <Filter Include="ヘッダー ファイル\Model">
       <UniqueIdentifier>{50fa893d-4832-4d46-a5ae-2430f97431fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\BulletObject">
+      <UniqueIdentifier>{744db295-f5eb-4e7c-854d-284091da4045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\BulletObject">
+      <UniqueIdentifier>{7e67d431-a226-47c6-af68-f6869641434b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\エディター周り">
+      <UniqueIdentifier>{150cf10a-1ee4-48ad-b4cc-a8243646b45a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -135,15 +144,6 @@
     <ClCompile Include="BulletDebugDrawer.cpp">
       <Filter>ソース ファイル\Bullet</Filter>
     </ClCompile>
-    <ClCompile Include="GroundBlock.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorObjectCreator.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawImgui.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="animationModel.cpp">
       <Filter>ソース ファイル\Model</Filter>
     </ClCompile>
@@ -152,6 +152,18 @@
     </ClCompile>
     <ClCompile Include="modelRenderer.cpp">
       <Filter>ソース ファイル\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GroundBlock.cpp">
+      <Filter>ソース ファイル\BulletObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeBlock.cpp">
+      <Filter>ソース ファイル\BulletObject</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawImgui.cpp">
+      <Filter>ソース ファイル\エディター周り</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorObjectCreator.cpp">
+      <Filter>ソース ファイル\エディター周り</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,9 +275,6 @@
     <ClInclude Include="PhysicsManager.h">
       <Filter>ヘッダー ファイル\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="GroundBlock.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="EditorObjectCreator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -286,6 +295,12 @@
     </ClInclude>
     <ClInclude Include="modelRenderer.h">
       <Filter>ヘッダー ファイル\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GroundBlock.h">
+      <Filter>ヘッダー ファイル\BulletObject</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeBlock.h">
+      <Filter>ヘッダー ファイル\BulletObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -130,25 +130,11 @@ void CreateObjectWindow()
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
 		EditorObjectCreator::CreateGroundBlock(pos, Vector3(1.0f,1.0f,1.f));
 	}
-	if (ImGui::Button("Add Cube")) {
+	if (ImGui::Button("Add Tree")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		 EditorObjectCreator::CreateCube(pos, 1.0f);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Add Sphere")) {
-		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		 EditorObjectCreator::CreateSphere(pos, 1.0f);
+		 EditorObjectCreator::CreateTree(pos, Vector3(1.0f,1.0f,1.0f));
 	}
 
-	if (ImGui::Button("Static Wall")) {
-		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		EditorObjectCreator::CreateStaticCube(pos, Vector3(2, 1, 0.2f));
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Heavy Box")) {
-		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		EditorObjectCreator::CreateDynamicCube(pos, Vector3(1, 1, 1), 10.0f);
-	}
 
 	ImGui::End();
 }
@@ -307,7 +293,22 @@ void ShowPropertiesWindow(void)
 	{
 		selectedObject->SetScale(scale);
 		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+		{
 			physics->RecreateCollider();
+		}
+		updated = true;
+	}
+
+	// 一括スケール変更
+	static float allScale = 1.0f;
+	if (ImGui::DragFloat("AllScale", &allScale, 0.1f, 0.0f, 100.f))
+	{
+		scale = Vector3(allScale, allScale, allScale);
+		selectedObject->SetScale(scale);
+		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+		{
+			physics->RecreateCollider();
+		}
 		updated = true;
 	}
 

@@ -10,6 +10,7 @@
 #include"gameObject.h"
 #include"PhysicsObject.h"
 #include"camera.h"
+#include"TreeBlock.h"
 
 
 int EditorObjectCreator::s_CreatedObjectCount = 0;
@@ -33,107 +34,26 @@ GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, Vector3 siz
     return block;
 }
 
-GameObject* EditorObjectCreator::CreateCube(Vector3 position, float size) {
+GameObject* EditorObjectCreator::CreateTree(Vector3 position, Vector3 size) {
+   
+
+    //シーンを取得
     Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* block = scene->AddGameObject<TreeBlock>(OBJECT);
+    block->SetMass(1.0f);
+    block->SetPosition(position);
+    block->SetScale(size);
 
 
+    // シーンからユニークな名前をもらう
+    block->SetName(scene->GenerateUniqueName("TreeBlock"));
 
 
-    return 0;
+    return block;
 }
 
-GameObject* EditorObjectCreator::CreateSphere(Vector3 position, float radius) {
-    //Scene* scene = Manager::GetScene();
 
-    //auto* sphere = scene->AddGameObject<Player>(OBJECT);
-
-    //s_CreatedObjectCount++;
-    //char name[64];
-    //sprintf_s(name, "EditorSphere_%03d", s_CreatedObjectCount);
-    //sphere->SetName(name);
-
-    //sphere->SetPosition(position);
-    //sphere->SetScale(Vector3(radius, radius, radius));
-    //sphere->SetTag(GameObjectTag::Item);
-
-    //// SphereCollider作成
-    //sphere->CreateSphereColliderAt(position, radius, 1.0f);
-
-    return 0;
-}
-
-GameObject* EditorObjectCreator::CreateCapsule(Vector3 position, float radius, float height) {
-    //Scene* scene = Manager::GetScene();
-
-    //auto* capsule = scene->AddGameObject<Player>(OBJECT);
-
-    //s_CreatedObjectCount++;
-    //char name[64];
-    //sprintf_s(name, "EditorCapsule_%03d", s_CreatedObjectCount);
-    //capsule->SetName(name);
-
-    //capsule->SetPosition(position);
-    //capsule->SetScale(Vector3(radius, height, radius));
-    //capsule->SetTag(GameObjectTag::Item);
-
-    //// CapsuleCollider作成
-    //capsule->CreateCapsuleColliderAt(position, radius, height, 1.0f);
-
-    return 0;
-}
-
-GameObject* EditorObjectCreator::CreateStaticCube(Vector3 position, Vector3 size) {
-    //Scene* scene = Manager::GetScene();
-
-    //auto* staticCube = scene->AddGameObject<Player>(OBJECT);
-
-    //s_CreatedObjectCount++;
-    //char name[64];
-    //sprintf_s(name, "StaticCube_%03d", s_CreatedObjectCount);
-    //staticCube->SetName(name);
-
-    //staticCube->SetPosition(position);
-    //staticCube->SetScale(size);
-    //staticCube->SetTag(GameObjectTag::Wall);
-
-    //// 質量0で静的オブジェクト
-    //staticCube->CreateBoxColliderAt(position, size, 0.0f);
-
-    return 0;
-}
-
-GameObject* EditorObjectCreator::CreateDynamicCube(Vector3 position, Vector3 size, float mass) {
-    //Scene* scene = Manager::GetScene();
-
-    //auto* dynamicCube = scene->AddGameObject<Player>(OBJECT);
-
-    //s_CreatedObjectCount++;
-    //char name[64];
-    //sprintf_s(name, "DynamicCube_%03d", s_CreatedObjectCount);
-    //dynamicCube->SetName(name);
-
-    //dynamicCube->SetPosition(position);
-    //dynamicCube->SetScale(size);
-    //dynamicCube->SetTag(GameObjectTag::Item);
-
-    //// 指定質量で動的オブジェクト
-    //dynamicCube->CreateBoxColliderAt(position, size, mass);
-
-    return 0;
-}
-
-GameObject* EditorObjectCreator::CreateTerrain(Vector3 position) {
-    Scene* scene = Manager::GetScene();
-    auto* terrain = scene->AddGameObject<MeshField>(OBJECT);
-    s_CreatedObjectCount++;
-    char name[64];
-    sprintf_s(name, "Terrain_%03d", s_CreatedObjectCount);
-    terrain->SetName(scene->GenerateUniqueName("GroundBlock"));
-    terrain->SetPosition(position);
-    terrain->SetScale(Vector3(1.0f, 1.0f, 1.0f));
-    terrain->SetTag(GameObjectTag::Ground);
-    return terrain;
-}
 
 Vector3 EditorObjectCreator::GetSafeSpawnPosition() {
     //// カメラから見える位置に配置
