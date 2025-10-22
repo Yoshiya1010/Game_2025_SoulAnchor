@@ -50,11 +50,22 @@ void Scene::Uninit()
 
 void Scene::Update()
 {
-	for (auto& list : m_GameObjects) {
-		list.remove_if([](GameObject* object) {
-			return object->Destroy();
-			delete object;
-			});
+	for (auto& list : m_GameObjects)
+	{
+		for (auto it = list.begin(); it != list.end(); )
+		{
+			GameObject* obj = *it;
+			if (obj->Destroy())
+			{
+				obj->Uninit();
+				delete obj;
+				it = list.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 
 	

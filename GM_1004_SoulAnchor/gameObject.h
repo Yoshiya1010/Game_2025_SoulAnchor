@@ -62,6 +62,9 @@ protected:
 	//モデル
 	std::string m_ModelPath;
 public:
+
+	virtual ~GameObject() = default;
+
 	// 初期化（生成直後に1回想定）
 	virtual void Init() {}
 

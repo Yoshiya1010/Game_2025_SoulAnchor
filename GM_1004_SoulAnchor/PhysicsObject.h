@@ -60,7 +60,17 @@ public:
         return this;
     }
 
-
+    // 終了処理（物理のみ）
+    virtual void Uninit() override {
+        auto* world = PhysicsManager::GetWorld();
+        if (m_RigidBody && world) {
+            world->removeRigidBody(m_RigidBody.get());
+            m_RigidBody->setUserPointer(nullptr);
+        }
+        m_RigidBody.reset();
+        m_MotionState.reset();
+        m_CollisionShape.reset();
+    }
 
 
     virtual ~PhysicsObject() = default;
@@ -202,17 +212,7 @@ public:
         m_RigidBody->activate(true);
     }
 
-    // 終了処理（物理のみ）
-    virtual void Uninit() override {
-        auto* world = PhysicsManager::GetWorld();
-        if (m_RigidBody && world) {
-            world->removeRigidBody(m_RigidBody.get());
-            m_RigidBody->setUserPointer(nullptr);
-        }
-        m_RigidBody.reset();
-        m_MotionState.reset();
-        m_CollisionShape.reset();
-    }
+    
 
 
 
