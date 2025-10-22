@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
@@ -26,6 +26,10 @@ using namespace DirectX;
 #pragma comment(lib,"DirectXTex_Release.lib")
 #endif
 
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
 
 
 
@@ -40,3 +44,11 @@ HWND GetWindow();
 
 void Invoke(std::function<void()> Function, int Time);
 
+
+
+
+#ifdef _DEBUG
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#else
+#define DEBUG_NEW new
+#endif

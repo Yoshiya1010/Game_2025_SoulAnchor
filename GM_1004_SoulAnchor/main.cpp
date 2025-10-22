@@ -1,4 +1,4 @@
-
+Ôªø
 
 #include "main.h"
 #include "manager.h"
@@ -10,7 +10,7 @@
 
 
 const char* CLASS_NAME = "AppClass";
-const char* WINDOW_NAME = "DX11ÉQÅ[ÉÄ";
+const char* WINDOW_NAME = "DX11„Ç≤„Éº„É†";
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -28,7 +28,13 @@ HWND GetWindow()
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+//#ifdef _DEBUG
+//	_CrtSetBreakAlloc(232815); // ‚Üê „Åì„Åì„ÇíÂá∫Âäõ„Å´Âá∫„ÅüÁï™Âè∑„Å´Â§âÊõ¥
+//#endif
 
+#ifdef _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 
 	WNDCLASSEX wcex;
 	{
@@ -51,7 +57,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		RECT rc = { 0, 0, (LONG)SCREEN_WIDTH, (LONG)SCREEN_HEIGHT };
 		AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
-		// ÉEÉBÉìÉhÉEÇçÏÇÈ
+		// „Ç¶„Ç£„É≥„Éâ„Ç¶„Çí‰Ωú„Çã
 		g_Window = CreateWindowEx(0, CLASS_NAME, WINDOW_NAME, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 			rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 	}
@@ -117,6 +123,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	CoUninitialize();
 
+#ifdef _DEBUG
+	
+	_CrtDumpMemoryLeaks();
+#endif
+
 	return (int)msg.wParam;
 }
 
@@ -126,7 +137,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
-	// ImGuiÇ…ÉÅÉbÉZÅ[ÉWÇìnÇ∑Åiç≈èdóvÅIÅj
+	// ImGui„Å´„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÊ∏°„ÅôÔºàÊúÄÈáçË¶ÅÔºÅÔºâ
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
 		return true;
 	}

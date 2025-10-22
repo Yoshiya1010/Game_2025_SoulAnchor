@@ -6,6 +6,7 @@
 #include "gameObject.h"
 #include"json.hpp"
 #include"Layer.h"
+#include"main.h"
 
 using json = nlohmann::json;
 
@@ -48,7 +49,7 @@ public:
 	template <typename T>
 	T* AddGameObject(int Layer)
 	{
-		T* gameObject = new T();
+		T* gameObject = DEBUG_NEW T();
 		gameObject->Init();
 		gameObject->SetLayer(Layer);
 
