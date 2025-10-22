@@ -65,7 +65,7 @@ public:
 
     virtual ~PhysicsObject() = default;
 
-    // 剛体生成 ここでボディを作ってる
+    //剛体生成ここでボディを作ってる
     void CreateRigidBody(float mass) {
 
         //質量一旦保存
@@ -238,19 +238,22 @@ public:
         );
 
 
-        Vector3 scaledOffset = {
+        XMVECTOR offsetVec = {
         m_ColliderOffset.x * m_Scale.x * ModelScale,
         m_ColliderOffset.y * m_Scale.y * ModelScale,
-        m_ColliderOffset.z * m_Scale.z * ModelScale
+        m_ColliderOffset.z * m_Scale.z * ModelScale,
+        0.0f
         };
-       
 
-        XMMATRIX S_p = XMMatrixScaling(m_Scale.x*ModelScale, m_Scale.y* ModelScale, m_Scale.z * ModelScale);
+        offsetVec = XMVector3Rotate(offsetVec, rotationQuaternion); 
+
+        // 回転を考慮した平行移動
+        XMMATRIX S_p = XMMatrixScaling(m_Scale.x * ModelScale, m_Scale.y * ModelScale, m_Scale.z * ModelScale);
         XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
         XMMATRIX T_p = XMMatrixTranslation(
-            m_Position.x - scaledOffset.x,
-            m_Position.y - scaledOffset.y,
-            m_Position.z - scaledOffset.z
+            m_Position.x - XMVectorGetX(offsetVec),
+            m_Position.y - XMVectorGetY(offsetVec),
+            m_Position.z - XMVectorGetZ(offsetVec)
         );
 
 
@@ -379,7 +382,8 @@ private:
                 { "ColliderType", colliderType },
                 { "ColliderOffset", { m_ColliderOffset.x, m_ColliderOffset.y, m_ColliderOffset.z } },
                 { "CollisionGroup", (int)m_CollisionGroup },
-                { "CollisionMask", m_CollisionMask }
+                { "CollisionMask", m_CollisionMask },
+                { "OriginalColliderHalfSize", { m_OriginalColliderHalfSize.x,m_OriginalColliderHalfSize.y,m_OriginalColliderHalfSize.z }}
             };
         }
 
@@ -401,6 +405,20 @@ private:
         Vector3 size{ 1.0f, 1.0f, 1.0f };
         if (j.contains("Scale"))
             size = { j["Scale"][0], j["Scale"][1], j["Scale"][2] };
+
+        if (rb.contains("OriginalColliderHalfSize"))
+        {
+            m_OriginalColliderHalfSize = {
+                rb["OriginalColliderHalfSize"][0],
+                rb["OriginalColliderHalfSize"][1],
+                rb["OriginalColliderHalfSize"][2]
+            };
+        }
+        else
+        {
+            //なかったら初期値　全部１
+            m_OriginalColliderHalfSize = m_Scale;
+        }
 
         if (colliderType == "Box")
             CreateBoxCollider(size, mass);
