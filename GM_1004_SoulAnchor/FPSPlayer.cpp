@@ -118,9 +118,9 @@ void FPSPlayer::Draw()
         m_AnimationModel->Draw();
 
         // 子のローカル変換（親からの相対だけを入れる）
-        Vector3 childLocalPos = { 0.0f, 0.0f, 0.0f };   // 例：親の前方50cm
-        Vector3 childLocalRot = { 0.0f, 0.0f, 0.0f };   // 例：回転なし
-        Vector3 childLocalScale = { m_Scale.x * 1000.0f, m_Scale.y * 1000.0f, m_Scale.z * 1000.0f }; // ←行列に*100はしない！
+        Vector3 childLocalPos = { 0.0f, 0.0f, 0.0f };   // 親の前方50cm
+        Vector3 childLocalRot = { 0.0f, 0.0f, 0.0f };   // 回転なし
+        Vector3 childLocalScale = { m_Scale.x * 1000.0f, m_Scale.y * 1000.0f, m_Scale.z * 1000.0f }; //行列に*100はしない！
 
         XMMATRIX S_c = XMMatrixScaling(childLocalScale.x, childLocalScale.y, childLocalScale.z);
         XMMATRIX R_c = XMMatrixRotationRollPitchYaw(childLocalRot.x, childLocalRot.y, childLocalRot.z);

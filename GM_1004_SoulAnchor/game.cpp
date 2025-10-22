@@ -56,7 +56,10 @@ void Game::Init()
 	AddGameObject<Wave>(FIELD)->SetPosition({ 0.0f,0.5f,0.0f });
 	AddGameObject<Score>(UI)->SetPosition({ 50.0f,50.0f,0.0f });
 	
-	
+	Scene* scene = Manager::GetScene();
+	if (scene) {
+		scene->LoadScene("Test5.json");
+	}
 
 	// ImGui‰Šú‰»iRenderer::Init()‚ÌŒãj
 	HWND hwnd = GetWindow();

@@ -39,9 +39,9 @@ void	FPSCamera::Update()
 	if (!player) return;
 
 
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)  // ←右クリック押下判定
+	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)  // 右クリック押下判定
 	{
-		// --- カメラ操作（マウスによる視点回転） ---
+		//カメラ操作（マウスによる視点回転
 		POINT mousePos;
 		GetCursorPos(&mousePos);
 		static POINT prevMousePos = mousePos;
@@ -60,11 +60,11 @@ void	FPSCamera::Update()
 		// 上下の回転制限
 		m_Rotation.x = std::max(minPitch, std::min(m_Rotation.x, maxPitch));
 
-		// --- カメラの位置をプレイヤーの頭に合わせる ---
+		// カメラの位置をプレイヤーの頭に合わせる
 		Vector3 playerPos = player->GetPosition();
 		m_Position = playerPos + Vector3(0.0f, 1.8f, 0.0f); // 頭の高さ
 
-		// --- カメラの注視点を向いている方向に設定 ---
+		//カメラの注視点を向いている方向に設定
 		Vector3 forward;
 		forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
 		forward.y = sinf(m_Rotation.x);
