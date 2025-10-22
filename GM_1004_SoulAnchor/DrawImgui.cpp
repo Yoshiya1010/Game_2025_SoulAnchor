@@ -160,6 +160,7 @@ void SaveSceneWindow(void)
 		Scene* scene = Manager::GetScene();
 		if (scene) {
 			scene->SaveScene(str0);
+			selectedObject = nullptr;
 		}
 		strcpy_s(str0, "");//リセット
 	}
@@ -334,6 +335,7 @@ void ShowPropertiesWindow(void)
 		if (selectedObject)
 		{
 			selectedObject->SetDestroy();  // 削除フラグを立てる
+			selectedObject = nullptr;
 			
 		}
 	}

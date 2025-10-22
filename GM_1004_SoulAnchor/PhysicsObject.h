@@ -126,7 +126,6 @@ public:
         );
 
         // Rigidbody生成（オフセットを内部で使う）
-        m_ColliderOffset = scaledOffset;
         CreateRigidBody(mass);
     }
 
@@ -399,12 +398,21 @@ private:
         if (!j.contains("RigidBody")) return;
         const auto& rb = j["RigidBody"];
 
-        float mass = rb.value("Mass", 0.0f);
+        m_mass = rb.value("Mass", 0.0f);
         std::string colliderType = rb.value("ColliderType", "Box");
 
-        Vector3 size{ 1.0f, 1.0f, 1.0f };
-        if (j.contains("Scale"))
-            size = { j["Scale"][0], j["Scale"][1], j["Scale"][2] };
+     
+
+        if (rb.contains("ColliderOffset")) {
+            m_ColliderOffset = {
+                rb["ColliderOffset"][0],
+                rb["ColliderOffset"][1],
+                rb["ColliderOffset"][2]
+            };
+        }
+        else {
+            m_ColliderOffset = { 0,0,0 };
+        }
 
         if (rb.contains("OriginalColliderHalfSize"))
         {
@@ -420,12 +428,15 @@ private:
             m_OriginalColliderHalfSize = m_Scale;
         }
 
-        if (colliderType == "Box")
-            CreateBoxCollider(size, mass);
-        else if (colliderType == "Sphere")
-            CreateSphereCollider(size.x, mass);
-        else if (colliderType == "Capsule")
-            CreateCapsuleCollider(size.x, size.y, mass);
+        if (colliderType == "Box") {
+            CreateBoxCollider(m_OriginalColliderHalfSize, m_mass);
+        }
+        else if (colliderType == "Sphere") {
+            CreateSphereCollider(m_OriginalColliderHalfSize.x, m_mass);
+        }
+        else if (colliderType == "Capsule") {
+            CreateCapsuleCollider(m_OriginalColliderHalfSize.x, m_OriginalColliderHalfSize.y, m_mass);
+        }
         
     }
 

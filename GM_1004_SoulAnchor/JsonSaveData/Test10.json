@@ -1,0 +1,172 @@
+{
+    "Objects": [
+        {
+            "Layer": 0,
+            "Name": "FPSCamera",
+            "Position": [
+                -6.082863807678223,
+                1.7999999523162842,
+                -14.515780448913574
+            ],
+            "Rotation": [
+                0.03599992394447327,
+                0.13500043749809265,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "FPSCamera"
+        },
+        {
+            "Layer": 2,
+            "Name": "FPSPlayer",
+            "Position": [
+                -6.190537452697754,
+                0.0,
+                -15.308505058288574
+            ],
+            "Rotation": [
+                0.0,
+                0.13500043749809265,
+                0.0
+            ],
+            "Scale": [
+                0.014999999664723873,
+                0.014999999664723873,
+                0.014999999664723873
+            ],
+            "Type": "FPSPlayer"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock_001",
+            "Position": [
+                0.0,
+                -1.0,
+                0.0
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 0.0,
+                "OriginalColliderHalfSize": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                30.0,
+                1.0,
+                30.0
+            ],
+            "Type": "GroundBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "TreeBlock_001",
+            "Position": [
+                -8.992841720581055,
+                7.000133991241455,
+                -0.0017221079906448722
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    7.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 2.4000000953674316,
+                "OriginalColliderHalfSize": [
+                    1.0,
+                    7.0,
+                    1.0
+                ]
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "TreeBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "TreeBlock_002",
+            "Position": [
+                0.013393545523285866,
+                7.001370429992676,
+                0.007692828308790922
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    7.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 64,
+                "CollisionMask": -1,
+                "Mass": 2.4000000953674316,
+                "OriginalColliderHalfSize": [
+                    1.0,
+                    7.0,
+                    1.0
+                ]
+            },
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "TreeBlock"
+        },
+        {
+            "Layer": 4,
+            "Name": "",
+            "Position": [
+                50.0,
+                50.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Score"
+        }
+    ]
+}

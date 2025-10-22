@@ -50,15 +50,10 @@ void TreeBlock::Start()
 
 void TreeBlock::Uninit()
 {
-    // 物理オブジェクトの削除
-    if (m_RigidBody && PhysicsManager::GetWorld()) {
-        PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody.get());
-        m_RigidBody->setUserPointer(nullptr);
+    if (m_RigidBody) 
+    {
+        PhysicsObject::Uninit();
     }
-
-    m_RigidBody.reset();
-    m_MotionState.reset();
-    m_CollisionShape.reset();
 
     m_ModelRenderer.reset();
     if (m_VertexLayout)     m_VertexLayout->Release();
