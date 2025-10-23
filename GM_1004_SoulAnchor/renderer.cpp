@@ -2,6 +2,7 @@
 #include "main.h"
 #include "renderer.h"
 #include <io.h>
+#include"modelRenderer.h"
 
 
 D3D_FEATURE_LEVEL       Renderer::m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -284,8 +285,9 @@ void Renderer::Uninit()
 	m_DeviceContext->Release();
 	m_Device->Release();
 
-
+	ModelRenderer::UnloadAll();
 	StaticFBXModel::UnloadAllCachedModels();
+	TextureManager::Release();
 }
 
 

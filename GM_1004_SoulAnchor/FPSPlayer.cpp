@@ -53,7 +53,6 @@ void FPSPlayer::Uninit()
     m_SE->Uninit();
     m_SE.reset();
 
-    //delete m_ModelRenderer;
     m_AnimationModel->Uninit();
     m_AnimationModel.reset();
 

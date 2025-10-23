@@ -4,6 +4,8 @@
 #include <DirectXMath.h>
 #include"vector3.h"
 #include"ModelFBX.h"
+#include"textureManager.h"
+
 
 using namespace DirectX;
 

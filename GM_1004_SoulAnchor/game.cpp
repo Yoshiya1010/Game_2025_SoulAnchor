@@ -99,6 +99,12 @@ void Game::DrawImgui()
 
 void Game::Uninit()
 {
+	// 物理世界の終了処理
+	PhysicsManager::Uninit();
+
+	//衝突管理マネージャーの終了処理
+	PhysicsCollisionManager::Uninit();
+
 	m_BGM->Uninit();
 	delete m_BGM;
 

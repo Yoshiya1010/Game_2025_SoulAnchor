@@ -58,6 +58,7 @@ void Score::Uninit()
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();
     if (m_PixelShader)      m_PixelShader->Release();
+    m_Texture = nullptr;
 }
 
 void Score::Update()

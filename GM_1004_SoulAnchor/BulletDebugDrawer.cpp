@@ -9,7 +9,7 @@ BulletDebugDrawer::BulletDebugDrawer()
 
 BulletDebugDrawer::~BulletDebugDrawer()
 {
-    Uninit();
+ 
 }
 
 void BulletDebugDrawer::Init()
