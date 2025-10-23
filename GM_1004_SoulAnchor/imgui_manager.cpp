@@ -1,11 +1,11 @@
-#include"imgui_manager.h"
+ï»¿#include"imgui_manager.h"
 
 bool ImGuiManager::Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* context) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
 
-    // Šî–{İ’è‚Ì‚İi–â‘è‚Ì‚ ‚és‚ÍœŠOj
+    // åŸºæœ¬è¨­å®šã®ã¿ï¼ˆå•é¡Œã®ã‚ã‚‹è¡Œã¯é™¤å¤–ï¼‰
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
     ImGui::StyleColorsDark();
@@ -47,7 +47,7 @@ void ImGuiManager::Shutdown() {
 void ImGuiManager::BeginFrame() {
     if (!m_initialized) return;
 
-    // ƒtƒŒ[ƒ€ŠJn
+    // ãƒ•ãƒ¬ãƒ¼ãƒ é–‹å§‹
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();

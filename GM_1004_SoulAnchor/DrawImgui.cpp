@@ -24,6 +24,8 @@
 #include <iostream>
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+// utf8ヘルパーマクロ
+#define U8(text) reinterpret_cast<const char*>(u8##text)
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 
@@ -146,11 +148,11 @@ void SaveSceneWindow(void)
 	ImGui::Begin("SaveScne");
 
 	ImGui::Separator();
-	ImGui::Text(u8"Sceneにある全てのオブジェクトをセーブします。");
+	ImGui::Text(U8("Sceneにある全てのオブジェクトをセーブします。"));
 
 	ImGui::PushFont(nullptr, ImGui::GetFontSize() * 1.5f);
 	static char str0[128] = "";
-	ImGui::InputTextWithHint(".json",u8"保存するファイル名", str0,IM_ARRAYSIZE(str0));
+	ImGui::InputTextWithHint(".json",U8("保存するファイル名"), str0,IM_ARRAYSIZE(str0));
 	ImGui::SameLine();
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); // 通常時
@@ -192,7 +194,7 @@ void LoadSceneWindow(void)
 			
 			if (fs::is_directory(entry))
 			{
-				ImGui::Text(u8"%s", name.c_str());
+				ImGui::Text("%s", name.c_str());
 			}
 			else
 			{
@@ -207,7 +209,7 @@ void LoadSceneWindow(void)
 	if (SelectFileName != "")
 	{
 		ImGui::Separator();
-		ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), u8"選択中のファイル");
+		ImGui::TextColored(ImVec4(1.0f,1.0f,0.0f,1.0f), U8("選択中のファイル"));
 		ImGui::SameLine();
 		ImGui::Text(SelectFileName.c_str());
 		ImGui::SameLine();
@@ -330,7 +332,7 @@ void ShowPropertiesWindow(void)
 		}
 	}
 
-	if (ImGui::Button(u8"選択してるオブジェクトを削除する"))
+	if (ImGui::Button(U8("選択してるオブジェクトを削除する")))
 	{
 		if (selectedObject)
 		{

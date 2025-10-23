@@ -28,4 +28,7 @@ public:
     void Load(const char* FileName);
     void Draw() override;
     void Uninit() override;
+
+    //クラス全体のキャッシュ開放
+    static void UnloadAllCachedModels();
 };

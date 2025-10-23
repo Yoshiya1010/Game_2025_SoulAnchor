@@ -284,6 +284,8 @@ void Renderer::Uninit()
 	m_DeviceContext->Release();
 	m_Device->Release();
 
+
+	StaticFBXModel::UnloadAllCachedModels();
 }
 
 

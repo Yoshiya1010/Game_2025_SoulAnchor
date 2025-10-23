@@ -3,6 +3,8 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include"vector3.h"
+#include"ModelFBX.h"
+
 using namespace DirectX;
 
 

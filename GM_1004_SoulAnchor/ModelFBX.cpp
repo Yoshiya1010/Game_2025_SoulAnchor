@@ -269,3 +269,35 @@ void StaticFBXModel::Uninit()
     m_IndexBuffer.clear();
     m_Texture.clear();
 }
+
+
+void StaticFBXModel::UnloadAllCachedModels()
+{
+    for (auto& [key, cache] : s_ModelCache)
+    {
+        // Assimpシーンの解放
+        if (cache.scene)
+        {
+            aiReleaseImport(cache.scene);
+            cache.scene = nullptr;
+        }
+
+        // 頂点・インデックスバッファ解放
+        for (auto* vb : cache.vertexBuffers)
+        {
+            if (vb) vb->Release();
+        }
+        for (auto* ib : cache.indexBuffers)
+        {
+            if (ib) ib->Release();
+        }
+
+        // テクスチャ解放
+        for (auto& [name, tex] : cache.textures)
+        {
+            if (tex) tex->Release();
+        }
+    }
+
+    s_ModelCache.clear();
+}
