@@ -1,9 +1,9 @@
 #pragma once
 
-#include <btBulletDynamicsCommon.h>
+#include"main.h"
 #include "gameObject.h"
 #include "PhysicsManager.h"
-#include "vector3.h"
+
 
 class PhysicsCollisionManager {
 private:

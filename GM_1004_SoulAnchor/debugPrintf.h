@@ -4,7 +4,7 @@
 //=============================================================================
 
 #pragma once
-#include <windows.h>
+#include"main.h"
 #include <stdio.h>
 // デバック用printf...VisualStudioの出力ウィンドウに出力される
 inline void DebugPrintf(const char* pFormat, ...)

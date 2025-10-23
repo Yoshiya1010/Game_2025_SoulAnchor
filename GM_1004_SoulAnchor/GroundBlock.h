@@ -3,7 +3,6 @@
 #include "main.h"
 #include "renderer.h"
 #include "gameObject.h"
-#include <btBulletDynamicsCommon.h>
 #include"ModelFBX.h"
 #include<memory>
 #include"PhysicsObject.h"

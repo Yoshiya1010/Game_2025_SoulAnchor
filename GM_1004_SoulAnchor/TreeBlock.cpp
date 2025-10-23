@@ -4,7 +4,6 @@
 #include "input.h"
 #include"explosion.h"
 #include "PhysicsManager.h"
-#include <btBulletDynamicsCommon.h>
 #include "animationModel.h"
 #include"ModelFBX.h"
 

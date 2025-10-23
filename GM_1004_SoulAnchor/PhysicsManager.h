@@ -1,8 +1,5 @@
 #pragma once
-#include <btBulletDynamicsCommon.h> 
-#include <vector>
-
-
+#include"main.h"
 
 class BulletDebugDrawer; // ‘O•ûéŒ¾
 

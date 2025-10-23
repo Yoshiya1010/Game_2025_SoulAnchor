@@ -3,7 +3,6 @@
 #include"vector3.h"
 #include"main.h"
 #include"PhysicsManager.h"
-#include <btBulletDynamicsCommon.h>
 #include <DirectXMath.h>
 #include<memory>
 #include"json.hpp"

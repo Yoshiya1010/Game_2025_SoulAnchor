@@ -6,7 +6,7 @@
 #include "title.h"
 #include "game.h"
 #include "audio.h"
-#include"imgui.h"
+
 #include"imgui_manager.h"
 // ヘッダ上で宣言しても実体は作られないからこっちで定義する必要がある
 Scene* Manager::m_Scene = nullptr;

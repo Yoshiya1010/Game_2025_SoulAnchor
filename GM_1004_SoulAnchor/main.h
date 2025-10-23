@@ -1,10 +1,10 @@
 ﻿#pragma once
-
+#define NOMINMAX
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <iostream>
 #include"json.hpp"
-#define NOMINMAX
+
 #include <windows.h>
 #include <assert.h>
 #include <functional>
@@ -25,6 +25,38 @@ using namespace DirectX;
 #else
 #pragma comment(lib,"DirectXTex_Release.lib")
 #endif
+
+#pragma comment(lib, "shlwapi.lib")
+#pragma comment (lib, "assimp-vc143-mt.lib")
+// XInputライブラリをリンク
+#pragma comment(lib, "XInput.lib")
+
+
+#include <vector>
+#include "vector3.h"
+//Bullut
+#include <btBulletDynamicsCommon.h>
+
+
+//あしんぷ
+#include "assimp/cimport.h"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "assimp/matrix4x4.h"
+
+
+//Imgui
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
+
+
+
+
+
+
+
+
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

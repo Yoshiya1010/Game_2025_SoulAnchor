@@ -1,14 +1,9 @@
 #pragma once
 
 #include <unordered_map>
-#include "assimp/cimport.h"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
-#include "assimp/matrix4x4.h"
-#pragma comment (lib, "assimp-vc143-mt.lib")
-
 #include "component.h"
 #include <d3d11.h>
+#include"main.h"
 
 
 //ComponentŒp³‚·‚é‚Æ@GameObject‚Æ‚©‚©‚ç’¼‚Å’l‚ğ‚Á‚Ä‚±‚ê‚½‚è‚·‚é•Ö—˜

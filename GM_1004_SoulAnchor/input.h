@@ -3,8 +3,7 @@
 #include "main.h"
 #include <XInput.h>
 
-// XInputライブラリをリンク
-#pragma comment(lib, "XInput.lib")
+
 
 // キー列挙
 typedef enum Keyboard_Keys_tag

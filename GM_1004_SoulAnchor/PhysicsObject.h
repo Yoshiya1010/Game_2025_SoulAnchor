@@ -1,7 +1,7 @@
 #pragma once
 #include"gameObject.h"
 #include"PhysicsManager.h"
-#include <btBulletDynamicsCommon.h>
+#include"main.h"
 
 enum CollisionGroup {
     COL_NOTHING = 0,

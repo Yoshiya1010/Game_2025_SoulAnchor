@@ -1,6 +1,8 @@
 #pragma once
 
-
+#include "component.h"
+#include <string>
+#include <unordered_map>
 
 // マテリアル構造体
 struct MODEL_MATERIAL
@@ -45,9 +47,7 @@ struct MODEL
 };
 
 
-#include "component.h"
-#include <string>
-#include <unordered_map>
+
 
 
 class ModelRenderer : public Component
