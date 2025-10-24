@@ -29,17 +29,11 @@ HWND GetWindow()
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef _DEBUG
-
+	/*_CrtSetBreakAlloc(110);*/
 #endif
 
 #ifdef _DEBUG
-	// CRTデバッグヒープ有効化
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
-	// DEBUG_NEWマクロが有効な場合、ここで一旦解除してブレークポイントを正しく設定
-#undef new
-	_CrtSetBreakAlloc(130); // ← メモリリーク番号にブレークを張る
-#define new DEBUG_NEW
 #endif
 
 	WNDCLASSEX wcex;
