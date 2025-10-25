@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "textureManager.h"
 #include "scene.h"
+#include"FPSCamera.h"
 
 void Explosion::Init()
 {
@@ -115,7 +116,7 @@ void Explosion::Draw()
 
 
     // マトリクス設定
-    Camera* camera = Manager::GetScene()->GetGameObject<Camera>();
+    FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
     XMMATRIX view = camera->GetViewMatrix();
 
     // ビューの逆行列

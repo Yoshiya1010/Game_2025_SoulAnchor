@@ -6,8 +6,9 @@
 #include"audio.h"
 #include"animationModel.h"
 #include"modelRenderer.h"
+#include"PhysicsObject.h"
 
-class Player :public GameObject {
+class Player :public PhysicsObject {
 private:
 	ID3D11VertexShader* m_VertexShader;	// 頂点シェーダーオブジェクト
 	ID3D11PixelShader* m_PixelShader;		// ピクセルシェーダーオブジェクト

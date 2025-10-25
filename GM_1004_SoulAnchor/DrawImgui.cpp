@@ -217,6 +217,7 @@ void LoadSceneWindow(void)
 		{
 			Scene* scene = Manager::GetScene();
 			if (scene) {
+				selectedObject = nullptr;
 				scene->LoadScene(SelectFileName);
 			}
 		}

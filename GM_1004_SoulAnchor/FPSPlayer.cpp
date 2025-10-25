@@ -12,8 +12,7 @@
 
 void FPSPlayer::Init()
 {
-    m_ModelRenderer = make_unique<ModelRenderer>();
-    m_ModelRenderer->Load("asset\\model\\player.obj");
+   
 
     // モデルのロード
     m_AnimationModel = make_unique<AnimationModel>();
@@ -46,6 +45,22 @@ void FPSPlayer::Init()
 
 
     SetName("FPSPlayer");
+}
+
+
+void FPSPlayer::Start()
+{
+    if (m_RigidBody) return;
+    // 物理コライダーの設定
+    if (PhysicsManager::GetWorld()) {
+        // 衝突レイヤー設定（任意）
+        SetupCollisionLayer();
+
+
+        m_ColliderOffset = Vector3(0, 0.f, 0);
+        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 0.0f);
+
+    }
 }
 
 void FPSPlayer::Uninit()
@@ -116,20 +131,7 @@ void FPSPlayer::Draw()
         Renderer::SetWorldMatrix(parentWorld);
         m_AnimationModel->Draw();
 
-        // 子のローカル変換（親からの相対だけを入れる）
-        Vector3 childLocalPos = { 0.0f, 0.0f, 0.0f };   // 親の前方50cm
-        Vector3 childLocalRot = { 0.0f, 0.0f, 0.0f };   // 回転なし
-        Vector3 childLocalScale = { m_Scale.x * 1000.0f, m_Scale.y * 1000.0f, m_Scale.z * 1000.0f }; //行列に*100はしない！
-
-        XMMATRIX S_c = XMMatrixScaling(childLocalScale.x, childLocalScale.y, childLocalScale.z);
-        XMMATRIX R_c = XMMatrixRotationRollPitchYaw(childLocalRot.x, childLocalRot.y, childLocalRot.z);
-        XMMATRIX T_c = XMMatrixTranslation(childLocalPos.x, childLocalPos.y, childLocalPos.z);
-
-        // 子の最終ワールド： 子ローカル * 親ワールド
-        XMMATRIX childWorld = S_c * R_c * T_c * parentWorld;
-
-        Renderer::SetWorldMatrix(childWorld);
-        m_ModelRenderer->Draw();
+      
 
 
     }
