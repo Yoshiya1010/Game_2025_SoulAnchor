@@ -31,6 +31,8 @@ void GroundBlock::Init()
 
     SetName("GroundBlock");
 
+    SetTag(GameObjectTag::Ground);
+
 
 }
 void GroundBlock::Start()
@@ -38,7 +40,7 @@ void GroundBlock::Start()
     if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定（任意）
+        // 衝突レイヤー設定
         SetupCollisionLayer();
 
         // 物理コライダー生成

@@ -20,10 +20,6 @@ enum class GameObjectTag {
 	None,
 	Player,
 	Enemy,
-	Ship,
-	Bullet,
-	PlayerBullet,
-	EnemyBullet,
 	Wall,
 	Ground,
 	Item

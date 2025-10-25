@@ -27,6 +27,8 @@ void TreeBlock::Init()
 
     SetName("TreeBlock");
 
+    SetTag(GameObjectTag::Ground);
+
 
 }
 void TreeBlock::Start()

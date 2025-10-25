@@ -3,6 +3,7 @@
 #include <iostream>
 #include "BulletDebugDrawer.h"
 #include"input.h"
+#include"scene.h"
 
 // 静的メンバーの定義
 btDiscreteDynamicsWorld* PhysicsManager::s_DynamicsWorld = nullptr;
@@ -109,7 +110,7 @@ void PhysicsManager::DrawDebugWorld()
 void PhysicsManager::Update() {
     if (s_DynamicsWorld) {
         // 物理シミュレーションを1フレーム進める
-        s_DynamicsWorld->stepSimulation(1.0f / 60.0f, 10);
+        s_DynamicsWorld->stepSimulation( Scene::GetDeltaTime(), 10);
     }
 
     if (Input::GetKeyTrigger(KK_F1))

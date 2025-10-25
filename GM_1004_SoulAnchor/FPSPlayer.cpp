@@ -41,7 +41,7 @@ void FPSPlayer::Init()
     m_AnimationNameNext = "Run";
     m_AnimationBlend = 0.0f;
 
-
+    SetTag(GameObjectTag::Player);
 
 
     SetName("FPSPlayer");
@@ -58,10 +58,10 @@ void FPSPlayer::Start()
 
 
         m_ColliderOffset = Vector3(0, 1.f, 0);
-        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 1.0f);
+        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 70.0f);
 
 
-        //こけないように追加
+        //こけないように　回転を一部固定
         m_RigidBody->setAngularFactor(btVector3(0, 1, 0));
     }
 }
@@ -94,6 +94,8 @@ void FPSPlayer::Update()
         FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
         if (!camera) return;
 
+        m_RigidBody->activate(true);
+
         Vector3 moveDir = { 0,0,0 };
         bool isMoving = false;
 
@@ -115,21 +117,23 @@ void FPSPlayer::Update()
             velocity = btVector3(moveDir.x, moveDir.y, moveDir.z) * 5.0f;
         }
 
-        // Rigidbodyに速度を適用
-        m_RigidBody->setLinearVelocity(velocity);
+        btVector3 currentVel = m_RigidBody->getLinearVelocity();
+        btVector3 newVel = btVector3(velocity.x(), currentVel.getY(), velocity.z());
+        m_RigidBody->setLinearVelocity(newVel);
 
         // カメラ方向をプレイヤー向きに反映（水平のみ）
         m_Rotation.y = camera->GetRotation().y;
 
       
-        m_RigidBody->activate(true);
+       
 
-        // 弾発射（カメラの正面方向）
-        if (Input::GetKeyTrigger(KK_SPACE)) {
-            Bullet* bullet = Manager::GetScene()->AddGameObject<Bullet>(OBJECT);
-            bullet->SetPosition(m_Position + camForward * 1.0f);
-            bullet->SetVelocity(camForward * 0.5f);
-            m_SE->Play();
+
+        //ジャンプの処理
+        if (Input::GetKeyTrigger(KK_SPACE) && m_IsOnGround)
+        {
+             m_RigidBody->applyCentralImpulse(btVector3(0, 10.0f, 0)); // 上方向に力を加える
+            m_RigidBody->activate(true);
+            m_IsOnGround = false; // 空中に出たのでリセット
         }
     }
 
@@ -148,10 +152,5 @@ void FPSPlayer::Draw()
         UpdatePhysicsWithModel(m_modelScale));
     m_AnimationModel->Draw();
 
-        
 
-      
-
-
-    
 }

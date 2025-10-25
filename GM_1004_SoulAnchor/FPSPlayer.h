@@ -28,7 +28,12 @@ private:
 
 
 	const float m_modelScale = 0.015;
+
+	bool m_IsOnGround = false;
 public:
+	void SetOnGround(bool onGround) { m_IsOnGround = onGround; }
+	bool IsOnGround() const { return m_IsOnGround; }
+
 	void Init() override;
 	void Start()override;
 	void Uninit() override;

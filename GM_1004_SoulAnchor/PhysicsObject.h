@@ -2,16 +2,24 @@
 #include"gameObject.h"
 #include"PhysicsManager.h"
 #include"main.h"
-
 enum CollisionGroup {
-    COL_NOTHING = 0,
-    COL_PLAYER = 1 << 0,
-    COL_ENEMY = 1 << 1,
-    COL_SHIP = 1 << 2,
-    COL_BULLET = 1 << 3,
-    COL_WALL = 1 << 4,
-    COL_GROUND = 1 << 5,
-    COL_DEFAULT = 1 << 6
+    COL_NONE = 0,        // 衝突無効
+
+    // --- 動的オブジェクト群 ---
+    COL_PLAYER = 1 << 0,   // プレイヤー
+    COL_ENEMY = 1 << 1,   // 敵キャラ
+    COL_BULLET = 1 << 2,   // 弾丸（プレイヤー・敵共通）
+    COL_ITEM = 1 << 3,   // 取得アイテムなど
+
+    // --- 静的オブジェクト群 ---
+    COL_GROUND = 1 << 4,   // 地面（床・地形）
+    COL_WALL = 1 << 5,   // 壁・障害物・建物
+
+    // --- その他 ---
+    COL_TRIGGER = 1 << 6,   // センサー・トリガー（非物理当たり判定）
+    COL_DEFAULT = 1 << 7,   // デフォルト（明示しない一般物体）
+
+    COL_ALL = -1        // すべてと衝突（ワイルドカード）
 };
 class PhysicsObject : public GameObject {
 protected:
@@ -267,39 +275,39 @@ public:
     //衝突のレイヤーを設定してる
     //これで衝突しないとかのレイヤー分けができる
 	virtual void SetupCollisionLayer() {
-		switch (m_Tag) {
-		case GameObjectTag::Player:
-			m_CollisionGroup = COL_PLAYER;
-			m_CollisionMask = COL_ENEMY | COL_SHIP | COL_WALL | COL_GROUND | COL_DEFAULT;
-			break;
+        switch (m_Tag) {
+        case GameObjectTag::Player:
+            m_CollisionGroup = COL_PLAYER;
+            m_CollisionMask = COL_ENEMY | COL_WALL | COL_GROUND | COL_ITEM;
+            break;
 
-		case GameObjectTag::Ship:
-			m_CollisionGroup = COL_SHIP;
-			m_CollisionMask = COL_PLAYER | COL_BULLET | COL_WALL | COL_GROUND | COL_DEFAULT;
-			break;
+        case GameObjectTag::Enemy:
+            m_CollisionGroup = COL_ENEMY;
+            m_CollisionMask = COL_PLAYER | COL_WALL | COL_GROUND;
+            break;
 
-		case GameObjectTag::PlayerBullet:
-			m_CollisionGroup = COL_BULLET;
-			m_CollisionMask = COL_ENEMY | COL_SHIP | COL_WALL | COL_DEFAULT;
-			break;
+   
 
-		case GameObjectTag::EnemyBullet:
-			m_CollisionGroup = COL_BULLET;
-			m_CollisionMask = COL_PLAYER | COL_WALL | COL_DEFAULT;
-			break;
+        case GameObjectTag::Item:
+            m_CollisionGroup = COL_ITEM;
+            m_CollisionMask = COL_PLAYER; // 取れるのはプレイヤーのみ
+            break;
 
-		case GameObjectTag::Wall:
-		case GameObjectTag::Ground:
-			m_CollisionGroup = COL_WALL;
-			m_CollisionMask = -1; // 全てと衝突
-			break;
+        case GameObjectTag::Ground:
+            m_CollisionGroup = COL_GROUND;
+            m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_BULLET|COL_DEFAULT;
+            break;
 
-		default:
-			// デフォルト：全てと衝突（UI、エフェクト等）
-			m_CollisionGroup = COL_DEFAULT;
-			m_CollisionMask = -1;
-			break;
-		}
+        case GameObjectTag::Wall:
+            m_CollisionGroup = COL_WALL;
+            m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_BULLET;
+            break;
+
+        default:
+            m_CollisionGroup = COL_DEFAULT;
+            m_CollisionMask = COL_ALL;
+            break;
+        }
 	}
 
 	//  カスタムレイヤー設定（必要な時だけ呼ぶ）
@@ -310,7 +318,7 @@ public:
 
 	//  衝突無効化（UI要素等で使用）
 	void DisableCollision() {
-		m_CollisionGroup = COL_NOTHING;
+		m_CollisionGroup = COL_NONE;
 		m_CollisionMask = 0;
 	}
 
