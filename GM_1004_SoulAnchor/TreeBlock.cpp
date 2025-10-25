@@ -34,7 +34,7 @@ void TreeBlock::Start()
     if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定（任意）
+        // 衝突レイヤー設定
         SetupCollisionLayer();
 
 
@@ -51,7 +51,7 @@ void TreeBlock::Uninit()
 {
     if (m_RigidBody) 
     {
-        PhysicsObject::Uninit();
+        PhysicsObject::Uninit();//Rigtbodyを消す
     }
 
     m_ModelRenderer.reset();
@@ -78,7 +78,7 @@ void TreeBlock::Draw()
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    // UnlitColor はテクスチャ使わないのでスロットをクリア（保険）
+    // UnlitColor はテクスチャ使わないのでスロットをクリア
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 

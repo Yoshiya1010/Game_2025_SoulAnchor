@@ -33,13 +33,18 @@ void	FPSCamera::Uninit()
 
 void	FPSCamera::Update()
 {
-
+	// 右クリックでマウスロック切り替え
+	static bool mouseLocked = false;
 
 	FPSPlayer* player = Manager::GetScene()->GetGameObject<FPSPlayer>();
 	if (!player) return;
 
+	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+		mouseLocked = !mouseLocked;
+		
+	}
 
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)  // 右クリック押下判定
+	if (mouseLocked)  // 右クリック押下判定
 	{
 		//カメラ操作（マウスによる視点回転
 		POINT mousePos;

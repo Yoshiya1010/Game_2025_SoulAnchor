@@ -56,8 +56,15 @@ void Game::Init()
 	AddGameObject<Wave>(FIELD)->SetPosition({ 0.0f,0.5f,0.0f });
 	AddGameObject<Score>(UI)->SetPosition({ 50.0f,50.0f,0.0f });
 	
+	//初期値のシーンをロード　今はデバック用をいれるけど
 
+	Scene* scene = Manager::GetScene();
 
+	if (scene)
+	{
+		scene->LoadScene("TestScene.json");
+	}
+	
 	// ImGui初期化（Renderer::Init()の後）
 	HWND hwnd = GetWindow();
 	ID3D11Device* device = Renderer::GetDevice();

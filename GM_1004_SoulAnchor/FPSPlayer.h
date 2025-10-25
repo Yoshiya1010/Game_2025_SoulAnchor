@@ -25,6 +25,9 @@ private:
 	std::string m_AnimationName;
 	std::string m_AnimationNameNext;
 	float m_AnimationBlend;
+
+
+	const float m_modelScale = 0.015;
 public:
 	void Init() override;
 	void Start()override;

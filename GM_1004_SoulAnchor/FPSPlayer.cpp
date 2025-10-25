@@ -33,7 +33,7 @@ void FPSPlayer::Init()
     m_SE = make_unique<Audio>();
     m_SE->Load("asset\\audio\\wan.wav");
 
-    m_Scale = Vector3(0.015f, 0.015f, 0.015f);
+    m_Scale = Vector3(1.0f, 1.0f, 1.0f);
 
     m_Frame = 0;
 
@@ -53,18 +53,27 @@ void FPSPlayer::Start()
     if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定（任意）
+        // 衝突レイヤー設定
         SetupCollisionLayer();
 
 
-        m_ColliderOffset = Vector3(0, 0.f, 0);
-        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 0.0f);
+        m_ColliderOffset = Vector3(0, 1.f, 0);
+        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 1.0f);
 
+
+        //こけないように追加
+        m_RigidBody->setAngularFactor(btVector3(0, 1, 0));
     }
 }
 
 void FPSPlayer::Uninit()
 {
+    //Bodyは削除
+    if (m_RigidBody)
+    {
+        PhysicsObject::Uninit();
+    }
+
     m_SE->Uninit();
     m_SE.reset();
 
@@ -78,38 +87,50 @@ void FPSPlayer::Uninit()
 
 void FPSPlayer::Update()
 {
-    FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
-    if (!camera) return;
+    CheckAndCallStart();
 
-    Vector3 moveDir = { 0,0,0 };
-    bool isMoving = false;
-
-    // カメラの向き基準
-    Vector3 camForward = camera->GetForward();
-    Vector3 camRight = camera->GetRight();
-    camForward.y = 0;
-    camRight.y = 0;
-
-    if (Input::GetKeyPress(KK_W)) { moveDir += camForward; isMoving = true; }
-    if (Input::GetKeyPress(KK_S)) { moveDir -= camForward; isMoving = true; }
-    if (Input::GetKeyPress(KK_A)) { moveDir -= camRight; isMoving = true; }
-    if (Input::GetKeyPress(KK_D)) { moveDir += camRight; isMoving = true; }
-
-    if (isMoving)
+    if (m_Started)
     {
-        moveDir.Normalize();
-        m_Position += moveDir * 0.1f;
-    }
+        FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
+        if (!camera) return;
 
-    // カメラ方向をプレイヤー向きに反映（水平のみ）
-    m_Rotation.y = camera->GetRotation().y;
+        Vector3 moveDir = { 0,0,0 };
+        bool isMoving = false;
 
-    // 弾発射（カメラの正面方向）
-    if (Input::GetKeyTrigger(KK_SPACE)) {
-        Bullet* bullet = Manager::GetScene()->AddGameObject<Bullet>(OBJECT);
-        bullet->SetPosition(m_Position + camForward * 1.0f);
-        bullet->SetVelocity(camForward * 0.5f);
-        m_SE->Play();
+        // カメラの向き基準
+        Vector3 camForward = camera->GetForward();
+        Vector3 camRight = camera->GetRight();
+        camForward.y = 0;
+        camRight.y = 0;
+
+        if (Input::GetKeyPress(KK_W)) { moveDir += camForward; isMoving = true; }
+        if (Input::GetKeyPress(KK_S)) { moveDir -= camForward; isMoving = true; }
+        if (Input::GetKeyPress(KK_A)) { moveDir -= camRight; isMoving = true; }
+        if (Input::GetKeyPress(KK_D)) { moveDir += camRight; isMoving = true; }
+
+        btVector3 velocity(0, 0, 0);
+        if (isMoving)
+        {
+            moveDir.Normalize();
+            velocity = btVector3(moveDir.x, moveDir.y, moveDir.z) * 5.0f;
+        }
+
+        // Rigidbodyに速度を適用
+        m_RigidBody->setLinearVelocity(velocity);
+
+        // カメラ方向をプレイヤー向きに反映（水平のみ）
+        m_Rotation.y = camera->GetRotation().y;
+
+      
+        m_RigidBody->activate(true);
+
+        // 弾発射（カメラの正面方向）
+        if (Input::GetKeyTrigger(KK_SPACE)) {
+            Bullet* bullet = Manager::GetScene()->AddGameObject<Bullet>(OBJECT);
+            bullet->SetPosition(m_Position + camForward * 1.0f);
+            bullet->SetVelocity(camForward * 0.5f);
+            m_SE->Play();
+        }
     }
 
 
@@ -122,17 +143,15 @@ void FPSPlayer::Draw()
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    {
-        XMMATRIX S_p = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
-        XMMATRIX R_p = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
-        XMMATRIX T_p = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
-        XMMATRIX parentWorld = S_p * R_p * T_p;
+    Renderer::SetWorldMatrix(
+        //モデルと物理の座標を同期させる
+        UpdatePhysicsWithModel(m_modelScale));
+    m_AnimationModel->Draw();
 
-        Renderer::SetWorldMatrix(parentWorld);
-        m_AnimationModel->Draw();
+        
 
       
 
 
-    }
+    
 }
