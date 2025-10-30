@@ -7,7 +7,7 @@
 #include "bullet.h"
 #include "scene.h"
 #include "animationModel.h"
-
+#include"Anchor.h"
 #include "meshField.h"
 
 void FPSPlayer::Init()
@@ -125,7 +125,11 @@ void FPSPlayer::Update()
         m_Rotation.y = camera->GetRotation().y;
 
       
-       
+        // アンカー発射
+        if (Input::GetKeyTrigger(KK_T)) {
+            FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
+            ThrowAnchor(camera);
+        }
 
 
         //ジャンプの処理
@@ -153,4 +157,41 @@ void FPSPlayer::Draw()
     m_AnimationModel->Draw();
 
 
+}
+
+void FPSPlayer::ThrowAnchor(FPSCamera* camera)
+{
+    if (m_CurrentAnchor) return; // すでに存在する場合は無視
+
+    // Anchor生成
+    Anchor* anchor = Manager::GetScene()->AddGameObject<Anchor>(OBJECT);
+
+    // プレイヤー位置＋少し前方に配置
+    Vector3 camForward = camera->GetForward();
+    
+    Vector3 spawnPos = Vector3((m_Position.x + (camForward.x * 2.0f)), (m_Position.y + 2.0f+ (camForward.y * 2.0f)), (m_Position.z + (camForward.z * 2.0f)));
+    anchor->SetPosition(spawnPos);
+
+
+    // 飛ばす方向の速度設定（Start後に反映される仕組み）
+    anchor->SetVelocity(camForward * 50.0f);
+
+    // 所持中アンカー登録
+    m_CurrentAnchor = anchor;
+}
+void FPSPlayer::PullAnchor() {
+    if (!m_CurrentAnchor) return;
+
+    // Anchorが何かにジョイント済みなら、引っ張る
+    if (m_CurrentAnchor->IsAttached()) {
+        Vector3 dir = (m_CurrentAnchor->GetPosition() - m_Position);
+        dir.Normalize();
+        m_RigidBody->applyCentralImpulse(btVector3(dir.x, dir.y, dir.z) * 500.0f);
+    }
+}
+
+void FPSPlayer::ReleaseAnchor() {
+    if (!m_CurrentAnchor) return;
+    m_CurrentAnchor->Detach();
+    m_CurrentAnchor = nullptr;
 }

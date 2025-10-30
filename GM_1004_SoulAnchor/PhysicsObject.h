@@ -3,23 +3,15 @@
 #include"PhysicsManager.h"
 #include"main.h"
 enum CollisionGroup {
-    COL_NONE = 0,        // 衝突無効
-
-    // --- 動的オブジェクト群 ---
-    COL_PLAYER = 1 << 0,   // プレイヤー
-    COL_ENEMY = 1 << 1,   // 敵キャラ
-    COL_BULLET = 1 << 2,   // 弾丸（プレイヤー・敵共通）
-    COL_ITEM = 1 << 3,   // 取得アイテムなど
-
-    // --- 静的オブジェクト群 ---
-    COL_GROUND = 1 << 4,   // 地面（床・地形）
-    COL_WALL = 1 << 5,   // 壁・障害物・建物
-
-    // --- その他 ---
-    COL_TRIGGER = 1 << 6,   // センサー・トリガー（非物理当たり判定）
-    COL_DEFAULT = 1 << 7,   // デフォルト（明示しない一般物体）
-
-    COL_ALL = -1        // すべてと衝突（ワイルドカード）
+    COL_NOTHING = 0,
+    COL_PLAYER  = 1 << 0,
+    COL_ENEMY   = 1 << 1,
+    COL_WALL    = 1 << 2,
+    COL_GROUND  = 1 << 3,
+    COL_BULLET  = 1 << 4,
+    COL_ANCHOR  = 1 << 5,
+    COL_ITEM    = 1 << 6,
+    COL_DEFAULT = 1 << 7,
 };
 class PhysicsObject : public GameObject {
 protected:
@@ -36,6 +28,10 @@ protected:
 
     float DEG2RAD = 3.14159265358979323846f / 180.0f;
 public:
+
+    // Rigtbody　のゲッター
+    btRigidBody* GetRigidBody() const { return m_RigidBody.get(); }
+
     float GetMass() { return m_mass; }
     virtual PhysicsObject* SetMass(float mass)
     {
@@ -269,9 +265,28 @@ public:
         return parentWorld;
     }
 
-    // Rigtbody　のゲッター
-    btRigidBody* GetRigidBody() const { return m_RigidBody.get(); }
 
+    //------------------------------------------------------------------------
+    //ベクトルを触る
+    void SetVelocity(const Vector3& velocity)
+    {
+        if (m_RigidBody)
+        {
+            m_RigidBody->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+            m_RigidBody->activate(true);
+        }
+    }
+
+    Vector3 GetVelocity() const
+    {
+        if (m_RigidBody)
+        {
+            btVector3 v = m_RigidBody->getLinearVelocity();
+            return Vector3(v.getX(), v.getY(), v.getZ());
+        }
+        return Vector3(0, 0, 0);
+    }
+    //--------------------------------------------------------------------------
     //衝突のレイヤーを設定してる
     //これで衝突しないとかのレイヤー分けができる
 	virtual void SetupCollisionLayer() {
@@ -286,6 +301,10 @@ public:
             m_CollisionMask = COL_PLAYER | COL_WALL | COL_GROUND;
             break;
 
+        case GameObjectTag::Anchor:
+            m_CollisionGroup = COL_ANCHOR;
+            m_CollisionMask = COL_WALL | COL_GROUND | COL_DEFAULT;
+            break;
    
 
         case GameObjectTag::Item:
@@ -305,7 +324,7 @@ public:
 
         default:
             m_CollisionGroup = COL_DEFAULT;
-            m_CollisionMask = COL_ALL;
+            m_CollisionMask = -1;//すべてと衝突する
             break;
         }
 	}
@@ -318,15 +337,12 @@ public:
 
 	//  衝突無効化（UI要素等で使用）
 	void DisableCollision() {
-		m_CollisionGroup = COL_NONE;
+		m_CollisionGroup = COL_NOTHING;
 		m_CollisionMask = 0;
 	}
 
-
-
     
-    // コライダー生成関数群
-
+    // コライダー生成関数
     //Box
     void CreateBoxColliderAt(Vector3 position, Vector3 size, float mass = 0.0f, Vector3 offset = { 0, 0, 0 }) {
         m_Position = position;

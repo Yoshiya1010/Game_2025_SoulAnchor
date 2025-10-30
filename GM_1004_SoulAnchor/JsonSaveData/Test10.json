@@ -4,13 +4,13 @@
             "Layer": 0,
             "Name": "FPSCamera",
             "Position": [
-                -6.082863807678223,
-                1.7999999523162842,
-                -14.515780448913574
+                -4.820049285888672,
+                3.799999237060547,
+                28.813291549682617
             ],
             "Rotation": [
-                0.03599992394447327,
-                0.13500043749809265,
+                -0.10800010710954666,
+                3.347999095916748,
                 0.0
             ],
             "Scale": [
@@ -24,19 +24,35 @@
             "Layer": 2,
             "Name": "FPSPlayer",
             "Position": [
-                -6.190537452697754,
-                0.0,
-                -15.308505058288574
+                -4.717723846435547,
+                2.000000476837158,
+                29.300682067871094
             ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    1.0,
+                    2.0,
+                    1.0
+                ]
+            },
             "Rotation": [
                 0.0,
-                0.13500043749809265,
+                3.347999095916748,
                 0.0
             ],
             "Scale": [
-                0.014999999664723873,
-                0.014999999664723873,
-                0.014999999664723873
+                1.0,
+                1.0,
+                1.0
             ],
             "Type": "FPSPlayer"
         },
@@ -55,7 +71,7 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 64,
+                "CollisionGroup": 128,
                 "CollisionMask": -1,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
@@ -80,9 +96,9 @@
             "Layer": 2,
             "Name": "TreeBlock_001",
             "Position": [
-                -8.992841720581055,
-                7.000133991241455,
-                -0.0017221079906448722
+                -23.120386123657227,
+                0.9999986290931702,
+                0.280727744102478
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -91,9 +107,9 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 64,
+                "CollisionGroup": 128,
                 "CollisionMask": -1,
-                "Mass": 2.4000000953674316,
+                "Mass": 1.2000000476837158,
                 "OriginalColliderHalfSize": [
                     1.0,
                     7.0,
@@ -116,9 +132,9 @@
             "Layer": 2,
             "Name": "TreeBlock_002",
             "Position": [
-                0.013393545523285866,
-                7.001370429992676,
-                0.007692828308790922
+                3.8933022022247314,
+                0.9999988675117493,
+                0.11894107609987259
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -127,12 +143,48 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 64,
-                "CollisionMask": -1,
-                "Mass": 2.4000000953674316,
+                "CollisionGroup": 8,
+                "CollisionMask": 147,
+                "Mass": 5.599999904632568,
                 "OriginalColliderHalfSize": [
                     1.0,
                     7.0,
+                    1.0
+                ]
+            },
+            "Rotation": [
+                0.0,
+                22.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "TreeBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "Anchor",
+            "Position": [
+                -66.69241333007813,
+                -142.30853271484375,
+                -266.6786804199219
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 32,
+                "CollisionMask": 140,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    1.0,
+                    1.0,
                     1.0
                 ]
             },
@@ -146,7 +198,7 @@
                 1.0,
                 1.0
             ],
-            "Type": "TreeBlock"
+            "Type": "Anchor"
         },
         {
             "Layer": 4,

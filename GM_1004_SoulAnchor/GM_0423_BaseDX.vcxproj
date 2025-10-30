@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Anchor.cpp" />
     <ClCompile Include="animationModel.cpp" />
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="bullet.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="wave.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Anchor.h" />
     <ClInclude Include="animationModel.h" />
     <ClInclude Include="audio.h" />
     <ClInclude Include="bullet.h" />

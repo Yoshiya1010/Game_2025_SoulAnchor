@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include"Anchor.h"
 #include "main.h"
 #include "renderer.h"
 #include "gameObject.h"
@@ -8,6 +8,7 @@
 #include"animationModel.h"
 #include"modelRenderer.h"
 #include"PhysicsObject.h"
+#include"FPSCamera.h"
 
 class FPSPlayer :public PhysicsObject {
 private:
@@ -30,6 +31,9 @@ private:
 	const float m_modelScale = 0.015;
 
 	bool m_IsOnGround = false;
+
+	//ÉAÉìÉJÅ[ÇÇ‡Ç¡Ç∆Ç≠
+	Anchor *m_CurrentAnchor = nullptr;
 public:
 	void SetOnGround(bool onGround) { m_IsOnGround = onGround; }
 	bool IsOnGround() const { return m_IsOnGround; }
@@ -39,4 +43,9 @@ public:
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+
+
+	void ThrowAnchor(FPSCamera* camera);
+	void PullAnchor();
+	void ReleaseAnchor();
 };

@@ -177,6 +177,9 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
+    <ClCompile Include="Anchor.cpp">
+      <Filter>ソース ファイル\プレイヤー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -290,9 +293,6 @@
     <ClInclude Include="DrawImgui.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -319,6 +319,12 @@
     </ClInclude>
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
+    </ClInclude>
+    <ClInclude Include="Anchor.h">
+      <Filter>ヘッダー ファイル\プレイヤー</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject.h">
+      <Filter>ヘッダー ファイル\BulletObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
