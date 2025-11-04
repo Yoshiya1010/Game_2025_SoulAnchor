@@ -20,14 +20,14 @@
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
 
-bool Scene::debugFlag;
+bool Scene::debugFlag = false;
 
 bool Scene::m_isPaused = false;
 
 
 void Scene::Init()
 {
-	debugFlag = true;
+	
 }
 
 
@@ -77,14 +77,6 @@ void Scene::Update()
 			gameObject->Update();
 		}
 	}
-
-
-	if (Input::GetKeyPress(KK_Z))
-	{
-		debugFlag = !debugFlag;
-		
-	}
-
 }
 
 void Scene::Draw()

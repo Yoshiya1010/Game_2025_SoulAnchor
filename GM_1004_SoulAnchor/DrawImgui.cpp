@@ -63,7 +63,7 @@ void DrawImguiWindow()
 
 				if (ImGui::MenuItem("Load Scene", nullptr, &loadSceneWindowFlag));
 				
-				
+			
 			
 					
 				ImGui::Separator();
@@ -78,8 +78,17 @@ void DrawImguiWindow()
 				ImGui::MenuItem("Scene Hierarchy", nullptr, &showSceneHierarchyWindowFlag);
 				ImGui::MenuItem("Properties", nullptr, &showPropertiesWindowFlag);
 
+
+			
 				ImGui::EndMenu();
 			}
+
+			//Bullutのあたり判定の描画
+			bool DebugFlag = Scene::GetDebugFlag();
+			if (ImGui::Checkbox(U8("あたり判定描画"), &DebugFlag))
+			{
+				Scene::SetDebugFlag(DebugFlag);
+			};
 
 			ImGui::EndMainMenuBar();
 

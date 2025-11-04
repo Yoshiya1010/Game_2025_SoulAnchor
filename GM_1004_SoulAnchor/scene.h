@@ -44,7 +44,9 @@ public:
 	void SaveScene(const std::string& fileName);
 	void LoadScene(const std::string& fileName);
 
-	
+	static void SetDebugFlag(bool flag) { debugFlag = flag; }
+	static bool GetDebugFlag(void) { return debugFlag; }
+
 
 	template <typename T>
 	T* AddGameObject(int Layer)
