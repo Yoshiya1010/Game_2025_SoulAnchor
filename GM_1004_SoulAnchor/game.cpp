@@ -22,6 +22,7 @@
 #include"DrawImgui.h"
 #include"FPSCamera.h"
 #include"FPSPlayer.h"
+#include"SkyBox.h"
 
 ImGuiManager Game::m_ImGuiManager;
 
@@ -45,21 +46,13 @@ void Game::Init()
 
 	/// カメラを最初に入れる
 	AddGameObject<FPSCamera>(SYSTEM);
-	//AddGameObject<MeshField>(FIELD);
 	AddGameObject<FPSPlayer>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
-	//AddGameObject<Enemy>(OBJECT)->SetPosition({ -2.0f,0.0f,3.0f });
-	//AddGameObject<Enemy>(OBJECT)->SetPosition({ 0.0f,0.0f,3.0f });
-	/*AddGameObject<Enemy>(OBJECT)->SetPosition({ 2.0f,0.0f,3.0f });*/
-
-	/*AddGameObject<GroundBlock>(OBJECT);*/
-
-	AddGameObject<Wave>(FIELD)->SetPosition({ 0.0f,0.5f,0.0f });
 	AddGameObject<Score>(UI)->SetPosition({ 50.0f,50.0f,0.0f });
+
+	AddGameObject<SkyBox>(OBJECT);
 	
 	//初期値のシーンをロード　今はデバック用をいれるけど
-
 	Scene* scene = Manager::GetScene();
-
 	if (scene)
 	{
 		scene->LoadScene("TestScene.json");

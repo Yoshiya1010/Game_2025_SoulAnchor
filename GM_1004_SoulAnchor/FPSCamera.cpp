@@ -24,6 +24,8 @@ void	FPSCamera::Init()
 	m_sensitivity = 2.0f;  // スティック感度
 
 	SetName("FPSCamera");
+
+	
 }
 
 void	FPSCamera::Uninit()

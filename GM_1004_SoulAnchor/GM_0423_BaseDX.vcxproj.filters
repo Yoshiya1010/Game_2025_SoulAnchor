@@ -180,6 +180,9 @@
     <ClCompile Include="Anchor.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>ソース ファイル\プレイヤー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -325,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="PhysicsObject.h">
       <Filter>ヘッダー ファイル\BulletObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
