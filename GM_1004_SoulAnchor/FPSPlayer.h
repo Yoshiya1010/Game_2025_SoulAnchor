@@ -45,7 +45,6 @@ public:
 	void Draw() override;
 
 
+	// アンカー投擲（生成のみ）
 	void ThrowAnchor(FPSCamera* camera);
-	void PullAnchor();
-	void ReleaseAnchor();
 };

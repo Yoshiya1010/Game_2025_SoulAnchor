@@ -20,9 +20,18 @@ private:
 	Vector3 m_PendingVelocity = { 0,0,0 }; // まだRigidBodyがない場合の一時保存
 
 private:
+	// アンカーの状態
 	bool m_Attached = false;
 	GameObject* m_AttachedTarget = nullptr;
 	btPoint2PointConstraint* m_Joint = nullptr;
+
+	// プレイヤーへの参照（引き寄せ用）
+	GameObject* m_Owner = nullptr;
+
+	// 引き寄せパラメータ
+	float m_PullForce = 200.0f;      // 引き寄せる力
+	float m_PullDistance = 1.0f;     // この距離以下になったら引き寄せ完了
+	bool m_IsPulling = false;        // 引き寄せ中かどうか
 
 public:
 	void Init() override;
@@ -32,17 +41,29 @@ public:
 	void Draw() override;
 
 
+	// 衝突時の処理
 	void OnCollisionEnter(GameObject* other, const Vector3& hitPoint)override;
 
-	//物体同士をジョイント
+	// 物体同士をジョイント
 	void AttachTo(GameObject* target, const Vector3& hitPoint);
 
-	//ジョイントを削除
+	// ジョイントを削除
 	void Detach();
 
-	bool IsAttached() const { return m_Attached; };
+	// アンカーの所有者（プレイヤー）を設定
+	void SetOwner(GameObject* owner) { m_Owner = owner; }
 
+	// 引き寄せ開始
+	void StartPulling();
 
+	// 引き寄せ停止
+	void StopPulling();
+
+	// 接続状態の取得
+	bool IsAttached() const { return m_Attached; }
+	bool IsPulling() const { return m_IsPulling; }
+
+	// 速度設定（投擲時用）
 	void SetVelocity(const Vector3& vel)
 	{
 		if (m_RigidBody)
@@ -57,4 +78,8 @@ public:
 			m_PendingVelocity = vel;
 		}
 	}
+
+	// 引き寄せパラメータの設定
+	void SetPullForce(float force) { m_PullForce = force; }
+	void SetPullDistance(float distance) { m_PullDistance = distance; }
 };

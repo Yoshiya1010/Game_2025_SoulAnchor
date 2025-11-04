@@ -105,6 +105,7 @@ void FPSPlayer::Update()
         camForward.y = 0;
         camRight.y = 0;
 
+        // WASD移動
         if (Input::GetKeyPress(KK_W)) { moveDir += camForward; isMoving = true; }
         if (Input::GetKeyPress(KK_S)) { moveDir -= camForward; isMoving = true; }
         if (Input::GetKeyPress(KK_A)) { moveDir -= camRight; isMoving = true; }
@@ -124,20 +125,32 @@ void FPSPlayer::Update()
         // カメラ方向をプレイヤー向きに反映（水平のみ）
         m_Rotation.y = camera->GetRotation().y;
 
-      
-        // アンカー発射
+        // ジャンプの処理
+        if (Input::GetKeyTrigger(KK_SPACE) && m_IsOnGround)
+        {
+            m_RigidBody->applyCentralImpulse(btVector3(0, 10.0f, 0)); // 上方向に力を加える
+            m_RigidBody->activate(true);
+            m_IsOnGround = false; // 空中に出たのでリセット
+        }
+
+        // アンカー発射（Tキー）
         if (Input::GetKeyTrigger(KK_T)) {
-            FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
             ThrowAnchor(camera);
         }
 
+        // アンカー引き寄せ開始（Yキー）
+        if (Input::GetKeyTrigger(KK_Y)) {
+            if (m_CurrentAnchor && m_CurrentAnchor->IsAttached()) {
+                m_CurrentAnchor->StartPulling();
+            }
+        }
 
-        //ジャンプの処理
-        if (Input::GetKeyTrigger(KK_SPACE) && m_IsOnGround)
-        {
-             m_RigidBody->applyCentralImpulse(btVector3(0, 10.0f, 0)); // 上方向に力を加える
-            m_RigidBody->activate(true);
-            m_IsOnGround = false; // 空中に出たのでリセット
+        // アンカー解除（Uキー）
+        if (Input::GetKeyTrigger(KK_U)) {
+            if (m_CurrentAnchor) {
+                m_CurrentAnchor->Detach();
+                m_CurrentAnchor = nullptr;
+            }
         }
     }
 
@@ -176,22 +189,9 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
     // 飛ばす方向の速度設定（Start後に反映される仕組み）
     anchor->SetVelocity(camForward * 50.0f);
 
+
+    // 所有者を設定
+    anchor->SetOwner(this);
     // 所持中アンカー登録
     m_CurrentAnchor = anchor;
-}
-void FPSPlayer::PullAnchor() {
-    if (!m_CurrentAnchor) return;
-
-    // Anchorが何かにジョイント済みなら、引っ張る
-    if (m_CurrentAnchor->IsAttached()) {
-        Vector3 dir = (m_CurrentAnchor->GetPosition() - m_Position);
-        dir.Normalize();
-        m_RigidBody->applyCentralImpulse(btVector3(dir.x, dir.y, dir.z) * 500.0f);
-    }
-}
-
-void FPSPlayer::ReleaseAnchor() {
-    if (!m_CurrentAnchor) return;
-    m_CurrentAnchor->Detach();
-    m_CurrentAnchor = nullptr;
 }
