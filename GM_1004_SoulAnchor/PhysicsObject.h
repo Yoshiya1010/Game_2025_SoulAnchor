@@ -1,7 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include"gameObject.h"
 #include"PhysicsManager.h"
 #include"main.h"
+
 enum CollisionGroup {
     COL_NOTHING = 0,
     COL_PLAYER  = 1 << 0,
@@ -29,7 +30,7 @@ protected:
     float DEG2RAD = 3.14159265358979323846f / 180.0f;
 public:
 
-    // Rigtbody@‚ÌƒQƒbƒ^[
+    // Rigtbodyã€€ã®ã‚²ãƒƒã‚¿ãƒ¼
     btRigidBody* GetRigidBody() const { return m_RigidBody.get(); }
 
     float GetMass() { return m_mass; }
@@ -42,39 +43,39 @@ public:
         auto* world = PhysicsManager::GetWorld();
         if (!world) return this;
 
-        // ˆê’U•¨—¢ŠE‚©‚çíœ
+        // ä¸€æ—¦ç‰©ç†ä¸–ç•Œã‹ã‚‰å‰Šé™¤
         world->removeRigidBody(m_RigidBody.get());
 
         btVector3 inertia(0, 0, 0);
         if (mass > 0.f)
             m_CollisionShape->calculateLocalInertia(mass, inertia);
 
-        //„‘Ìî•ñ‚ğÄİ’è
+        //å‰›ä½“æƒ…å ±ã‚’å†è¨­å®š
         m_RigidBody->setMassProps(mass, inertia);
         m_RigidBody->updateInertiaTensor();
 
-        // ‘¬“x‚ğƒŠƒZƒbƒg‚µ‚ÄˆÀ’è‰»
+        // é€Ÿåº¦ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦å®‰å®šåŒ–
         m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
         m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
 
-        //Ä“o˜^
+        //å†ç™»éŒ²
         world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
         m_RigidBody->activate(true);
 
         return this;
     }
 
-    // I—¹ˆ—i•¨—‚Ì‚İj
+    // çµ‚äº†å‡¦ç†ï¼ˆç‰©ç†ã®ã¿ï¼‰
     virtual void Uninit() override {
 
         auto* world = PhysicsManager::GetWorld();
         if (m_RigidBody && world) {
-            // RigidBody‚ğíœ‚·‚é‘O‚ÉA‚±‚ÌBody‚ÉÚ‘±‚³‚ê‚Ä‚¢‚é‘S‚Ä‚ÌConstraintiƒWƒ‡ƒCƒ“ƒgj‚ğíœ
+            // RigidBodyã‚’å‰Šé™¤ã™ã‚‹å‰ã«ã€ã“ã®Bodyã«æ¥ç¶šã•ã‚Œã¦ã„ã‚‹å…¨ã¦ã®Constraintï¼ˆã‚¸ãƒ§ã‚¤ãƒ³ãƒˆï¼‰ã‚’å‰Šé™¤
             int numConstraints = world->getNumConstraints();
             for (int i = numConstraints - 1; i >= 0; i--) {
                 btTypedConstraint* constraint = world->getConstraint(i);
 
-                // ‚±‚ÌRigidBody‚ÉÚ‘±‚³‚ê‚Ä‚¢‚éConstraint‚©Šm”F
+                // ã“ã®RigidBodyã«æ¥ç¶šã•ã‚Œã¦ã„ã‚‹Constraintã‹ç¢ºèª
                 if (&constraint->getRigidBodyA() == m_RigidBody.get() ||
                     &constraint->getRigidBodyB() == m_RigidBody.get()) {
                     world->removeConstraint(constraint);
@@ -82,7 +83,7 @@ public:
                 }
             }
 
-            // ‚»‚ÌŒã‚ÅRigidBody‚ğíœ
+            // ãã®å¾Œã§RigidBodyã‚’å‰Šé™¤
             world->removeRigidBody(m_RigidBody.get());
             m_RigidBody->setUserPointer(nullptr);
         }
@@ -95,10 +96,10 @@ public:
 
     virtual ~PhysicsObject() = default;
 
-    //„‘Ì¶¬‚±‚±‚Åƒ{ƒfƒB‚ğì‚Á‚Ä‚é
+    //å‰›ä½“ç”Ÿæˆã“ã“ã§ãƒœãƒ‡ã‚£ã‚’ä½œã£ã¦ã‚‹
     void CreateRigidBody(float mass) {
 
-        //¿—Êˆê’U•Û‘¶
+        //è³ªé‡ä¸€æ—¦ä¿å­˜
         this->m_mass = mass;
 
         auto* world = PhysicsManager::GetWorld();
@@ -122,19 +123,19 @@ public:
         world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
     }
 
-    // Œ`ó¶¬
+    // å½¢çŠ¶ç”Ÿæˆ
     void CreateBoxCollider(Vector3 halfSize, float mass = 0.0f) {
 
         m_OriginalColliderHalfSize = halfSize;
 
-        // ƒXƒP[ƒ‹‚ğ”½‰f‚µ‚½ƒTƒCƒY‚ğZo
+        // ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ ã—ãŸã‚µã‚¤ã‚ºã‚’ç®—å‡º
         Vector3 scaledHalfSize = {
             halfSize.x * m_Scale.x,
             halfSize.y * m_Scale.y,
             halfSize.z * m_Scale.z
         };
 
-        // ƒXƒP[ƒ‹‚ğ”½‰f‚µ‚½ƒIƒtƒZƒbƒg‚àŒvZ
+        // ã‚¹ã‚±ãƒ¼ãƒ«ã‚’åæ˜ ã—ãŸã‚ªãƒ•ã‚»ãƒƒãƒˆã‚‚è¨ˆç®—
         Vector3 scaledOffset = {
             m_ColliderOffset.x * m_Scale.x,
             m_ColliderOffset.y * m_Scale.y,
@@ -145,7 +146,7 @@ public:
             btVector3(scaledHalfSize.x, scaledHalfSize.y, scaledHalfSize.z)
         );
 
-        // Rigidbody¶¬iƒIƒtƒZƒbƒg‚ğ“à•”‚Åg‚¤j
+        // Rigidbodyç”Ÿæˆï¼ˆã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å†…éƒ¨ã§ä½¿ã†ï¼‰
         CreateRigidBody(mass);
     }
 
@@ -166,14 +167,14 @@ public:
         auto* world = PhysicsManager::GetWorld();
         if (!world) return;
 
-        // Šù‘¶‚Ì„‘Ì‚ğˆê’Uíœ
+        // æ—¢å­˜ã®å‰›ä½“ã‚’ä¸€æ—¦å‰Šé™¤
         if (m_RigidBody)
         {
             world->removeRigidBody(m_RigidBody.get());
             m_RigidBody->setUserPointer(nullptr);
         }
 
-        // Œ`óƒ^ƒCƒv‚ğ’²‚×‚ÄÄ¶¬
+        // å½¢çŠ¶ã‚¿ã‚¤ãƒ—ã‚’èª¿ã¹ã¦å†ç”Ÿæˆ
         std::string shapeType = GetShapeTypeName(m_CollisionShape.get());
 
         if (shapeType == "Box")
@@ -195,11 +196,11 @@ public:
         else if (shapeType == "Capsule")
             m_CollisionShape = std::make_unique<btCapsuleShape>(m_Scale.x, m_Scale.y);
 
-        // „‘Ì‚ğÄ“o˜^
+        // å‰›ä½“ã‚’å†ç™»éŒ²
         CreateRigidBody(m_mass);
     }
 
-    // “¯ŠúŠÖ”
+    // åŒæœŸé–¢æ•°
     void SyncFromPhysics() {
         if (m_RigidBody && m_RigidBody->getMotionState()) {
             btTransform transform;
@@ -215,7 +216,7 @@ public:
         btTransform t = m_RigidBody->getWorldTransform();
         t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
-        //Bullet‚Í ZYXiyaw, pitch, rollj‚Ì‡‚Åó‚¯æ‚é
+        //Bulletã¯ ZYXï¼ˆyaw, pitch, rollï¼‰ã®é †ã§å—ã‘å–ã‚‹
         btQuaternion q;
         q.setEulerZYX(
             m_Rotation.y * DEG2RAD, // yaw (Y)
@@ -236,11 +237,11 @@ public:
 
 
 
-    XMMATRIX UpdatePhysicsWithModel(float ModelScale)
+    XMMATRIX UpdatePhysicsWithModel(float ModelScale=1.0f)
     {
         if (!m_RigidBody || !m_RigidBody->getMotionState()) return XMMatrixIdentity();
 
-        // •¨—ƒGƒ“ƒWƒ“‚©‚çˆÊ’u‚ğè“®‚Åæ“¾
+        // ç‰©ç†ã‚¨ãƒ³ã‚¸ãƒ³ã‹ã‚‰ä½ç½®ã‚’æ‰‹å‹•ã§å–å¾—
         btTransform trans = m_RigidBody->getCenterOfMassTransform();
         m_Position.x = trans.getOrigin().getX();
         m_Position.y = trans.getOrigin().getY();
@@ -266,7 +267,7 @@ public:
 
         offsetVec = XMVector3Rotate(offsetVec, rotationQuaternion); 
 
-        // ‰ñ“]‚ğl—¶‚µ‚½•½sˆÚ“®
+        // å›è»¢ã‚’è€ƒæ…®ã—ãŸå¹³è¡Œç§»å‹•
         XMMATRIX S_p = XMMatrixScaling(m_Scale.x * ModelScale, m_Scale.y * ModelScale, m_Scale.z * ModelScale);
         XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
         XMMATRIX T_p = XMMatrixTranslation(
@@ -283,7 +284,7 @@ public:
 
 
     //------------------------------------------------------------------------
-    //ƒxƒNƒgƒ‹‚ğG‚é
+    //ãƒ™ã‚¯ãƒˆãƒ«ã‚’è§¦ã‚‹
     void SetVelocity(const Vector3& velocity)
     {
         if (m_RigidBody)
@@ -303,8 +304,8 @@ public:
         return Vector3(0, 0, 0);
     }
     //--------------------------------------------------------------------------
-    //Õ“Ë‚ÌƒŒƒCƒ„[‚ğİ’è‚µ‚Ä‚é
-    //‚±‚ê‚ÅÕ“Ë‚µ‚È‚¢‚Æ‚©‚ÌƒŒƒCƒ„[•ª‚¯‚ª‚Å‚«‚é
+    //è¡çªã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¨­å®šã—ã¦ã‚‹
+    //ã“ã‚Œã§è¡çªã—ãªã„ã¨ã‹ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼åˆ†ã‘ãŒã§ãã‚‹
 	virtual void SetupCollisionLayer() {
         switch (m_Tag) {
         case GameObjectTag::Player:
@@ -325,7 +326,7 @@ public:
 
         case GameObjectTag::Item:
             m_CollisionGroup = COL_ITEM;
-            m_CollisionMask = COL_PLAYER; // æ‚ê‚é‚Ì‚ÍƒvƒŒƒCƒ„[‚Ì‚İ
+            m_CollisionMask = COL_PLAYER; // å–ã‚Œã‚‹ã®ã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã¿
             break;
 
         case GameObjectTag::Ground:
@@ -340,25 +341,25 @@ public:
 
         default:
             m_CollisionGroup = COL_DEFAULT;
-            m_CollisionMask = -1;//‚·‚×‚Ä‚ÆÕ“Ë‚·‚é
+            m_CollisionMask = -1;//ã™ã¹ã¦ã¨è¡çªã™ã‚‹
             break;
         }
 	}
 
-	//  ƒJƒXƒ^ƒ€ƒŒƒCƒ„[İ’èi•K—v‚È‚¾‚¯ŒÄ‚Ôj
+	//  ã‚«ã‚¹ã‚¿ãƒ ãƒ¬ã‚¤ãƒ¤ãƒ¼è¨­å®šï¼ˆå¿…è¦ãªæ™‚ã ã‘å‘¼ã¶ï¼‰
 	void SetCollisionLayer(CollisionGroup group, int mask) {
 		m_CollisionGroup = group;
 		m_CollisionMask = mask;
 	}
 
-	//  Õ“Ë–³Œø‰»iUI—v‘f“™‚Åg—pj
+	//  è¡çªç„¡åŠ¹åŒ–ï¼ˆUIè¦ç´ ç­‰ã§ä½¿ç”¨ï¼‰
 	void DisableCollision() {
 		m_CollisionGroup = COL_NOTHING;
 		m_CollisionMask = 0;
 	}
 
     
-    // ƒRƒ‰ƒCƒ_[¶¬ŠÖ”
+    // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ç”Ÿæˆé–¢æ•°
     //Box
     void CreateBoxColliderAt(Vector3 position, Vector3 size, float mass = 0.0f, Vector3 offset = { 0, 0, 0 }) {
         m_Position = position;
@@ -367,7 +368,7 @@ public:
         CreateRigidBody(mass);
     }
 
-    //ƒXƒtƒBƒA
+    //ã‚¹ãƒ•ã‚£ã‚¢
     void CreateSphereColliderAt(Vector3 position, float radius, float mass = 0.0f, Vector3 offset = { 0, 0, 0 }) {
         m_Position = position;
         m_ColliderOffset = offset;
@@ -375,7 +376,7 @@ public:
         CreateRigidBody(mass);
     }
 
-    //ƒJƒvƒZƒ‹
+    //ã‚«ãƒ—ã‚»ãƒ«
     void CreateCapsuleColliderAt(Vector3 position, float radius, float height, float mass = 0.0f, Vector3 offset = { 0, 0, 0 }) {
         m_Position = position;
         m_ColliderOffset = offset;
@@ -386,19 +387,19 @@ public:
 private:
 
 
-	//•¨—ƒ{ƒfƒB‚ğ–³Œø‰»iNullƒ`ƒFƒbƒN‚µ‚Ä‚éj
+	//ç‰©ç†ãƒœãƒ‡ã‚£ã‚’ç„¡åŠ¹åŒ–ï¼ˆNullãƒã‚§ãƒƒã‚¯ã—ã¦ã‚‹ï¼‰
 	void DisablePhysicsBody() {
 		auto* world = PhysicsManager::GetWorld();
-		// 1. ƒ[ƒ‹ƒh‚ª—LŒø‚ÅAƒŠƒWƒbƒhƒ{ƒfƒB‚ª‘¶İ‚·‚éê‡
+		// 1. ãƒ¯ãƒ¼ãƒ«ãƒ‰ãŒæœ‰åŠ¹ã§ã€ãƒªã‚¸ãƒƒãƒ‰ãƒœãƒ‡ã‚£ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 		if (world && m_RigidBody) {
-			// ƒ[ƒ‹ƒh‚©‚çRigidBody‚ğíœ
+			// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰RigidBodyã‚’å‰Šé™¤
 			world->removeRigidBody(m_RigidBody.get());
 
-			// UserPointer‚ğ‰ğœiBullet‚ÌÕ“ËƒR[ƒ‹ƒoƒbƒN‘Îôj
+			// UserPointerã‚’è§£é™¤ï¼ˆBulletã®è¡çªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å¯¾ç­–ï¼‰
 			m_RigidBody->setUserPointer(nullptr);
 		}
 
-		//•¨—ƒIƒuƒWƒFƒNƒg‚ğ‚Ü‚Æ‚ß‚Ä‰ğ•ú
+		//ç‰©ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã¾ã¨ã‚ã¦è§£æ”¾
 		m_RigidBody.reset();
 		m_MotionState.reset();
 		m_CollisionShape.reset();
@@ -406,10 +407,10 @@ private:
 	}
 
     //-------------------------------------
-    //JSON‚ÌGameObject.h‚©‚ç‚Ì@•¨—‚Á‚Ä‚é‚¾‚¯‚É’Ç‰Á‚µ‚Ä‚é‚â‚Â
+    //JSONã®GameObject.hã‹ã‚‰ã®ã€€ç‰©ç†æŒã£ã¦ã‚‹æ™‚ã ã‘ã«è¿½åŠ ã—ã¦ã‚‹ã‚„ã¤
 
     json ToJson() const {
-        json j = GameObject::ToJson(); // Œp³Œ³‚ÌŠî–{î•ñ‚ğŒp³
+        json j = GameObject::ToJson(); // ç¶™æ‰¿å…ƒã®åŸºæœ¬æƒ…å ±ã‚’ç¶™æ‰¿
 
         if (m_RigidBody) {
             btScalar invMass = m_RigidBody->getInvMass();
@@ -464,7 +465,7 @@ private:
         }
         else
         {
-            //‚È‚©‚Á‚½‚ç‰Šú’l@‘S•”‚P
+            //ãªã‹ã£ãŸã‚‰åˆæœŸå€¤ã€€å…¨éƒ¨ï¼‘
             m_OriginalColliderHalfSize = m_Scale;
         }
 
@@ -502,5 +503,37 @@ private:
         }
     }
 
+    protected:
+        // ç ´å£Šæ©Ÿèƒ½é–¢é€£
+        bool m_IsDestructible = false;
+        float m_DestructionThreshold = 20.0f;
+        int m_VoxelGridX = 4;
+        int m_VoxelGridY = 4;
+        int m_VoxelGridZ = 4;
+        XMFLOAT4 m_FragmentColor = { 0.8f, 0.6f, 0.4f, 1.0f };
+
+        // publicã‚»ã‚¯ã‚·ãƒ§ãƒ³ã«è¿½åŠ ï¼ˆæ—¢å­˜ã®é–¢æ•°ã®ä¸‹ï¼‰
+public:
+    // ç ´å£Šæ©Ÿèƒ½
+    void SetDestructible(bool destructible, float threshold = 20.0f) {
+        m_IsDestructible = destructible;
+        m_DestructionThreshold = threshold;
+    }
+
+    void SetVoxelGrid(int x, int y, int z) {
+        m_VoxelGridX = x;
+        m_VoxelGridY = y;
+        m_VoxelGridZ = z;
+    }
+
+    void SetFragmentColor(XMFLOAT4 color) {
+        m_FragmentColor = color;
+    }
+
+
+    bool IsDestructible() const { return m_IsDestructible; }
+
+    void Destroy(Vector3 impactPoint, Vector3 impactForce);
+    void CheckDestruction(GameObject* other, const Vector3& hitPoint);
 
 };

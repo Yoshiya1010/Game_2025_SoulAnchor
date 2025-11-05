@@ -23,10 +23,6 @@ void Manager::Init()
 	// ƒQ[ƒ€ƒV[ƒ“‚ð“ü‚ê‚é
 	m_Scene = new Game();
 	m_Scene->Init();
-
-
-
-
 }
 
 

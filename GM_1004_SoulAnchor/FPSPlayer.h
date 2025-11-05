@@ -17,7 +17,7 @@ private:
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
 	
-	unique_ptr<AnimationModel> m_AnimationModel;
+
 
 	unique_ptr<Audio> m_SE;
 

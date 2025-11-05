@@ -183,6 +183,12 @@
     <ClCompile Include="SkyBox.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
+    <ClCompile Include="VoxelFragment.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>ソース ファイル\BulletObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -331,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelFragment.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

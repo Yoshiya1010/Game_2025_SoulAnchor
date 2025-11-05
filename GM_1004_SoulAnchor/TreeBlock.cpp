@@ -30,6 +30,10 @@ void TreeBlock::Init()
     SetTag(GameObjectTag::Ground);
 
 
+    SetDestructible(true, 20.0f);  // 速度20以上で破壊
+    SetVoxelGrid(3, 8, 3);          // 3x8x3に分割（木は縦長）
+    SetFragmentColor(XMFLOAT4(0.4f, 0.3f, 0.2f, 1.0f));  // 茶色
+
 }
 void TreeBlock::Start()
 {
@@ -90,4 +94,14 @@ void TreeBlock::Draw()
     // モデルの描画
     m_ModelRenderer->Draw();
 
+}
+
+
+void TreeBlock::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)
+{
+    if (other->GetTag() == GameObjectTag::Anchor) {
+        // アンカーとの衝突時に破壊チェック
+        CheckDestruction(other, hitPoint);
+        // ↑ この1行だけでOK！
+    }
 }

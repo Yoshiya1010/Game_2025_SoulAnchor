@@ -172,6 +172,7 @@
     <ClCompile Include="modelRenderer.cpp" />
     <ClCompile Include="PhysicsCollisionManager.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="title.cpp" />
     <ClCompile Include="TreeBlock.cpp" />
     <ClCompile Include="vector3.cpp" />
+    <ClCompile Include="VoxelFragment.cpp" />
     <ClCompile Include="wave.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +236,7 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="TreeBlock.h" />
     <ClInclude Include="vector3.h" />
+    <ClInclude Include="VoxelFragment.h" />
     <ClInclude Include="wave.h" />
   </ItemGroup>
   <ItemGroup>
