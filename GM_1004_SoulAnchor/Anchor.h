@@ -6,6 +6,7 @@
 #include"ModelFBX.h"
 #include<memory>
 #include"PhysicsObject.h"
+
 class Anchor :public PhysicsObject {
 private:
 	ID3D11VertexShader* m_VertexShader;	// 頂点シェーダーオブジェクト
@@ -30,8 +31,10 @@ private:
 
 	// 引き寄せパラメータ
 	float m_PullForce = 200.0f;      // 引き寄せる力
-	float m_PullDistance = 1.0f;     // この距離以下になったら引き寄せ完了
+	float m_PullDistance = 10.0f;     // この距離以下になったら引き寄せ完了
 	bool m_IsPulling = false;        // 引き寄せ中かどうか
+
+	bool m_PullingSelf = false;//静的オブジェクトにぶつかった
 
 public:
 	void Init() override;

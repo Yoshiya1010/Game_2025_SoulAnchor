@@ -6,6 +6,7 @@
 #include "PhysicsManager.h"
 #include "animationModel.h"
 #include"ModelFBX.h"
+#include"FPSPlayer.h"
 
 void Anchor::Init()
 {
@@ -50,9 +51,15 @@ void Anchor::Start()
 
 void Anchor::Uninit()
 {
+    m_Joint = nullptr;
+    m_IsPulling = false;
+    m_Attached = false;
+    m_AttachedTarget = nullptr;
+
+    // その後でRigidBodyを削除
     if (m_RigidBody)
     {
-        PhysicsObject::Uninit();//Rigtbodyを消す
+        PhysicsObject::Uninit(); // RigidBody削除（ジョイントは既に削除済み）
     }
 
     m_ModelRenderer.reset();
@@ -67,43 +74,62 @@ void Anchor::Update()
  
     if (m_Started)
     {
-        // 引き寄せ処理
-        if (m_IsPulling && m_Attached && m_AttachedTarget && m_Owner)
+        if (m_Started)
         {
-            Vector3 anchorPos = m_AttachedTarget->GetPosition();
-            Vector3 ownerPos = m_Owner->GetPosition();
-
-            Vector3 direction = anchorPos - ownerPos;
-            float distance = direction.Length();
-
-            // まだ距離がある場合
-            if (distance > m_PullDistance)
+            // 引き寄せ処理
+            if (m_IsPulling && m_Owner)
             {
-                direction.Normalize();
+                Vector3 ownerPos = m_Owner->GetPosition();
 
-                // アンカーが刺さっている物体を引き寄せる力を与える
-                btVector3 pullForce(
-                    direction.x * m_PullForce,
-                    direction.y * m_PullForce,
-                    direction.z * m_PullForce
-                );
-
-                // 接続先の物体に力を加える
-                PhysicsObject* targetPhysics = dynamic_cast<PhysicsObject*>(m_AttachedTarget);
-                if (targetPhysics && targetPhysics->GetRigidBody())
+                // 自分自身を引き寄せる場合（静的オブジェクトに当たった）
+                if (m_PullingSelf)
                 {
-                    targetPhysics->GetRigidBody()->applyCentralForce(pullForce);
-                    targetPhysics->GetRigidBody()->activate(true);
-                }
-            }
-            else
-            {
-                // 引き寄せ完了 - ジョイント解除
-                StopPulling();
-                Detach();
+                    Vector3 anchorPos = this->GetPosition();
+                    Vector3 direction = ownerPos - anchorPos;
+                    float distance = direction.Length();
 
-                // アンカー自体を削除
-                SetDestroy();
+                    if (distance > m_PullDistance)
+                    {
+                        direction.Normalize();
+                        btVector3 pullForce(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
+
+                        if (m_RigidBody) {
+                            m_RigidBody->applyCentralForce(pullForce);
+                            m_RigidBody->activate(true);
+                        }
+                    }
+                    else
+                    {
+                        StopPulling();
+                        SetDestroy();
+                    }
+                }
+                // 物体を引き寄せる場合
+                else if (m_Attached && m_AttachedTarget)
+                {
+                    Vector3 targetPos = m_AttachedTarget->GetPosition();
+                    Vector3 direction = ownerPos - targetPos;
+                    float distance = direction.Length();
+
+                    if (distance > m_PullDistance)
+                    {
+                        direction.Normalize();
+                        btVector3 pullForce(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
+
+                        PhysicsObject* targetPhysics = dynamic_cast<PhysicsObject*>(m_AttachedTarget);
+                        if (targetPhysics && targetPhysics->GetRigidBody())
+                        {
+                            targetPhysics->GetRigidBody()->applyCentralForce(pullForce);
+                            targetPhysics->GetRigidBody()->activate(true);
+                        }
+                    }
+                    else
+                    {
+                        StopPulling();
+                        Detach();
+                        SetDestroy();
+                    }
+                }
             }
         }
     }
@@ -145,6 +171,23 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
     PhysicsObject* targetPhysics = dynamic_cast<PhysicsObject*>(target);
     if (!targetPhysics || !targetPhysics->GetRigidBody()) return;
 
+    // 質量が0（静的オブジェクト）の場合はジョイントせずに即座にpulling開始
+    float targetMass = targetPhysics->GetMass();
+    if (targetMass == 0.0f) {;
+        // ジョイントは作らず、自分自身をプレイヤーに引き寄せる
+        m_Attached = false;
+        m_AttachedTarget = nullptr;
+        m_IsPulling = true;
+        m_PullingSelf = true;  // 自分自身を引き寄せる
+
+        // 速度を0にして制御可能にする
+        if (m_RigidBody) {
+            m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
+            m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
+        }
+        return; // ここで終了、ジョイントは作らない
+    }
+
     btRigidBody* bodyA = m_RigidBody.get();
     btRigidBody* bodyB = targetPhysics->GetRigidBody();
 
@@ -164,6 +207,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
 
     m_Attached = true;
     m_AttachedTarget = target;
+    m_PullingSelf = false;  // 物体を引き寄せる
 
     // 接続したら速度を0にする（刺さった状態）
     if (m_RigidBody) {

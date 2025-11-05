@@ -34,7 +34,17 @@ private:
 
 	//アンカーをもっとく
 	Anchor *m_CurrentAnchor = nullptr;
+
+
+
 public:
+    // アンカーから削除通知を受け取る
+	void OnAnchorDestroyed(Anchor* anchor) {
+		if (m_CurrentAnchor == anchor) {
+			m_CurrentAnchor = nullptr;
+		}
+	}
+
 	void SetOnGround(bool onGround) { m_IsOnGround = onGround; }
 	bool IsOnGround() const { return m_IsOnGround; }
 

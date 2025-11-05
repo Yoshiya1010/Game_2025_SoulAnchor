@@ -66,8 +66,23 @@ public:
 
     // 終了処理（物理のみ）
     virtual void Uninit() override {
+
         auto* world = PhysicsManager::GetWorld();
         if (m_RigidBody && world) {
+            // RigidBodyを削除する前に、このBodyに接続されている全てのConstraint（ジョイント）を削除
+            int numConstraints = world->getNumConstraints();
+            for (int i = numConstraints - 1; i >= 0; i--) {
+                btTypedConstraint* constraint = world->getConstraint(i);
+
+                // このRigidBodyに接続されているConstraintか確認
+                if (&constraint->getRigidBodyA() == m_RigidBody.get() ||
+                    &constraint->getRigidBodyB() == m_RigidBody.get()) {
+                    world->removeConstraint(constraint);
+                    delete constraint;
+                }
+            }
+
+            // その後でRigidBodyを削除
             world->removeRigidBody(m_RigidBody.get());
             m_RigidBody->setUserPointer(nullptr);
         }
@@ -75,6 +90,7 @@ public:
         m_MotionState.reset();
         m_CollisionShape.reset();
     }
+
 
 
     virtual ~PhysicsObject() = default;

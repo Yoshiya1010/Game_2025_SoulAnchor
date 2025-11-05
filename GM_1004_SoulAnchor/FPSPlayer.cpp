@@ -68,6 +68,8 @@ void FPSPlayer::Start()
 
 void FPSPlayer::Uninit()
 {
+    //参照をクリア
+    m_CurrentAnchor = nullptr;
     //Bodyは削除
     if (m_RigidBody)
     {
@@ -149,7 +151,8 @@ void FPSPlayer::Update()
         if (Input::GetKeyTrigger(KK_U)) {
             if (m_CurrentAnchor) {
                 m_CurrentAnchor->Detach();
-                m_CurrentAnchor = nullptr;
+                m_CurrentAnchor->SetDestroy();  //削除予約も追加
+                m_CurrentAnchor = nullptr;  // これでクリア
             }
         }
     }
