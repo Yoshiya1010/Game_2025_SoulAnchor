@@ -236,7 +236,7 @@ public:
 
 
 
-    XMMATRIX UpdatePhysicsWithModel(float ModelScale)
+    XMMATRIX UpdatePhysicsWithModel(float ModelScale=1.0f)
     {
         if (!m_RigidBody || !m_RigidBody->getMotionState()) return XMMatrixIdentity();
 

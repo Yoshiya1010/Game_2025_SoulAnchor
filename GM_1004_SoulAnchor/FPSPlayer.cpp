@@ -12,15 +12,6 @@
 
 void FPSPlayer::Init()
 {
-   
-
-    // モデルのロード
-    m_AnimationModel = make_unique<AnimationModel>();
-    m_AnimationModel->Load("asset\\model\\Akai.fbx");
-
-    // モデルのアニメーションをロード
-    m_AnimationModel->LoadAnimation("asset\\model\\Akai_Run.fbx", "Run");
-    m_AnimationModel->LoadAnimation("asset\\model\\Akai_Idle.fbx", "Idle");
 
     // シェーダー読み込み
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
@@ -37,9 +28,6 @@ void FPSPlayer::Init()
 
     m_Frame = 0;
 
-    m_AnimationName = "Idle";
-    m_AnimationNameNext = "Run";
-    m_AnimationBlend = 0.0f;
 
     SetTag(GameObjectTag::Player);
 
@@ -79,8 +67,7 @@ void FPSPlayer::Uninit()
     m_SE->Uninit();
     m_SE.reset();
 
-    m_AnimationModel->Uninit();
-    m_AnimationModel.reset();
+ 
 
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();
@@ -135,6 +122,14 @@ void FPSPlayer::Update()
             m_IsOnGround = false; // 空中に出たのでリセット
         }
 
+        //m_positionとRigtbodyを同期
+        UpdatePhysicsWithModel();
+       
+
+
+        //-------------------------------------
+        //アンカーの処理
+        
         // アンカー発射（Tキー）
         if (Input::GetKeyTrigger(KK_T)) {
             ThrowAnchor(camera);
@@ -163,15 +158,14 @@ void FPSPlayer::Update()
 void FPSPlayer::Draw()
 {
 
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+    //Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
+    //Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
+    //Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    Renderer::SetWorldMatrix(
-        //モデルと物理の座標を同期させる
-        UpdatePhysicsWithModel(m_modelScale));
-    m_AnimationModel->Draw();
-
+    //Renderer::SetWorldMatrix(
+    //    //モデルと物理の座標を同期させる
+    //    UpdatePhysicsWithModel(m_modelScale));
+    //m_AnimationModel->Draw();
 
 }
 
