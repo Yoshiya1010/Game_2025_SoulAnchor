@@ -62,6 +62,9 @@ public:
 	// 引き寄せ停止
 	void StopPulling();
 
+	//オーナーにアンカーの削除を伝える
+	void NotifyOwnerAnchorRemoved();
+
 	// 接続状態の取得
 	bool IsAttached() const { return m_Attached; }
 	bool IsPulling() const { return m_IsPulling; }

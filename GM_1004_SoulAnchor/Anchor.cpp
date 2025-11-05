@@ -100,6 +100,7 @@ void Anchor::Update()
                     }
                     else
                     {
+                        NotifyOwnerAnchorRemoved();
                         StopPulling();
                         SetDestroy();
                     }
@@ -125,6 +126,7 @@ void Anchor::Update()
                     }
                     else
                     {
+                        NotifyOwnerAnchorRemoved();
                         StopPulling();
                         Detach();
                         SetDestroy();
@@ -240,4 +242,14 @@ void Anchor::StartPulling()
 void Anchor::StopPulling()
 {
     m_IsPulling = false;
+}
+
+void Anchor::NotifyOwnerAnchorRemoved()
+{
+    if (m_Owner) {
+        class FPSPlayer* player = dynamic_cast<class FPSPlayer*>(m_Owner);
+        if (player) {
+            player->OnAnchorDestroyed(this);  
+        }
+    }
 }
