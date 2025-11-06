@@ -184,10 +184,8 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
     Vector3 spawnPos = Vector3((m_Position.x + (camForward.x * 2.0f)), (m_Position.y + 2.0f+ (camForward.y * 2.0f)), (m_Position.z + (camForward.z * 2.0f)));
     anchor->SetPosition(spawnPos);
 
-    //向きを設定する
-    anchor->SetRotation(m_Rotation);
-
-    DebugImguiWindow::DebugVector3("m_Rotation", &m_Rotation, true);
+    
+    
 
     // 飛ばす方向の速度設定（Start後に反映される仕組み）
     anchor->SetVelocity(camForward * 50.0f);

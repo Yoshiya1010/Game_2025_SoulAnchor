@@ -2,6 +2,9 @@
 
 #include <math.h>
 
+#define RAD2DEG (180.0f / 3.14159265358979323846f)
+#define DEG2RAD (3.14159265358979323846f / 180.0f)
+
 class Vector3 {
 public:
 	float x, y, z;

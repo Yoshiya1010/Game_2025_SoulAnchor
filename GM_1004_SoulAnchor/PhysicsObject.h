@@ -27,7 +27,7 @@ protected:
 
     float m_mass=0;
 
-    float DEG2RAD = 3.14159265358979323846f / 180.0f;
+   
 public:
 
     int m_RotationSyncCountdown = 0; // UI 編集後の優先同期フレーム数
@@ -112,6 +112,15 @@ public:
         transform.setOrigin(btVector3(m_Position.x+m_ColliderOffset.x,
                                       m_Position.y+m_ColliderOffset.y,
                                       m_Position.z+m_ColliderOffset.z));
+
+
+        btQuaternion q;
+        q.setEulerZYX(
+            m_Rotation.y * DEG2RAD, // yaw
+            m_Rotation.x * DEG2RAD, // pitch
+            m_Rotation.z * DEG2RAD  // roll
+        );
+        transform.setRotation(q);
 
         btVector3 inertia(0, 0, 0);
         if (mass != 0.0f)
