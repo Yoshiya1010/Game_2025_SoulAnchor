@@ -9,6 +9,7 @@
 #include "animationModel.h"
 #include"Anchor.h"
 #include "meshField.h"
+#include"DebugImguiWindow.h"
 
 void FPSPlayer::Init()
 {
@@ -125,7 +126,6 @@ void FPSPlayer::Update()
         //m_position‚ÆRigtbody‚ğ“¯Šú
         UpdatePhysicsWithModel();
        
-
 
         //-------------------------------------
         //ƒAƒ“ƒJ[‚Ìˆ—

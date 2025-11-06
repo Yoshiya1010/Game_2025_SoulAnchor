@@ -23,6 +23,7 @@
 #include"FPSCamera.h"
 #include"FPSPlayer.h"
 #include"SkyBox.h"
+#include "DebugImguiWindow.h"
 
 ImGuiManager Game::m_ImGuiManager;
 
@@ -92,6 +93,8 @@ void Game::DrawImgui()
 	// ImGuiフレーム開始
 	m_ImGuiManager.BeginFrame();
 	DrawImguiWindow();
+
+	DebugImguiWindow::Draw();
 	// ImGui描画（3Dシーンの上にオーバーレイ）
 	m_ImGuiManager.EndFrame();
 

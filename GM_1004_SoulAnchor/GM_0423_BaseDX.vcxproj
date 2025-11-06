@@ -145,6 +145,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="BulletDebugDrawer.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="DebugImguiWindow.cpp" />
     <ClCompile Include="DrawImgui.cpp" />
     <ClCompile Include="EditorObjectCreator.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="BulletDebugDrawer.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="DebugImguiWindow.h" />
     <ClInclude Include="debugPrintf.h" />
     <ClInclude Include="DrawImgui.h" />
     <ClInclude Include="EditorObjectCreator.h" />

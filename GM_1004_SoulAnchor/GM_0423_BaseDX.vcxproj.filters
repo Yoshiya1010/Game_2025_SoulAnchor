@@ -46,6 +46,9 @@
     <Filter Include="ヘッダー ファイル\プレイヤー">
       <UniqueIdentifier>{d153c012-19e7-4bb1-b086-3ae4f3d336de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\エディター周り">
+      <UniqueIdentifier>{6ab0cd87-4c5a-44a3-8046-0feeaf6b7546}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -189,6 +192,9 @@
     <ClCompile Include="PhysicsObject.cpp">
       <Filter>ソース ファイル\BulletObject</Filter>
     </ClCompile>
+    <ClCompile Include="DebugImguiWindow.cpp">
+      <Filter>ソース ファイル\エディター周り</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -296,12 +302,6 @@
     <ClInclude Include="PhysicsManager.h">
       <Filter>ヘッダー ファイル\Bullet</Filter>
     </ClInclude>
-    <ClInclude Include="EditorObjectCreator.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawImgui.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -340,6 +340,15 @@
     </ClInclude>
     <ClInclude Include="VoxelFragment.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawImgui.h">
+      <Filter>ヘッダー ファイル\エディター周り</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorObjectCreator.h">
+      <Filter>ヘッダー ファイル\エディター周り</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugImguiWindow.h">
+      <Filter>ヘッダー ファイル\エディター周り</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
