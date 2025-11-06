@@ -11,6 +11,9 @@ void DebugImguiWindow::Add(const std::string& label, std::function<void()> drawF
 
 void DebugImguiWindow::Draw()
 {
+    //何もチェック事項がなければはじく
+    if (entries.size() < 1) { return; };
+
     ImGui::Begin("Debug Inspector");
 
     for (auto& e : entries)//構造体分呼ばれる
