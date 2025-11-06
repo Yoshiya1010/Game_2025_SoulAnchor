@@ -1,12 +1,11 @@
 #include"DebugImguiWindow.h"
-
 #include "imgui.h"
 
 std::vector<DebugImguiWindow::Entry> DebugImguiWindow::entries;
 
-void DebugImguiWindow::Add(const std::string& label, std::function<void()> drawFunc)
+void DebugImguiWindow::Add(const std::string& label, std::function<void()> drawFunc, bool deleteFlag = true)
 {
-    entries.push_back({ label, drawFunc });//構造体をAddして配列に追加する
+    entries.push_back({ label, drawFunc ,deleteFlag});//構造体をAddして配列に追加する
 }
 
 void DebugImguiWindow::Draw()
@@ -25,5 +24,10 @@ void DebugImguiWindow::Draw()
 
     ImGui::End();
 
-    entries.clear();
+    
+    entries.erase(
+        std::remove_if(entries.begin(), entries.end(),
+            [](const Entry& e) { return e.deleteFlag == true; }),
+        entries.end()
+    );
 }
