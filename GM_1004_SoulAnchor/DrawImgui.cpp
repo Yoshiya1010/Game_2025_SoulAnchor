@@ -296,10 +296,14 @@ void ShowPropertiesWindow(void)
 		updated = true;
 	}
 
-	if (ImGui::DragFloat3("Rotation", (float*)&rot, 1.0f))
+	if (ImGui::DragFloat3("Rotation", (float*)&rot, 0.1f))
 	{
 		selectedObject->SetRotation(rot);
-		updated = true;
+		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+		{
+			physics->m_RotationSyncCountdown = 40;
+			physics->SyncToPhysics();
+		}
 	}
 
 	if (ImGui::DragFloat3("Scale", (float*)&scale, 0.1f,0.0f,100.f))

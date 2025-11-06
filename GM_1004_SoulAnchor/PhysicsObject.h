@@ -30,6 +30,8 @@ protected:
     float DEG2RAD = 3.14159265358979323846f / 180.0f;
 public:
 
+    int m_RotationSyncCountdown = 0; // UI 編集後の優先同期フレーム数
+
     // Rigtbody　のゲッター
     btRigidBody* GetRigidBody() const { return m_RigidBody.get(); }
 
@@ -247,6 +249,18 @@ public:
         m_Position.y = trans.getOrigin().getY();
         m_Position.z = trans.getOrigin().getZ();
 
+
+        if (m_RotationSyncCountdown > 0)
+        {
+            m_RotationSyncCountdown--; // UI優先中
+        }
+        else
+        {
+            btQuaternion rot = trans.getRotation();
+            btScalar yaw, pitch, roll;
+            rot.getEulerZYX(yaw, pitch, roll);
+            m_Rotation = Vector3((float)pitch, (float)yaw, (float)roll);
+        }
 
         btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
 
