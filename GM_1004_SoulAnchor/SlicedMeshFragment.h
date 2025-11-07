@@ -3,8 +3,10 @@
 #include "main.h"
 #include "renderer.h"
 #include "PhysicsObject.h"
+#include "FBXMeshSlicer.h"
 
-class VoxelFragment : public PhysicsObject {
+// 分割されたメッシュの破片
+class SlicedMeshFragment : public PhysicsObject {
 private:
     ID3D11VertexShader* m_VertexShader = nullptr;
     ID3D11PixelShader* m_PixelShader = nullptr;
@@ -13,8 +15,8 @@ private:
     ID3D11Buffer* m_VertexBuffer = nullptr;
     ID3D11Buffer* m_IndexBuffer = nullptr;
 
-    XMFLOAT4 m_Color = { 0.8f, 0.6f, 0.4f, 1.0f };  // 茶色っぽい色
-    float m_Lifetime = 1500.0f;
+    unsigned int m_IndexCount = 0;
+    float m_Lifetime = 5.0f;
     float m_Timer = 0.0f;
 
 public:
@@ -24,8 +26,8 @@ public:
     void Update() override;
     void Draw() override;
 
-    void SetColor(XMFLOAT4 color) { m_Color = color; }
+    // 分割されたメッシュデータを設定
+    void SetMeshData(const SlicedMesh& meshData);
 
-private:
-    void CreateCubeMesh();
+    void SetLifetime(float lifetime) { m_Lifetime = lifetime; }
 };

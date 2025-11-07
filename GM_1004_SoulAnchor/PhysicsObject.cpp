@@ -1,162 +1,261 @@
-﻿
-#include"PhysicsObject.h"
-#include"gameObject.h"
-#include"VoxelFragment.h"
-#include"random"
+﻿// PhysicsObject.cpp に追加
+
+#include "FBXMeshSlicer.h"
+#include "SlicedMeshFragment.h"
+#include "ModelFBX.h"
 #include"scene.h"
-#include "manager.h"
+#include"manager.h"
+#include <random>
 
-void PhysicsObject::Destroy(Vector3 impactPoint, Vector3 impactForce)
+// メッシュを実際に分割して破壊
+void PhysicsObject::DestroyWithMeshSlicing(Vector3 impactPoint, Vector3 impactForce)
 {
-    // ========== ステップ1: 準備 ==========
+    printf("[%s] Mesh Slicing Destroy at impact: (%.2f, %.2f, %.2f)\n",
+        GetName().c_str(), impactPoint.x, impactPoint.y, impactPoint.z);
 
-    // 分割数を取得（例: 4x4x4 = 64個）
-    int gridX = m_VoxelGridX;  // X方向に4分割
-    int gridY = m_VoxelGridY;  // Y方向に4分割
-    int gridZ = m_VoxelGridZ;  // Z方向に4分割
+    // FBXのaiSceneを取得する必要がある
+    // ※ これにはStaticFBXModelにaiSceneへのアクセス方法を追加する必要がある
+    // 今回は簡易的に、外部からaiSceneを渡す形にする
 
-    // 各破片のサイズを計算
-    // 例: ブロックが (10, 10, 10) なら、破片は (2.5, 2.5, 2.5)
-    Vector3 fragmentSize = Vector3(m_Scale.x / m_VoxelGridX, m_Scale.x / m_VoxelGridX, m_Scale.x / m_VoxelGridX);
+    // ここでは仮の実装として、m_ModelPath から再読み込み
+    const aiScene* scene = aiImportFile(
+        m_ModelPath.c_str(),
+        aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded
+    );
 
+    if (!scene) {
+        printf("[%s] Failed to load FBX for slicing: %s\n",
+            GetName().c_str(), m_ModelPath.c_str());
+        return;
+    }
 
-    // ========== ステップ2: ランダム生成器の準備 ==========
+    // メッシュを分割
+    std::vector<SlicedMesh> slicedMeshes = FBXMeshSlicer::SliceFBX(
+        scene,
+        m_Scale,
+        m_VoxelGridX,
+        m_VoxelGridY,
+        m_VoxelGridZ
+    );
+
+    printf("[%s] Sliced into %zu mesh fragments\n",
+        GetName().c_str(), slicedMeshes.size());
+
+    // ランダム生成器
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> randomRotation(-15.0f, 15.0f);
+
+    // 衝撃方向を正規化
+    Vector3 impactDir = impactForce;
+    if (impactDir.Length() > 0.001f) {
+        impactDir.Normalize();
+    }
+    else {
+        impactDir = Vector3(0, 1, 0);
+    }
+
+    // 各分割メッシュを破片として生成
+    for (const auto& meshData : slicedMeshes) {
+        auto* fragment = Manager::GetScene()->AddGameObject<SlicedMeshFragment>(OBJECT);
+
+        // メッシュデータを設定（位置とスケールもここで設定される）
+        fragment->SetMeshData(meshData);
+
+        // ワールド空間の位置に変換
+        Vector3 worldPos = m_Position + meshData.center;
+        fragment->SetPosition(worldPos);
+
+        // 力の計算
+        Vector3 toFragment = worldPos - impactPoint;
+        float distance = toFragment.Length();
+
+        if (distance > 0.01f) {
+            toFragment.Normalize();
+        }
+        else {
+            toFragment = Vector3(0, 1, 0);
+        }
+
+        // 衝撃方向とランダム要素を混ぜる
+        Vector3 forceDir = impactDir * 0.4f + toFragment * 0.6f;
+        forceDir.y += 0.4f;
+        forceDir.Normalize();
+
+        // 距離に応じて力を減衰
+        float forceMagnitude = 600.0f / (distance + 1.0f);
+        forceMagnitude = std::max(forceMagnitude, 150.0f);
+        forceMagnitude = std::min(forceMagnitude, 800.0f);
+
+        Vector3 force = forceDir * forceMagnitude;
+
+        // RigidBodyに力を加える（次フレームで適用）
+        if (fragment->GetRigidBody()) {
+            fragment->GetRigidBody()->applyCentralImpulse(
+                btVector3(force.x, force.y, force.z)
+            );
+
+            fragment->GetRigidBody()->applyTorqueImpulse(
+                btVector3(
+                    randomRotation(gen),
+                    randomRotation(gen),
+                    randomRotation(gen)
+                )
+            );
+
+            fragment->GetRigidBody()->activate(true);
+        }
+    }
+
+    // シーンを解放
+    aiReleaseImport(scene);
+
+    // 元のオブジェクトを削除
+    SetDestroy();
+
+    printf("[%s] Mesh slicing complete!\n", GetName().c_str());
+}
+
+void PhysicsObject::SetDestructible(bool enable, float threshold) {
+    m_IsDestructible = enable;
+    m_DestructionThreshold = threshold;
+}
+
+void PhysicsObject::SetVoxelGrid(int x, int y, int z) {
+    m_VoxelGridX = x;
+    m_VoxelGridY = y;
+    m_VoxelGridZ = z;
+}
+
+void PhysicsObject::SetFBXDestructionModel(const std::string& path, float modelScale) {
+    m_ModelPath = path;
+    m_ModelScale = modelScale;
+}
+
+bool PhysicsObject::IsDestructible() const {
+    return m_IsDestructible;
+}
+// ========== PhysicsObject.cpp の最後に追加 ==========
+
+#include "FBXFragment.h"
+#include <random>
+#include "manager.h"
+#include "scene.h"
+
+// 衝突チェック
+void PhysicsObject::CheckDestruction(GameObject* other, const Vector3& hitPoint)
+{
+    if (!m_IsDestructible) return;
+
+    PhysicsObject* otherPhysics = dynamic_cast<PhysicsObject*>(other);
+    if (!otherPhysics) return;
+
+    Vector3 velocity = otherPhysics->GetVelocity();
+    float speed = velocity.Length();
+
+    if (speed > m_DestructionThreshold) {
+        printf("[%s] Destroyed by impact! Speed: %.2f\n", GetName().c_str(), speed);
+        DestroyWithFBX(hitPoint, velocity);
+    }
+}
+
+// FBX破壊
+void PhysicsObject::DestroyWithFBX(Vector3 impactPoint, Vector3 impactForce)
+{
+    printf("[%s] FBX Destroy at impact: (%.2f, %.2f, %.2f)\n",
+        GetName().c_str(), impactPoint.x, impactPoint.y, impactPoint.z);
+
+    int gridX = m_VoxelGridX;
+    int gridY = m_VoxelGridY;
+    int gridZ = m_VoxelGridZ;
+
+    Vector3 fragmentSize = Vector3(
+        m_Scale.x / (float)gridX,
+        m_Scale.y / (float)gridY,
+        m_Scale.z / (float)gridZ
+    );
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> randomRotation(-10.0f, 10.0f);  // 回転
-    std::uniform_real_distribution<float> randomColorVariation(0.8f, 1.2f);  // 色の変化
+    std::uniform_real_distribution<float> randomRotation(-15.0f, 15.0f);
+    std::uniform_real_distribution<float> randomScale(0.85f, 1.15f);
 
-
-    // ========== ステップ3: 衝撃方向を正規化 ==========
-
-    Vector3 impactDir = impactForce;  // アンカーの速度ベクトル
-    if (impactDir.Length() > 0) {
-        impactDir.Normalize();  // 長さを1にする
+    Vector3 impactDir = impactForce;
+    if (impactDir.Length() > 0.001f) {
+        impactDir.Normalize();
     }
     else {
-        impactDir = Vector3(0, 1, 0);  // 速度が0なら上方向
+        impactDir = Vector3(0, 1, 0);
     }
 
+    Vector3 objectCenter = m_Position;
 
-    // ========== ステップ4: グリッド分割してループ ==========
-
-    for (int x = 0; x < gridX; x++) {        // X方向に4回
-        for (int y = 0; y < gridY; y++) {    // Y方向に4回
-            for (int z = 0; z < gridZ; z++) {  // Z方向に4回
-
-                // --- 4.1: 破片の位置を計算 ---
-
-                // ブロックの中心を(0,0,0)として、各グリッドの位置を計算
+    int fragmentCount = 0;
+    for (int x = 0; x < gridX; x++) {
+        for (int y = 0; y < gridY; y++) {
+            for (int z = 0; z < gridZ; z++) {
                 Vector3 localOffset = Vector3(
                     (x + 0.5f) * fragmentSize.x - m_Scale.x * 0.5f,
                     (y + 0.5f) * fragmentSize.y - m_Scale.y * 0.5f,
                     (z + 0.5f) * fragmentSize.z - m_Scale.z * 0.5f
                 );
 
-                // ワールド座標に変換
-                Vector3 worldPos = m_Position + localOffset;
+                Vector3 worldPos = objectCenter + localOffset;
 
-
-                // --- 4.2: 破片オブジェクトを生成 ---
-
-                auto* fragment = Manager::GetScene()->AddGameObject<VoxelFragment>(OBJECT);
+                auto* fragment = Manager::GetScene()->AddGameObject<FBXFragment>(OBJECT);
+                fragment->SetModelPath(m_ModelPath);
+                fragment->SetModelScale(m_ModelScale);
                 fragment->SetPosition(worldPos);
-                fragment->SetScale(fragmentSize * 0.9f);  // 0.9倍（少し隙間を作る）
 
+                float scaleVar = randomScale(gen);
+                Vector3 fragScale = fragmentSize * 0.9f * scaleVar;
+                fragment->SetScale(fragScale);
 
-                // --- 4.3: ランダムな色をつける ---
+                fragment->SetLifetime(3.0f + randomScale(gen) * 2.0f);
 
-                float variation = randomColorVariation(gen);  // 0.8〜1.2のランダム値
-                XMFLOAT4 color = XMFLOAT4(
-                    m_FragmentColor.x * variation,  // 赤成分
-                    m_FragmentColor.y * variation,  // 緑成分
-                    m_FragmentColor.z * variation,  // 青成分
-                    m_FragmentColor.w               // アルファ
-                );
-                fragment->SetColor(color);
-
-
-                // --- 4.4: 力の方向を計算 ---
-
-                // 衝撃点から破片への方向ベクトル
-                Vector3 fragmentToImpact = worldPos - impactPoint;
-                float distance = fragmentToImpact.Length();
+                Vector3 toFragment = worldPos - impactPoint;
+                float distance = toFragment.Length();
 
                 if (distance > 0.01f) {
-                    fragmentToImpact.Normalize();
+                    toFragment.Normalize();
                 }
                 else {
-                    fragmentToImpact = Vector3(0, 1, 0);  // 真上
+                    toFragment = Vector3(0, 1, 0);
                 }
 
-                // 衝撃方向50% + 放射方向50%
-                Vector3 forceDir = impactDir * 0.5f + fragmentToImpact * 0.5f;
-                forceDir.y += 0.3f;  // 少し上向きに（重力で落ちるので）
+                Vector3 forceDir = impactDir * 0.4f + toFragment * 0.6f;
+                forceDir.y += 0.4f;
                 forceDir.Normalize();
 
-
-                // --- 4.5: 力の大きさを計算 ---
-
-                // 衝撃点に近いほど強く飛ぶ
-                float forceMagnitude = 500.0f / (distance + 1.0f);
-                forceMagnitude = std::max(forceMagnitude, 100.0f);  // 最低100
+                float forceMagnitude = 600.0f / (distance + 1.0f);
+                forceMagnitude = std::max(forceMagnitude, 150.0f);
+                forceMagnitude = std::min(forceMagnitude, 800.0f);
 
                 Vector3 force = forceDir * forceMagnitude;
 
-
-                // --- 4.6: 物理演算で力を加える ---
-
                 if (fragment->GetRigidBody()) {
-                    // 直線運動の力
                     fragment->GetRigidBody()->applyCentralImpulse(
                         btVector3(force.x, force.y, force.z)
                     );
 
-                    // ランダムな回転運動
                     fragment->GetRigidBody()->applyTorqueImpulse(
                         btVector3(
-                            randomRotation(gen),  // X軸回転
-                            randomRotation(gen),  // Y軸回転
-                            randomRotation(gen)   // Z軸回転
+                            randomRotation(gen),
+                            randomRotation(gen),
+                            randomRotation(gen)
                         )
                     );
 
                     fragment->GetRigidBody()->activate(true);
                 }
+
+                fragmentCount++;
             }
         }
     }
 
-    // ========== ステップ5: 元のオブジェクトを削除 ==========
     SetDestroy();
-}
-void PhysicsObject::CheckDestruction(GameObject* other, const Vector3& hitPoint)
-{
-    // ========== ステップ1: 破壊可能かチェック ==========
-    if (!m_IsDestructible) return;  // 破壊不可なら何もしない
 
-
-    // ========== ステップ2: 衝突相手の速度を取得 ==========
-
-    // 衝突相手をPhysicsObjectにキャスト
-    PhysicsObject* otherPhysics = dynamic_cast<PhysicsObject*>(other);
-    if (!otherPhysics) return;  // PhysicsObjectじゃなければ終了
-
-    // 相手の速度ベクトルを取得
-    Vector3 velocity = otherPhysics->GetVelocity();
-
-    // 速度の大きさ（スピード）を計算
-    float speed = velocity.Length();
-
-
-    // ========== ステップ3: 速度が閾値を超えたら破壊 ==========
-
-    if (speed > m_DestructionThreshold) {  // 例: 20.0f より速い？
-        printf("[%s] Destroyed by impact! Speed: %.2f\n",
-            GetName().c_str(), speed);
-
-        // 破壊実行！
-        Destroy(hitPoint, velocity);
-    }
+    printf("[%s] Successfully destroyed into %d FBX fragments\n",
+        GetName().c_str(), fragmentCount);
 }

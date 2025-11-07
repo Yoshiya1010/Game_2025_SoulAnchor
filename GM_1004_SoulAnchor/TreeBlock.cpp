@@ -31,8 +31,8 @@ void TreeBlock::Init()
 
 
     SetDestructible(true, 20.0f);  // 速度20以上で破壊
-    SetVoxelGrid(3, 8, 3);          // 3x8x3に分割（木は縦長）
-    SetFragmentColor(XMFLOAT4(0.4f, 0.3f, 0.2f, 1.0f));  // 茶色
+    SetVoxelGrid(2, 6, 2);  // 2x6x2 = 24個の破片（縦長）
+    SetFBXDestructionModel("asset\\model\\tree_pineTallA.fbx", 1.0f);  // 同じFBXを使用、モデルスケール1.0
 
 }
 void TreeBlock::Start()
@@ -100,8 +100,10 @@ void TreeBlock::Draw()
 void TreeBlock::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)
 {
     if (other->GetTag() == GameObjectTag::Anchor) {
-        // アンカーとの衝突時に破壊チェック
-        CheckDestruction(other, hitPoint);
-        // ↑ この1行だけでOK！
+        PhysicsObject* anchor = dynamic_cast<PhysicsObject*>(other);
+        if (anchor && anchor->GetVelocity().Length() > 20.0f) {
+            // ★★★ 本物のメッシュ分割破壊 ★★★
+            DestroyWithMeshSlicing(hitPoint, anchor->GetVelocity());
+        }
     }
 }

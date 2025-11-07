@@ -186,7 +186,7 @@
     <ClCompile Include="SkyBox.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
-    <ClCompile Include="VoxelFragment.cpp">
+    <ClCompile Include="FBXFragment.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsObject.cpp">
@@ -194,6 +194,12 @@
     </ClCompile>
     <ClCompile Include="DebugImguiWindow.cpp">
       <Filter>ソース ファイル\エディター周り</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXMeshSlicer.cpp">
+      <Filter>ソース ファイル\BulletObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SlicedMeshFragment.cpp">
+      <Filter>ソース ファイル\BulletObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -338,7 +344,7 @@
     <ClInclude Include="SkyBox.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelFragment.h">
+    <ClInclude Include="FBXFragment.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="DrawImgui.h">
@@ -349,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="DebugImguiWindow.h">
       <Filter>ヘッダー ファイル\エディター周り</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXMeshSlicer.h">
+      <Filter>ヘッダー ファイル\BulletObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SlicedMeshFragment.h">
+      <Filter>ヘッダー ファイル\BulletObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,7 @@
 #include"TreeBlock.h"
 #include"FPSCamera.h"
 #include"FPSPlayer.h"
+#include"DrawImgui.h"
 
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
@@ -57,6 +58,7 @@ void Scene::Update()
 			GameObject* obj = *it;
 			if (obj->Destroy())
 			{
+				CheckDeleteSelectObject(obj);
 				obj->Uninit();
 				delete obj;
 				it = list.erase(it);

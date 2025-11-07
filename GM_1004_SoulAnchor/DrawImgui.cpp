@@ -32,6 +32,14 @@ namespace fs = std::experimental::filesystem;
 // グローバルまたは静的変数として保持
 static GameObject* selectedObject = nullptr;
 
+void CheckDeleteSelectObject(GameObject* object)
+{
+	if (selectedObject == object)
+	{
+		selectedObject = nullptr;
+	}
+}
+
 void DrawImguiWindow()
 {
 
