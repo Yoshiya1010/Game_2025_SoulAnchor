@@ -107,4 +107,6 @@ public:
 	static void CreatePixelShader(ID3D11PixelShader** PixelShader, const char* FileName);
 
 	static void SetCullNone(bool enable);
+
+
 };
