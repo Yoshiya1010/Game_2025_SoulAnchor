@@ -9,7 +9,7 @@
 
 void Title::Init()
 {
-	AddGameObject<Polygon2D>(UI)->Init(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, "asset\\texture\\Title_BG.png");
+	AddGameObject<Polygon2D>(UI)->Init(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, "asset\\texture\\TitleScene\\title_background.jpg");
 }
 
 void Title::Update()

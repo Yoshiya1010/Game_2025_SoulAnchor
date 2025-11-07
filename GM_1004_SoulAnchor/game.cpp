@@ -34,8 +34,6 @@ void Game::Init()
 	// 物理世界の初期化
 	PhysicsManager::Init();
 
-	////デバック用のワイヤーフレーム
-	//PhysicsDebugRenderer::Init();
 
 	//衝突管理マネージャーの初期化
 	PhysicsCollisionManager::Init();

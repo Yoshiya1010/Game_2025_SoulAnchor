@@ -10,10 +10,6 @@
 
 using json = nlohmann::json;
 
-
-
-
-
 class Scene
 {
 private:
