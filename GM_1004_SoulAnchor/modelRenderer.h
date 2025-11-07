@@ -3,6 +3,7 @@
 #include "component.h"
 #include <string>
 #include <unordered_map>
+#include "renderer.h"
 
 // マテリアル構造体
 struct MODEL_MATERIAL

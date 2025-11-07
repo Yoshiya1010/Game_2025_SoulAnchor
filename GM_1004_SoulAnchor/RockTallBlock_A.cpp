@@ -5,7 +5,6 @@
 #include"explosion.h"
 #include "PhysicsManager.h"
 #include "animationModel.h"
-
 #include"TriangleMeshBuilder.h"
 
 
@@ -43,20 +42,37 @@ void RockTallBlock_A::Start()
         // 衝突レイヤー設定
         SetupCollisionLayer();
 
-        btCollisionShape* shape = CreateTriangleMeshShape(m_ModelRenderer->GetModel());
+        btCompoundShape* shape = CreateConvexDecompositionShapeFast(
+            m_ModelRenderer->GetModel(),
+            "rock_tallA"  // ← キャッシュキー（モデル名）
+        );
 
+        if (!shape) {
+            printf("[RockTallBlock_A] Failed to create collision shape!\n");
+            return;
+        }
+
+        // RigidBody作成
         btTransform t;
         t.setIdentity();
         t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
-        btScalar mass = 0.0f; // 静的オブジェクト
+        btScalar mass = 0.0f;  // 静的オブジェクト
         btVector3 inertia(0, 0, 0);
 
-        btDefaultMotionState* motion = new btDefaultMotionState(t);
-        btRigidBody::btRigidBodyConstructionInfo info(mass, motion, shape, inertia);
-        btRigidBody* body = new btRigidBody(info);
+        m_MotionState = std::make_unique<btDefaultMotionState>(t);
 
-        PhysicsManager::GetWorld()->addRigidBody(body);
+        btRigidBody::btRigidBodyConstructionInfo info(mass, m_MotionState.get(), shape, inertia);
+        m_RigidBody = std::make_unique<btRigidBody>(info);
+        m_CollisionShape.reset(shape);
+
+        m_RigidBody->setUserPointer(this);
+        PhysicsManager::GetWorld()->addRigidBody(
+            m_RigidBody.get(),
+            m_CollisionGroup,
+            m_CollisionMask
+        );
+
 
     }
 

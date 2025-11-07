@@ -145,6 +145,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="BulletDebugDrawer.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="ConvexDecomposition.cpp" />
     <ClCompile Include="DebugImguiWindow.cpp" />
     <ClCompile Include="DrawImgui.cpp" />
     <ClCompile Include="EditorObjectCreator.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="BulletDebugDrawer.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="Convexdecomposition.h" />
     <ClInclude Include="DebugImguiWindow.h" />
     <ClInclude Include="debugPrintf.h" />
     <ClInclude Include="DrawImgui.h" />
@@ -241,6 +243,7 @@
     <ClInclude Include="TreeBlock.h" />
     <ClInclude Include="TriangleMeshBuilder.h" />
     <ClInclude Include="vector3.h" />
+    <ClInclude Include="VHACD.h" />
     <ClInclude Include="VoxelFragment.h" />
     <ClInclude Include="wave.h" />
   </ItemGroup>
