@@ -44,6 +44,9 @@ struct MODEL
 
 	SUBSET*			SubsetArray;
 	unsigned int	SubsetNum;
+
+	std::vector<XMFLOAT3> CollisionVertices;
+	std::vector<unsigned int> CollisionIndices;
 };
 
 
@@ -72,5 +75,7 @@ public:
 
 	void Load( const char *FileName );
 	void Draw() override;
+
+	MODEL* GetModel() { return m_Model; }
 
 };

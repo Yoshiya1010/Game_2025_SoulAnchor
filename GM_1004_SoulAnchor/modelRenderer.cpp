@@ -164,6 +164,19 @@ void ModelRenderer::LoadModel( const char *FileName, MODEL *Model)
 		}
 	}
 
+	// Õ“Ë”»’è—p‚É¶ƒƒbƒVƒ…‚ð•Û‘¶‚·‚é
+	Model->CollisionVertices.reserve(modelObj.VertexNum);
+	for (unsigned int i = 0; i < modelObj.VertexNum; i++)
+	{
+		Model->CollisionVertices.push_back(modelObj.VertexArray[i].Position);
+	}
+
+	Model->CollisionIndices.reserve(modelObj.IndexNum);
+	for (unsigned int i = 0; i < modelObj.IndexNum; i++)
+	{
+		Model->CollisionIndices.push_back(modelObj.IndexArray[i]);
+	}
+
 	delete[] modelObj.VertexArray;
 	delete[] modelObj.IndexArray;
 	delete[] modelObj.SubsetArray;

@@ -239,6 +239,7 @@
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="TreeBlock.h" />
+    <ClInclude Include="TriangleMeshBuilder.h" />
     <ClInclude Include="vector3.h" />
     <ClInclude Include="VoxelFragment.h" />
     <ClInclude Include="wave.h" />

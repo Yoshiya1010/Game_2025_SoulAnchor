@@ -5,7 +5,8 @@
 #include"explosion.h"
 #include "PhysicsManager.h"
 #include "animationModel.h"
-#include"ModelFBX.h"
+
+#include"TriangleMeshBuilder.h"
 
 
 void RockTallBlock_A::Init()
@@ -42,8 +43,20 @@ void RockTallBlock_A::Start()
         // 衝突レイヤー設定
         SetupCollisionLayer();
 
-        // 物理コライダー生成
-        CreateBoxCollider(m_Scale, 0.0f);
+        btCollisionShape* shape = CreateTriangleMeshShape(m_ModelRenderer->GetModel());
+
+        btTransform t;
+        t.setIdentity();
+        t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+
+        btScalar mass = 0.0f; // 静的オブジェクト
+        btVector3 inertia(0, 0, 0);
+
+        btDefaultMotionState* motion = new btDefaultMotionState(t);
+        btRigidBody::btRigidBodyConstructionInfo info(mass, motion, shape, inertia);
+        btRigidBody* body = new btRigidBody(info);
+
+        PhysicsManager::GetWorld()->addRigidBody(body);
 
     }
 
