@@ -178,6 +178,7 @@
     <ClCompile Include="Polygon.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
+    <ClCompile Include="RockTallBlock_A.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="SkyBox.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="Polygon.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
+    <ClInclude Include="RockTallBlock_A.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="SkyBox.h" />

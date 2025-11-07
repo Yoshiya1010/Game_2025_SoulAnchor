@@ -145,6 +145,11 @@ void CreateObjectWindow()
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
 		 EditorObjectCreator::CreateTree(pos, Vector3(1.0f,1.0f,1.0f));
 	}
+	if (ImGui::Button("Add RockTall_A")) {
+		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
+		EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
+	}
+
 
 
 	ImGui::End();

@@ -11,6 +11,7 @@
 #include"PhysicsObject.h"
 #include"camera.h"
 #include"TreeBlock.h"
+#include"RockTallBlock_A.h"
 
 
 int EditorObjectCreator::s_CreatedObjectCount = 0;
@@ -53,6 +54,25 @@ GameObject* EditorObjectCreator::CreateTree(Vector3 position, Vector3 size) {
     return block;
 }
 
+
+GameObject* EditorObjectCreator::CreateRockTall_A(Vector3 position, Vector3 size) {
+
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* block = scene->AddGameObject<RockTallBlock_A>(OBJECT);
+    block->SetMass(1.0f);
+    block->SetPosition(position);
+    block->SetScale(size);
+
+
+    // シーンからユニークな名前をもらう
+    block->SetName(scene->GenerateUniqueName("RockTallBlock_A"));
+
+
+    return block;
+}
 
 
 Vector3 EditorObjectCreator::GetSafeSpawnPosition() {
