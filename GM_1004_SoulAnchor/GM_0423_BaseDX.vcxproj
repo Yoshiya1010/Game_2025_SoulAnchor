@@ -184,6 +184,7 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="skyBox.cpp" />
+    <ClCompile Include="sprite2D.cpp" />
     <ClCompile Include="spriteAnimator2Dcpp.cpp" />
     <ClCompile Include="textureManager.cpp" />
     <ClCompile Include="title.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="skyBox.h" />
+    <ClInclude Include="sprite2D.h" />
     <ClInclude Include="spriteAnimator2D.h" />
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="title.h" />

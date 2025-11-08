@@ -79,6 +79,9 @@
     <Filter Include="ヘッダー ファイル\基底クラス">
       <UniqueIdentifier>{ae5a469f-e110-4c81-9e27-a94939cfd89f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\アンカー">
+      <UniqueIdentifier>{0f4f82e8-a35d-4bcc-b7a8-d1551bbcee18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,9 +186,6 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
-    <ClCompile Include="Anchor.cpp">
-      <Filter>ソース ファイル\プレイヤー</Filter>
-    </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
@@ -239,6 +239,12 @@
     </ClCompile>
     <ClCompile Include="xInput.cpp">
       <Filter>ソース ファイル\input</Filter>
+    </ClCompile>
+    <ClCompile Include="anchor.cpp">
+      <Filter>ソース ファイル\アンカー</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite2D.cpp">
+      <Filter>ソース ファイル\2D描画</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +418,9 @@
     </ClInclude>
     <ClInclude Include="xInput.h">
       <Filter>ヘッダー ファイル\input</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite2D.h">
+      <Filter>ヘッダー ファイル\2D描画</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
