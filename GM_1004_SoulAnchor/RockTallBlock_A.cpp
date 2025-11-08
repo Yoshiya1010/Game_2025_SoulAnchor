@@ -53,6 +53,11 @@ void RockTallBlock_A::Start()
         // RigidBodyを作成（質量0で静的オブジェクト）
         CreateRigidBody(0.0f);
 
+
+        // 破壊設定（オプション）
+        SetDestructionThreshold(15.0f);
+        SetGroupSize(5);
+        SetExplosionForce(15.0f);
     }
 
 
@@ -71,7 +76,7 @@ void RockTallBlock_A::Uninit()
     m_MotionState.reset();
     m_CollisionShape.reset();
 
-    delete m_ModelRenderer;
+   
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();
     if (m_PixelShader)      m_PixelShader->Release();
@@ -85,7 +90,7 @@ void RockTallBlock_A::Update()
 
         if (Input::GetKeyTrigger(KK_G))
         {
-            DestroyRock(Vector3());
+            DestroyObject(Vector3());
         }
 
     }
@@ -112,69 +117,5 @@ void RockTallBlock_A::Draw()
 }
 
 
-void RockTallBlock_A::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)
-{
-    // 既に破壊されている、または破壊不可能な場合は何もしない
-    if (m_IsDestroyed || !m_Destructible) return;
 
 
-
-    if (other->GetTag() == GameObjectTag::Anchor) {
-        // アンカーとの衝突時に破壊チェック
-        DestroyRock(hitPoint);
-      
-    }
-}
-
-void RockTallBlock_A::DestroyRock(const Vector3& impactPoint)
-{
-    // 既に破壊済みならスキップ
-    if (m_IsDestroyed) return;
-    m_IsDestroyed = true;
-
-    // シーンを取得（実際のプロジェクトの取得方法に合わせて修正してください）
-    Scene* scene = Manager::GetScene();
-
-    if (!scene || !m_ModelRenderer) {
-        SetDestroy();
-        return;
-    }
-
-    // モデルを取得
-    MODEL* model = m_ModelRenderer->GetModel();
-
-    if (!model) {
-        SetDestroy();
-        return;
-    }
-
-    // ワールド行列を計算
-    XMMATRIX worldMatrix =
-        XMMatrixScaling(m_Scale.x * m_modelScale, m_Scale.y * m_modelScale, m_Scale.z * m_modelScale) *
-        XMMatrixRotationRollPitchYaw(
-            m_Rotation.x * DEG2RAD,
-            m_Rotation.y * DEG2RAD,
-            m_Rotation.z * DEG2RAD
-        ) *
-        XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
-
-    // 爆発の中心は衝突点
-    Vector3 explosionCenter = impactPoint;
-
-    // 爆発の力
-    float explosionForce = 15.0f;
-
-    // グループ化して破壊（パフォーマンス考慮）
-    // 岩は複雑なメッシュなのでグループサイズを大きめに設定
-    MeshDestroyer::DestroyModelGrouped(
-        model,
-        worldMatrix,
-        explosionCenter,
-        explosionForce,
-        scene,
-        5  // 5個の三角形を1グループに（調整可能）
-    );
-
-    // 自分自身を削除
-    SetDestroy();
-}

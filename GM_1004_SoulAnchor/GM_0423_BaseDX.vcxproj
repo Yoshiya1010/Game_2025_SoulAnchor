@@ -153,6 +153,7 @@
     <ClCompile Include="field.cpp" />
     <ClCompile Include="FPSCamera.cpp" />
     <ClCompile Include="FPSPlayer.cpp" />
+    <ClCompile Include="fragmentObject.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameObject.cpp" />
     <ClCompile Include="GroundBlock.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="field.h" />
     <ClInclude Include="FPSCamera.h" />
     <ClInclude Include="FPSPlayer.h" />
+    <ClInclude Include="fragmentObject.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gameObject.h" />
     <ClInclude Include="GroundBlock.h" />

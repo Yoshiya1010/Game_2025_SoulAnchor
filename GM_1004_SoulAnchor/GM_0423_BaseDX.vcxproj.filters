@@ -73,6 +73,12 @@
     <Filter Include="ソース ファイル\Fragment">
       <UniqueIdentifier>{fc458978-1844-457b-80b2-9cb2f3f9df8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\基底クラス">
+      <UniqueIdentifier>{416e61fb-27b2-4538-ad9a-cd12d0602544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\基底クラス">
+      <UniqueIdentifier>{ae5a469f-e110-4c81-9e27-a94939cfd89f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -88,9 +94,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="vector3.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="gameObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="enemy.cpp">
@@ -186,12 +189,6 @@
     <ClCompile Include="SkyBox.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
-    <ClCompile Include="VoxelFragment.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsObject.cpp">
-      <Filter>ソース ファイル\BulletObject</Filter>
-    </ClCompile>
     <ClCompile Include="DebugImguiWindow.cpp">
       <Filter>ソース ファイル\エディター周り</Filter>
     </ClCompile>
@@ -231,6 +228,18 @@
     <ClCompile Include="meshDestroyer.cpp">
       <Filter>ソース ファイル\Fragment</Filter>
     </ClCompile>
+    <ClCompile Include="gameObject.cpp">
+      <Filter>ソース ファイル\基底クラス</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelFragment.cpp">
+      <Filter>ソース ファイル\Fragment</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>ソース ファイル\基底クラス</Filter>
+    </ClCompile>
+    <ClCompile Include="fragmentObject.cpp">
+      <Filter>ソース ファイル\基底クラス</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -252,9 +261,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="gameObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="enemy.h">
@@ -347,9 +353,6 @@
     <ClInclude Include="Anchor.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>ヘッダー ファイル\BulletObject</Filter>
-    </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
@@ -400,6 +403,15 @@
     </ClInclude>
     <ClInclude Include="meshDestroyer.h">
       <Filter>ヘッダー ファイル\Fragment</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject.h">
+      <Filter>ヘッダー ファイル\基底クラス</Filter>
+    </ClInclude>
+    <ClInclude Include="gameObject.h">
+      <Filter>ヘッダー ファイル\基底クラス</Filter>
+    </ClInclude>
+    <ClInclude Include="fragmentObject.h">
+      <Filter>ヘッダー ファイル\基底クラス</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
