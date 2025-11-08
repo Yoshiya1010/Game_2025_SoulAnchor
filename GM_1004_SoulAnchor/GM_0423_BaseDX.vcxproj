@@ -193,7 +193,7 @@
     <ClCompile Include="wave.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Anchor.h" />
+    <ClInclude Include="anchor.h" />
     <ClInclude Include="animationModel.h" />
     <ClInclude Include="audio.h" />
     <ClInclude Include="bullet.h" />
@@ -207,8 +207,8 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="field.h" />
-    <ClInclude Include="FPSCamera.h" />
-    <ClInclude Include="FPSPlayer.h" />
+    <ClInclude Include="fpsCamera.h" />
+    <ClInclude Include="fpsPlayer.h" />
     <ClInclude Include="fragmentObject.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gameObject.h" />
@@ -223,7 +223,7 @@
     <ClInclude Include="imgui_manager.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keyboard.h" />
-    <ClInclude Include="Layer.h" />
+    <ClInclude Include="layer.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="meshDestroyer.h" />
@@ -232,7 +232,7 @@
     <ClInclude Include="modelRenderer.h" />
     <ClInclude Include="physicsCollisionManager.h" />
     <ClInclude Include="physicsManager.h" />
-    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="physicsObject.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="polygon.h" />
     <ClInclude Include="renderer.h" />
@@ -240,7 +240,7 @@
     <ClInclude Include="rockTallBlock_A.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
-    <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="skyBox.h" />
     <ClInclude Include="spriteAnimator2D.h" />
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="title.h" />
