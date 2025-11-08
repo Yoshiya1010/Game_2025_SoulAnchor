@@ -5,6 +5,7 @@
 #include"random"
 #include"scene.h"
 #include "manager.h"
+#include "FracturedMesh.h"
 
 void PhysicsObject::Destroy(Vector3 impactPoint, Vector3 impactForce)
 {
@@ -159,4 +160,30 @@ void PhysicsObject::CheckDestruction(GameObject* other, const Vector3& hitPoint)
         // 破壊実行！
         Destroy(hitPoint, velocity);
     }
+}
+
+void PhysicsObject::DestroyWithMeshFracture(Vector3 impactPoint, Vector3 impactForce)
+{
+    if (!m_ModelRenderer) {
+        printf("[PhysicsObject] No model renderer!\n");
+        return;
+    }
+
+    MODEL* model = m_ModelRenderer->GetModel();
+    if (!model) return;
+
+    // メッシュを分割して破片を生成
+    MeshFracture::FractureAndCreateFragments(
+        model,
+        m_Position,
+        m_Scale,
+        impactPoint,
+        impactForce,
+        m_VoxelGridX,
+        m_VoxelGridY,
+        m_VoxelGridZ
+    );
+
+    // 元のオブジェクトを削除
+    SetDestroy();
 }

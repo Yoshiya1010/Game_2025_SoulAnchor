@@ -49,6 +49,12 @@
     <Filter Include="ヘッダー ファイル\エディター周り">
       <UniqueIdentifier>{6ab0cd87-4c5a-44a3-8046-0feeaf6b7546}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\コライダー">
+      <UniqueIdentifier>{427b5765-1306-4ba3-acd9-98ef16e5b6fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\コライダー">
+      <UniqueIdentifier>{5ac424a9-f510-462b-99cd-64fb23a85136}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -194,6 +200,21 @@
     </ClCompile>
     <ClCompile Include="DebugImguiWindow.cpp">
       <Filter>ソース ファイル\エディター周り</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexDecomposition.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="RockTallBlock_A.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="spriteSheetAnimator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshSimplifier.cpp">
+      <Filter>ソース ファイル\コライダー</Filter>
+    </ClCompile>
+    <ClCompile Include="FracturedMeah.cpp">
+      <Filter>ソース ファイル\コライダー</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +370,27 @@
     </ClInclude>
     <ClInclude Include="DebugImguiWindow.h">
       <Filter>ヘッダー ファイル\エディター周り</Filter>
+    </ClInclude>
+    <ClInclude Include="Convexdecomposition.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="RockTallBlock_A.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="spriteSheetAnimator.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangleMeshBuilder.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="VHACD.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshSimplifier.h">
+      <Filter>ヘッダー ファイル\コライダー</Filter>
+    </ClInclude>
+    <ClInclude Include="FracturedMesh.h">
+      <Filter>ヘッダー ファイル\コライダー</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

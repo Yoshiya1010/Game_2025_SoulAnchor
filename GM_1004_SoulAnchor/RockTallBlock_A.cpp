@@ -6,6 +6,7 @@
 #include "PhysicsManager.h"
 #include "animationModel.h"
 #include"TriangleMeshBuilder.h"
+#include "MeshSimplifier.h"
 
 
 void RockTallBlock_A::Init()
@@ -42,26 +43,20 @@ void RockTallBlock_A::Start()
         // 衝突レイヤー設定
         SetupCollisionLayer();
 
-        btCompoundShape* shape = CreateConvexDecompositionShapeFast(
-            m_ModelRenderer->GetModel(),
-            "rock_tallA"  // ← キャッシュキー（モデル名）
+        btBvhTriangleMeshShape* shape = MeshSimplifier::CreateSimplifiedTriangleMesh(
+            m_ModelRenderer->GetModel()->CollisionVertices,
+            20  // 8頂点（Box）
         );
-
-        if (!shape) {
-            printf("[RockTallBlock_A] Failed to create collision shape!\n");
-            return;
-        }
 
         // RigidBody作成
         btTransform t;
         t.setIdentity();
         t.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
 
-        btScalar mass = 0.0f;  // 静的オブジェクト
+        btScalar mass = 0.0f;
         btVector3 inertia(0, 0, 0);
 
         m_MotionState = std::make_unique<btDefaultMotionState>(t);
-
         btRigidBody::btRigidBodyConstructionInfo info(mass, m_MotionState.get(), shape, inertia);
         m_RigidBody = std::make_unique<btRigidBody>(info);
         m_CollisionShape.reset(shape);

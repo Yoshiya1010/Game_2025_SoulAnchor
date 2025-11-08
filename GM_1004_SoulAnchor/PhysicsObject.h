@@ -2,6 +2,7 @@
 #include"gameObject.h"
 #include"PhysicsManager.h"
 #include"main.h"
+#include"modelRenderer.h"
 
 enum CollisionGroup {
     COL_NOTHING = 0,
@@ -558,5 +559,8 @@ public:
 
     void Destroy(Vector3 impactPoint, Vector3 impactForce);
     void CheckDestruction(GameObject* other, const Vector3& hitPoint);
+
+    void DestroyWithMeshFracture(Vector3 impactPoint, Vector3 impactForce);
+    ModelRenderer* m_ModelRenderer = nullptr;  // モデルへの参照
 
 };
