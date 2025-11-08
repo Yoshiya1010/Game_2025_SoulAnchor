@@ -191,6 +191,7 @@
     <ClCompile Include="triangleMeshFragment.cpp" />
     <ClCompile Include="vector3.cpp" />
     <ClCompile Include="wave.cpp" />
+    <ClCompile Include="xInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anchor.h" />
@@ -249,6 +250,7 @@
     <ClInclude Include="triangleMeshFragment.h" />
     <ClInclude Include="vector3.h" />
     <ClInclude Include="wave.h" />
+    <ClInclude Include="xInput.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\common.hlsl">

@@ -231,14 +231,14 @@
     <ClCompile Include="gameObject.cpp">
       <Filter>ソース ファイル\基底クラス</Filter>
     </ClCompile>
-    <ClCompile Include="VoxelFragment.cpp">
-      <Filter>ソース ファイル\Fragment</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsObject.cpp">
       <Filter>ソース ファイル\基底クラス</Filter>
     </ClCompile>
     <ClCompile Include="fragmentObject.cpp">
       <Filter>ソース ファイル\基底クラス</Filter>
+    </ClCompile>
+    <ClCompile Include="xInput.cpp">
+      <Filter>ソース ファイル\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -356,9 +356,6 @@
     <ClInclude Include="SkyBox.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelFragment.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="DrawImgui.h">
       <Filter>ヘッダー ファイル\エディター周り</Filter>
     </ClInclude>
@@ -412,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="fragmentObject.h">
       <Filter>ヘッダー ファイル\基底クラス</Filter>
+    </ClInclude>
+    <ClInclude Include="xInput.h">
+      <Filter>ヘッダー ファイル\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

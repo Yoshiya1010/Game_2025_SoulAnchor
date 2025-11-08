@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "input.h"
+#include"xInput.h"
 
 
 BYTE Input::m_OldKeyState[256];
@@ -22,6 +23,8 @@ void Input::Init()
     memset(m_OldControllerState, 0, sizeof(m_OldControllerState));
     memset(m_ControllerState, 0, sizeof(m_ControllerState));
     memset(m_ControllerConnected, 0, sizeof(m_ControllerConnected));
+
+   
 }
 
 void Input::Uninit()
@@ -46,6 +49,8 @@ void Input::Update()
         DWORD result = XInputGetState(i, &m_ControllerState[i]);
         m_ControllerConnected[i] = (result == ERROR_SUCCESS);
     }
+
+    VibrationController::UpdateVibration();
 }
 
 bool Input::GetKeyPress(BYTE KeyCode)
