@@ -27,7 +27,7 @@ void Polygon2D::Init(float x, float y, float width, float height, const char* Fi
 	vertex[3].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	vertex[3].TexCoord = XMFLOAT2(1.0f, 1.0f);
 
-    // 頂点バッファ作成
+    //頂点バッファ作成
     D3D11_BUFFER_DESC bd{};
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(VERTEX_3D) * 4;
@@ -39,7 +39,7 @@ void Polygon2D::Init(float x, float y, float width, float height, const char* Fi
 
     Renderer::GetDevice()->CreateBuffer(&bd, &sd, &m_VertexBuffer);
 
-    // テクスチャ読み込み
+    //テクスチャロード
 	m_Texture = TextureManager::Load(FileName);
 
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
@@ -63,14 +63,14 @@ void Polygon2D::Update()
 
 void Polygon2D::Draw()
 {
-    // 入力レイアウト設定
+    //入力レイアウト設定
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
 
-    // シェーダー設定
+    //シェーダー設定
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
 
-    // マトリクス設定
+    //マトリクス設定
     Renderer::SetWorldViewProjection2D();
 
     XMMATRIX world, scale, rot, trans;
@@ -81,23 +81,23 @@ void Polygon2D::Draw()
 
     Renderer::SetWorldMatrix(world);
 
-    // マテリアル設定
+    //マテリアル設定
     MATERIAL material{};
     material.Diffuse = { 1.0f,1.0f,1.0f,1.0f };
     material.TextureEnable = true;
     Renderer::SetMaterial(material);
 
-    // 頂点バッファ設定
+    //頂点バッファ設定
     UINT stride = sizeof(VERTEX_3D);
     UINT offset = 0;
     Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
 
-    // テクスチャ設定
+    //テクスチャ設定
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &m_Texture);
 
-    // プリミティブタイプの設定
+    //プリミティブタイプの設定
     Renderer::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    // ポリゴン描画
+    //ポリゴン描画
     Renderer::GetDeviceContext()->Draw(4, 0);
 }

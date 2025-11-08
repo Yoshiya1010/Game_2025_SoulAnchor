@@ -33,7 +33,7 @@ void SpriteAnimator2D::Init(float x, float y, float w, float h, const char* File
 void SpriteAnimator2D::Update()
 {
    
-    if (!m_Playing) return; // ← 停止中なら一切進行しない
+    if (!m_Playing) return; //プレイ中じゃなかったら帰す
 
     m_Timer += 1.0f / 60.0f;
 
@@ -43,7 +43,7 @@ void SpriteAnimator2D::Update()
         m_Frame++;
 
         if (m_Frame >= m_Cols * m_Rows)
-            m_Frame = 0; // ループ
+            m_Frame = 0;//ループさせる
     }
 
 }
@@ -53,6 +53,7 @@ void SpriteAnimator2D::Draw()
     Renderer::SetWorldViewProjection2D();
     Renderer::SetDepthEnable(false);
 
+    //頂点を求める
     float cx = m_X;
     float cy = m_Y;
     float w = m_W;
@@ -69,7 +70,7 @@ void SpriteAnimator2D::Draw()
         {{x0 + w, y0 + h, 0}, {}, {1,1,1,1}, {}},
     };
 
-    // UV 計算
+    //UVを求める
     int col = m_Frame % m_Cols;
     int row = m_Frame / m_Cols;
     float u0 = (float)col / m_Cols;
@@ -82,13 +83,13 @@ void SpriteAnimator2D::Draw()
     v[2].TexCoord = { u0, v1 };
     v[3].TexCoord = { u1, v1 };
 
-    // 頂点更新
+    //頂点更新
     D3D11_MAPPED_SUBRESOURCE mp;
     Renderer::GetDeviceContext()->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mp);
     memcpy(mp.pData, v, sizeof(v));
     Renderer::GetDeviceContext()->Unmap(m_VertexBuffer, 0);
 
-    // 以降は Polygon2D と同じ
+    
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
