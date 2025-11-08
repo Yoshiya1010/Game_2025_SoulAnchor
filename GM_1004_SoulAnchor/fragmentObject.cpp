@@ -1,5 +1,9 @@
-#include"fragmentObject.h"
+// fragmentObject.cpp
+// 破壊機能を持つPhysicsObjectの実装
+
+#include "fragmentObject.h"
 #include "manager.h"
+#include "TriangleMeshBuilder.h"
 
 void FragmentObject::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)
 {
@@ -51,7 +55,7 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
         ) *
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 
-    // グループ化して破壊
+    // グループ化して破壊（三角形を指定個数ずつまとめて破片にする）
     MeshDestroyer::DestroyModelGrouped(
         model,
         worldMatrix,
@@ -71,4 +75,50 @@ void FragmentObject::LoadModel(const char* filepath)
         m_ModelRenderer = new ModelRenderer();
     }
     m_ModelRenderer->Load(filepath);
+}
+
+void FragmentObject::RecreateCollider()
+{
+    // トライアングルメッシュの場合
+    if (m_UseTriangleMesh && m_ModelRenderer) {
+        if (!m_CollisionShape) return;
+        auto* world = PhysicsManager::GetWorld();
+        if (!world) return;
+
+        // 既存の剛体を一旦削除
+        if (m_RigidBody) {
+            world->removeRigidBody(m_RigidBody.get());
+            m_RigidBody->setUserPointer(nullptr);
+        }
+
+        // トライアングルメッシュを再作成（スケールを反映）
+        btTriangleMesh* triMesh = new btTriangleMesh();
+        MODEL* model = m_ModelRenderer->GetModel();
+
+        if (model) {
+            for (unsigned int i = 0; i < model->CollisionIndices.size(); i += 3) {
+                auto& p0 = model->CollisionVertices[model->CollisionIndices[i + 0]];
+                auto& p1 = model->CollisionVertices[model->CollisionIndices[i + 1]];
+                auto& p2 = model->CollisionVertices[model->CollisionIndices[i + 2]];
+
+                // スケールを適用して頂点座標を作成
+                triMesh->addTriangle(
+                    btVector3(p0.x * m_Scale.x, p0.y * m_Scale.y, p0.z * m_Scale.z),
+                    btVector3(p1.x * m_Scale.x, p1.y * m_Scale.y, p1.z * m_Scale.z),
+                    btVector3(p2.x * m_Scale.x, p2.y * m_Scale.y, p2.z * m_Scale.z)
+                );
+            }
+
+            m_CollisionShape = std::unique_ptr<btCollisionShape>(
+                new btBvhTriangleMeshShape(triMesh, true)
+            );
+        }
+
+        // 剛体を再登録
+        CreateRigidBody(m_mass);
+    }
+    else {
+        // 通常のコライダーは親クラスの処理を呼ぶ
+        PhysicsObject::RecreateCollider();
+    }
 }

@@ -30,6 +30,9 @@ void RockTallBlock_A::Init()
 
     m_Started = false;
 
+    // トライアングルメッシュを使用することを設定
+    m_UseTriangleMesh = true;
+
     SetName("RockTallBlock_A");
 
     SetTag(GameObjectTag::Ground);

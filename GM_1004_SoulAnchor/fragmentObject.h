@@ -1,12 +1,13 @@
-#pragma once
+// fragmentObject.h
+// 破壊機能を持つPhysicsObjectの基底クラス
+// これを継承するだけでメッシュベースの破壊機能が使える
+
 #pragma once
 
 #include "PhysicsObject.h"
 #include "modelRenderer.h"
 #include "MeshDestroyer.h"
 
-// 破壊機能を持つPhysicsObjectの基底クラス
-// これを継承するだけで破壊機能が使える
 class FragmentObject : public PhysicsObject {
 protected:
     // モデルレンダラー
@@ -14,13 +15,16 @@ protected:
     float m_ModelScale = 1.0f;
 
     // 破壊設定
-    bool m_Destructible = true;
-    float m_DestructionThreshold = 15.0f;
-    bool m_IsDestroyed = false;
+    bool m_Destructible = true;              // 破壊可能かどうか
+    float m_DestructionThreshold = 15.0f;    // 破壊される速度の閾値
+    bool m_IsDestroyed = false;              // 既に破壊されたかどうか
 
     // メッシュ破壊設定
-    int m_GroupSize = 5;
-    float m_ExplosionForce = 15.0f;
+    int m_GroupSize = 5;            // 三角形をグループ化する数（1=個別、5=5個ずつまとめる）
+    float m_ExplosionForce = 15.0f; // 破片が飛ぶ力の大きさ
+
+    // トライアングルメッシュ用のフラグ
+    bool m_UseTriangleMesh = false;
 
 public:
     virtual ~FragmentObject() {
@@ -32,6 +36,9 @@ public:
 
     // 破壊処理（カスタマイズ可能）
     virtual void DestroyObject(const Vector3& impactPoint);
+
+    // トライアングルメッシュのスケール変更に対応したコライダー再作成
+    void RecreateCollider() override;
 
     // 設定用メソッド
     void SetDestructible(bool destructible) { m_Destructible = destructible; }

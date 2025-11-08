@@ -172,25 +172,22 @@ public:
         CreateRigidBody(mass);
     }
 
-    void RecreateCollider()
-    {
+    // コライダーの再作成（スケール変更時などに使用）
+    virtual void RecreateCollider() {
         if (!m_CollisionShape) return;
         auto* world = PhysicsManager::GetWorld();
         if (!world) return;
 
         // 既存の剛体を一旦削除
-        if (m_RigidBody)
-        {
+        if (m_RigidBody) {
             world->removeRigidBody(m_RigidBody.get());
             m_RigidBody->setUserPointer(nullptr);
         }
 
-        // 形状タイプを調べて再生成
+        // 形状タイプを判定して再生成
         std::string shapeType = GetShapeTypeName(m_CollisionShape.get());
 
-        if (shapeType == "Box")
-        {
-           
+        if (shapeType == "Box") {
             Vector3 scaledHalfSize = {
                 m_OriginalColliderHalfSize.x * m_Scale.x,
                 m_OriginalColliderHalfSize.y * m_Scale.y,
@@ -202,10 +199,12 @@ public:
                 scaledHalfSize.z
             ));
         }
-        else if (shapeType == "Sphere")
+        else if (shapeType == "Sphere") {
             m_CollisionShape = std::make_unique<btSphereShape>(m_Scale.x);
-        else if (shapeType == "Capsule")
+        }
+        else if (shapeType == "Capsule") {
             m_CollisionShape = std::make_unique<btCapsuleShape>(m_Scale.x, m_Scale.y);
+        }
 
         // 剛体を再登録
         CreateRigidBody(m_mass);
@@ -526,7 +525,17 @@ private:
         }
     }
 
+    protected:
+        // 破壊機能関連
+        bool m_IsDestructible = false;
+        float m_DestructionThreshold = 20.0f;
+        int m_VoxelGridX = 4;
+        int m_VoxelGridY = 4;
+        int m_VoxelGridZ = 4;
+        XMFLOAT4 m_FragmentColor = { 0.8f, 0.6f, 0.4f, 1.0f };
 
-
+        // publicセクションに追加（既存の関数の下）
+public:
+    // 破壊機能
 
 };

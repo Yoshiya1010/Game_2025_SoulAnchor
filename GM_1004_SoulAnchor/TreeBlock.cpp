@@ -27,6 +27,9 @@ void TreeBlock::Init()
 
     SetName("TreeBlock");
 
+    // トライアングルメッシュを使用することを設定
+    m_UseTriangleMesh = true;
+
     SetTag(GameObjectTag::Ground);
 
 
