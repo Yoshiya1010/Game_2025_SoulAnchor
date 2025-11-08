@@ -16,7 +16,7 @@ void RockTallBlock_A::Init()
 
     // モデルのロード
     m_ModelRenderer = new ModelRenderer();
-    m_ModelRenderer->Load("asset\\model\\rock_tallA.obj");
+    m_ModelRenderer->Load("asset\\model\\BullutObject\\rock_tallA.obj");
 
 
     // シェーダー読み込み

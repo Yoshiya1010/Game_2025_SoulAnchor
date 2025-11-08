@@ -526,37 +526,7 @@ private:
         }
     }
 
-    protected:
-        // 破壊機能関連
-        bool m_IsDestructible = false;
-        float m_DestructionThreshold = 20.0f;
-        int m_VoxelGridX = 4;
-        int m_VoxelGridY = 4;
-        int m_VoxelGridZ = 4;
-        XMFLOAT4 m_FragmentColor = { 0.8f, 0.6f, 0.4f, 1.0f };
-
-        // publicセクションに追加（既存の関数の下）
-public:
-    // 破壊機能
-    void SetDestructible(bool destructible, float threshold = 20.0f) {
-        m_IsDestructible = destructible;
-        m_DestructionThreshold = threshold;
-    }
-
-    void SetVoxelGrid(int x, int y, int z) {
-        m_VoxelGridX = x;
-        m_VoxelGridY = y;
-        m_VoxelGridZ = z;
-    }
-
-    void SetFragmentColor(XMFLOAT4 color) {
-        m_FragmentColor = color;
-    }
 
 
-    bool IsDestructible() const { return m_IsDestructible; }
-
-    void Destroy(Vector3 impactPoint, Vector3 impactForce);
-    void CheckDestruction(GameObject* other, const Vector3& hitPoint);
 
 };

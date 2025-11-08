@@ -190,7 +190,6 @@
     <ClCompile Include="TreeBlock.cpp" />
     <ClCompile Include="triangleMeshFragment.cpp" />
     <ClCompile Include="vector3.cpp" />
-    <ClCompile Include="VoxelFragment.cpp" />
     <ClCompile Include="wave.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +248,6 @@
     <ClInclude Include="TriangleMeshBuilder.h" />
     <ClInclude Include="triangleMeshFragment.h" />
     <ClInclude Include="vector3.h" />
-    <ClInclude Include="VoxelFragment.h" />
     <ClInclude Include="wave.h" />
   </ItemGroup>
   <ItemGroup>
