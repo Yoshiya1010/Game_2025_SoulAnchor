@@ -233,6 +233,7 @@ public:
 	static void Update();
 
 	static bool GetKeyPress( BYTE KeyCode );
+    static bool GetKeyRelease(BYTE KeyCode);
 	static bool GetKeyTrigger( BYTE KeyCode );
 
     // コントローラー関連メソッド

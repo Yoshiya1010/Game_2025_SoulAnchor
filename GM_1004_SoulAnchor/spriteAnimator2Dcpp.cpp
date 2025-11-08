@@ -33,17 +33,31 @@ void SpriteAnimator2D::Init(float x, float y, float w, float h, const char* File
 void SpriteAnimator2D::Update()
 {
 
-    if (!m_Playing) return; //プレイ中じゃなかったら帰す
+    if (!m_Playing || m_FrameSpeed == 0.0f) return;
 
-    m_Timer += 1.0f / 60.0f;
+    m_Frame += m_FrameSpeed; // 1フレームあたり増加・減少
 
-    if (m_Timer >= m_FrameTime)
+    int maxFrame = m_Cols * m_Rows;
+
+    if (m_Loop)
     {
-        m_Timer = 0;
-        m_Frame++;
-
-        if (m_Frame >= m_Cols * m_Rows)
-            m_Frame = 0;//ループさせる
+        // ループする場合
+        if (m_Frame >= maxFrame) m_Frame -= maxFrame;
+        if (m_Frame < 0)        m_Frame += maxFrame;
+    }
+    else
+    {
+        // ループしない場合（端で停止）
+        if (m_Frame >= maxFrame)
+        {
+            m_Frame = maxFrame - 1;
+            m_Playing = false;
+        }
+        if (m_Frame < 0)
+        {
+            m_Frame = 0;
+            m_Playing = false;
+        }
     }
 
 }
@@ -71,7 +85,7 @@ void SpriteAnimator2D::Draw()
     };
 
     //UVを求める
-    int col = m_Frame % m_Cols;
+    int col = (int)m_Frame % m_Cols;
     int row = m_Frame / m_Cols;
     float u0 = (float)col / m_Cols;
     float v0 = (float)row / m_Rows;

@@ -14,19 +14,29 @@ private:
 
     float m_X, m_Y, m_W, m_H;
 
-    int m_Cols = 1;
-    int m_Rows = 1;
-    int m_Frame = 0;
-    float m_FrameTime{ 0.1f };
-    float m_Timer{ 0.0f };
-    bool m_Playing = true;
+
+
+    int   m_Cols = 1;
+    int   m_Rows = 1;
+    float m_Frame = 0.0f; 
+
+  
+    float m_FrameSpeed = 1.0f;
+
+    bool  m_Loop = true;
+    bool  m_Playing = true;   
 public:
     void Init() {}
     void Init(float x, float y, float w, float h, const char* FileName, int cols, int rows);
     void SetFrame(int frame) { m_Frame = frame; }
     int  GetFrame() const { return m_Frame; }
 
-    void SetFrameSpeed(float secPerFrame) { m_FrameTime = secPerFrame; }
+    void SetFrameSpeed(float speed) { m_FrameSpeed = speed; }
+    void SetLoop(bool loop) { m_Loop = loop; }
+
+    int GetMaxFrame() { return m_Rows * m_Cols; };
+
+    void Play() { m_Playing = true; };
 
     void Update() override;
     void Draw() override;
