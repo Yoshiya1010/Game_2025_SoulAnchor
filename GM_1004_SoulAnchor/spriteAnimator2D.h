@@ -3,7 +3,7 @@
 #include "renderer.h"
 #include "textureManager.h"
 
-class SpriteAnimator2D : public GameObject
+class SpriteAnimator2D 
 {
 private:
     ID3D11Buffer* m_VertexBuffer = nullptr;
@@ -38,7 +38,7 @@ public:
 
     void Play() { m_Playing = true; };
 
-    void Update() override;
-    void Draw() override;
-    void Uninit() override;
+    void Update();
+    void Draw();
+    void Uninit();
 };

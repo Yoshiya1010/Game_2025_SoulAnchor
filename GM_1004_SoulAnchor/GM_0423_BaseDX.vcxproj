@@ -177,6 +177,7 @@
     <ClCompile Include="physicsManager.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="polygonAnimator.cpp" />
     <ClCompile Include="polygon.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="physicsObject.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="polygon.h" />
+    <ClInclude Include="polygonAnimator.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="rockTallBlock_A.h" />

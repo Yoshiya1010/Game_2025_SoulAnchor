@@ -5,7 +5,7 @@
 #include "title.h"
 #include "game.h"
 #include "Polygon.h"
-#include"spriteAnimator2D.h"
+
 
 void Title::Init()
 {
@@ -14,7 +14,7 @@ void Title::Init()
 
 
 	//タイトルロゴ
-	auto logo = AddGameObject<SpriteAnimator2D>(UI);
+	auto logo = AddGameObject<PolygonAnimator2D>(UI);
 	logo->Init(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 600, 300,
 		"asset\\texture\\TitleScene\\title_logo_text_loop.png",
 		6, 6);
@@ -24,7 +24,7 @@ void Title::Init()
 
 
 	//Aボタン
-	m_button = AddGameObject<SpriteAnimator2D>(UI);
+	m_button = AddGameObject<PolygonAnimator2D>(UI);
 	m_button->Init(950, 650, 100, 90,
 		"asset\\texture\\TitleScene\\UI\\skip_a.png",
 		10, 3);
