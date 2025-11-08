@@ -4,14 +4,14 @@
 #include "input.h"
 #include"explosion.h"
 #include "PhysicsManager.h"
-#include "animationModel.h"
-#include"ModelFBX.h"
+#include "TriangleMeshBuilder.h"
+#include "MeshDestroyer.h"
 
 void TreeBlock::Init()
 {
     // モデルのロード
-    m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load("asset\\model\\tree_pineTallA.fbx");
+    m_ModelRenderer = new ModelRenderer();
+    m_ModelRenderer->Load("asset\\model\\BullutObject\\tree_pineTallA.obj");
 
 
     // シェーダー読み込み
@@ -40,10 +40,20 @@ void TreeBlock::Start()
         // 衝突レイヤー設定
         SetupCollisionLayer();
 
+        // トライアングルメッシュコライダーを作成
+        btBvhTriangleMeshShape* shape = CreateTriangleMeshShape(m_ModelRenderer->GetModel());
 
-        m_ColliderOffset = Vector3(0, 7.f, 0);
-        CreateBoxCollider(Vector3(1.0f, 7.0f, 1.0f), 0.0f);
+        // PhysicsObjectのm_CollisionShapeに設定
+        m_CollisionShape = std::unique_ptr<btCollisionShape>(shape);
 
+        // RigidBodyを作成（質量0で静的オブジェクト）
+        CreateRigidBody(0.0f);
+
+
+        // 破壊設定（オプション）
+        SetDestructionThreshold(15.0f);
+        SetGroupSize(5);
+        SetExplosionForce(15.0f);
     }
 
 
@@ -57,7 +67,6 @@ void TreeBlock::Uninit()
         PhysicsObject::Uninit();//Rigtbodyを消す
     }
 
-    m_ModelRenderer.reset();
     if (m_VertexLayout)     m_VertexLayout->Release();
     if (m_VertexShader)     m_VertexShader->Release();
     if (m_PixelShader)      m_PixelShader->Release();
@@ -68,7 +77,10 @@ void TreeBlock::Update()
     CheckAndCallStart();
     if (m_Started)
     {
-
+        if (Input::GetKeyTrigger(KK_G))
+        {
+            DestroyObject(Vector3());
+        }
 
     }
 }
@@ -87,7 +99,7 @@ void TreeBlock::Draw()
 
     Renderer::SetWorldMatrix(
         //モデルと物理の座標を同期させる
-        UpdatePhysicsWithModel(m_modelScale));
+        UpdatePhysicsWithModel(1.0f));
     // モデルの描画
     m_ModelRenderer->Draw();
 

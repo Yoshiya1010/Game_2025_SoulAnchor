@@ -6,20 +6,19 @@
 #include "gameObject.h"
 #include"ModelFBX.h"
 #include<memory>
-#include"PhysicsObject.h"
+#include"fragmentObject.h"
 
 
 
-class TreeBlock :public PhysicsObject {
+class TreeBlock :public FragmentObject {
 private:
 	ID3D11VertexShader* m_VertexShader;	// 頂点シェーダーオブジェクト
 	ID3D11PixelShader* m_PixelShader;		// ピクセルシェーダーオブジェクト
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
 
-	//モデル
-	unique_ptr<StaticFBXModel> m_ModelRenderer = nullptr;
-	const float m_modelScale = 1.0f;
+
+
 
 public:
 	void Init() override;

@@ -17,9 +17,7 @@ private:
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
 
-	//モデル
-	
-	const float m_modelScale = 1.0f;
+
 
 
 	
