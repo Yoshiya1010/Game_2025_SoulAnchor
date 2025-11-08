@@ -42,16 +42,24 @@ void FPSPlayer::Start()
     if (m_RigidBody) return;
     // 物理コライダーの設定
     if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定
-        SetupCollisionLayer();
+     
+        m_ColliderOffset = Vector3(0, 1.0f, 0);
+        CreateCapsuleCollider(0.5f, 1.5f, 70.0f);
 
+        // 回転を完全に固定（Y軸周りの回転も含めて全て固定）
+        m_RigidBody->setAngularFactor(btVector3(0, 0, 0));
 
-        m_ColliderOffset = Vector3(0, 1.f, 0);
-        CreateBoxCollider(Vector3(1.0f, 2.0f, 1.0f), 70.0f);
+        // 摩擦係数を設定（滑りにくく）
+        m_RigidBody->setFriction(1.0f);
 
+        // 反発係数を0に（跳ね返らない）
+        m_RigidBody->setRestitution(0.0f);
 
-        //こけないように　回転を一部固定
-        m_RigidBody->setAngularFactor(btVector3(0, 1, 0));
+        // 減衰を設定（安定性向上）
+        m_RigidBody->setDamping(0.2f, 1.0f);
+
+        // 線形減衰も追加（急停止を防ぐ）
+        m_RigidBody->setLinearFactor(btVector3(1, 1, 1));
     }
 }
 
@@ -86,6 +94,9 @@ void FPSPlayer::Update()
 
         m_RigidBody->activate(true);
 
+        // 角速度を強制的にゼロにする（確実に回転を防ぐ）
+        m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
+
         Vector3 moveDir = { 0,0,0 };
         bool isMoving = false;
 
@@ -118,7 +129,7 @@ void FPSPlayer::Update()
         // ジャンプの処理
         if (Input::GetKeyTrigger(KK_SPACE) && m_IsOnGround)
         {
-            m_RigidBody->applyCentralImpulse(btVector3(0, 10.0f, 0)); // 上方向に力を加える
+            m_RigidBody->applyCentralImpulse(btVector3(0, 500.0f, 0)); // 上方向に力を加える
             m_RigidBody->activate(true);
             m_IsOnGround = false; // 空中に出たのでリセット
         }

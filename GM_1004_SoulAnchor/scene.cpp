@@ -13,6 +13,7 @@
 #include"score.h"
 #include"enemy.h"
 #include"TreeBlock.h"
+#include"drawImgui.h"
 #include"FPSCamera.h"
 #include"FPSPlayer.h"
 
@@ -55,8 +56,11 @@ void Scene::Update()
 		for (auto it = list.begin(); it != list.end(); )
 		{
 			GameObject* obj = *it;
+
+			
 			if (obj->Destroy())
 			{
+				CheckObjectSelect(obj);
 				obj->Uninit();
 				delete obj;
 				it = list.erase(it);

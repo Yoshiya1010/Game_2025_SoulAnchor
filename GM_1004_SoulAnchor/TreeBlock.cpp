@@ -57,6 +57,8 @@ void TreeBlock::Start()
         SetDestructionThreshold(15.0f);
         SetGroupSize(5);
         SetExplosionForce(15.0f);
+        RecreateCollider();
+
     }
 
 

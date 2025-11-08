@@ -46,7 +46,7 @@ void Title::Update()
 	if (Input::GetKeyPress(KK_ENTER))
 	{
 		m_button->Play();
-		m_button->SetFrameSpeed(0.2f);
+		m_button->SetFrameSpeed(0.4f);
 	}
 
 	if (Input::GetKeyRelease(KK_ENTER))

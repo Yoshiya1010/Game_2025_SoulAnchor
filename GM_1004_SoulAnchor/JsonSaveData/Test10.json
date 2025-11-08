@@ -4,13 +4,13 @@
             "Layer": 0,
             "Name": "FPSCamera",
             "Position": [
-                -4.820049285888672,
-                3.799999237060547,
-                28.813291549682617
+                -4.589823246002197,
+                1.8000179529190063,
+                -11.958051681518555
             ],
             "Rotation": [
-                -0.10800010710954666,
-                3.347999095916748,
+                0.10499995201826096,
+                0.44100096821784973,
                 0.0
             ],
             "Scale": [
@@ -24,9 +24,9 @@
             "Layer": 2,
             "Name": "FPSPlayer",
             "Position": [
-                -4.717723846435547,
-                2.000000476837158,
-                29.300682067871094
+                -4.533056735992432,
+                -6.78664946462959e-08,
+                -12.627366065979004
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -34,19 +34,19 @@
                     1.0,
                     0.0
                 ],
-                "ColliderType": "Box",
+                "ColliderType": "Capsule",
                 "CollisionGroup": 128,
                 "CollisionMask": -1,
-                "Mass": 1.0,
+                "Mass": 70.0,
                 "OriginalColliderHalfSize": [
                     1.0,
-                    2.0,
+                    1.0,
                     1.0
                 ]
             },
             "Rotation": [
+                -0.0,
                 0.0,
-                3.347999095916748,
                 0.0
             ],
             "Scale": [
@@ -58,10 +58,30 @@
         },
         {
             "Layer": 2,
-            "Name": "GroundBlock_001",
+            "Name": "SkyBox",
+            "Position": [
+                -4.589823246002197,
+                1.8000179529190063,
+                -11.958051681518555
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                100.0,
+                100.0,
+                100.0
+            ],
+            "Type": "SkyBox"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock",
             "Position": [
                 0.0,
-                -1.0,
+                -2.0,
                 0.0
             ],
             "RigidBody": {
@@ -71,17 +91,17 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
+                "CollisionGroup": 8,
+                "CollisionMask": 147,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
+                    30.0,
                     1.0,
-                    1.0,
-                    1.0
+                    30.0
                 ]
             },
             "Rotation": [
-                0.0,
+                -0.0,
                 0.0,
                 0.0
             ],
@@ -96,71 +116,35 @@
             "Layer": 2,
             "Name": "TreeBlock_001",
             "Position": [
-                -23.120386123657227,
-                0.9999986290931702,
-                0.280727744102478
-            ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    7.0,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Mass": 1.2000000476837158,
-                "OriginalColliderHalfSize": [
-                    1.0,
-                    7.0,
-                    1.0
-                ]
-            },
-            "Rotation": [
                 0.0,
-                0.0,
+                -0.20000000298023224,
                 0.0
             ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "Type": "TreeBlock"
-        },
-        {
-            "Layer": 2,
-            "Name": "TreeBlock_002",
-            "Position": [
-                3.8933022022247314,
-                0.9999988675117493,
-                0.11894107609987259
-            ],
             "RigidBody": {
                 "ColliderOffset": [
                     0.0,
-                    7.0,
+                    0.0,
                     0.0
                 ],
-                "ColliderType": "Box",
+                "ColliderType": "Unknown",
                 "CollisionGroup": 8,
                 "CollisionMask": 147,
-                "Mass": 5.599999904632568,
+                "Mass": 0.0,
                 "OriginalColliderHalfSize": [
                     1.0,
-                    7.0,
+                    1.0,
                     1.0
                 ]
             },
             "Rotation": [
+                -0.0,
                 0.0,
-                22.0,
                 0.0
             ],
             "Scale": [
-                1.0,
-                1.0,
-                1.0
+                6.599999904632568,
+                6.599999904632568,
+                6.599999904632568
             ],
             "Type": "TreeBlock"
         },
@@ -168,9 +152,9 @@
             "Layer": 2,
             "Name": "Anchor",
             "Position": [
-                -66.69241333007813,
-                -142.30853271484375,
-                -266.6786804199219
+                127.02197265625,
+                -216.4604034423828,
+                266.0882263183594
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -189,7 +173,7 @@
                 ]
             },
             "Rotation": [
-                0.0,
+                -0.0,
                 0.0,
                 0.0
             ],

@@ -27,6 +27,10 @@ protected:
     bool m_UseTriangleMesh = false;
 
 public:
+    void Start() { 
+       
+    };
+
     virtual ~FragmentObject() {
         if (m_ModelRenderer) delete m_ModelRenderer;
     }
