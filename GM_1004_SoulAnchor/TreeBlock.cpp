@@ -1,18 +1,17 @@
-#include"TreeBlock.h"
+// TreeBlock.cpp
+// 木のオブジェクト - Boxコライダー版（動的可能、倒れる）
+
+#include "TreeBlock.h"
 #include "manager.h"
 #include "camera.h"
 #include "input.h"
-#include"explosion.h"
+#include "explosion.h"
 #include "PhysicsManager.h"
-#include "TriangleMeshBuilder.h"
-#include "MeshDestroyer.h"
 
 void TreeBlock::Init()
 {
     // モデルのロード
-    m_ModelRenderer = new ModelRenderer();
-    m_ModelRenderer->Load("asset\\model\\BullutObject\\tree_pineTallA.obj");
-
+    LoadModel("asset\\model\\BullutObject\\tree_pineTallA.obj");
 
     // シェーダー読み込み
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
@@ -21,60 +20,53 @@ void TreeBlock::Init()
     Renderer::CreatePixelShader(&m_PixelShader,
         "shader\\unlitColorPS.cso");
 
-
-
     m_Started = false;
 
     SetName("TreeBlock");
 
-    // トライアングルメッシュを使用することを設定
-    m_UseTriangleMesh = true;
+    // ========================================
+    // コライダータイプの選択
+    // ========================================
+
+    // オプション1: Boxコライダー（動的可能、倒れる）
+    m_UseTriangleMesh = false;  // ← Box使用
+    SetMass(50.0f);             // 質量50kg（動的オブジェクト）
+
+    // オプション2: トライアングルメッシュ（静的のみ、倒れない）
+    // m_UseTriangleMesh = true;   // ← トライアングルメッシュ使用
+    // SetMass(0.0f);              // 質量0（静的オブジェクト）
+
+    // ========================================
+
+    // スケール設定
+    SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+    // 破壊設定
+    SetDestructible(true);
+    SetDestructionThreshold(15.0f);
+    SetGroupSize(5);
+    SetExplosionForce(15.0f);
 
     SetTag(GameObjectTag::Ground);
-
-
-
 }
+
 void TreeBlock::Start()
 {
-    if (m_RigidBody) return;
-    // 物理コライダーの設定
-    if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定
-        SetupCollisionLayer();
-
-        // トライアングルメッシュコライダーを作成
-        btBvhTriangleMeshShape* shape = CreateTriangleMeshShape(m_ModelRenderer->GetModel());
-
-        // PhysicsObjectのm_CollisionShapeに設定
-        m_CollisionShape = std::unique_ptr<btCollisionShape>(shape);
-
-        // RigidBodyを作成（質量0で静的オブジェクト）
-        CreateRigidBody(0.0f);
-
-
-        // 破壊設定（オプション）
-        SetDestructionThreshold(15.0f);
-        SetGroupSize(5);
-        SetExplosionForce(15.0f);
-        RecreateCollider();
-
-    }
-
-
+    // 親クラスのStart()を呼ぶだけ
+    // コライダーの作成は自動的に行われる
+    FragmentObject::Start();
 }
-
 
 void TreeBlock::Uninit()
 {
-    if (m_RigidBody) 
+    if (m_RigidBody)
     {
-        PhysicsObject::Uninit();//Rigtbodyを消す
+        PhysicsObject::Uninit();
     }
 
-    if (m_VertexLayout)     m_VertexLayout->Release();
-    if (m_VertexShader)     m_VertexShader->Release();
-    if (m_PixelShader)      m_PixelShader->Release();
+    if (m_VertexLayout) m_VertexLayout->Release();
+    if (m_VertexShader) m_VertexShader->Release();
+    if (m_PixelShader) m_PixelShader->Release();
 }
 
 void TreeBlock::Update()
@@ -82,32 +74,32 @@ void TreeBlock::Update()
     CheckAndCallStart();
     if (m_Started)
     {
+        // テスト用: Gキーで破壊
         if (Input::GetKeyTrigger(KK_G))
         {
-            DestroyObject(Vector3());
+            DestroyObject(m_Position);
         }
-
     }
 }
 
 void TreeBlock::Draw()
 {
+    if (!m_ModelRenderer) return;
 
-    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
+    // レイアウト・シェーダをセット
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    // UnlitColor はテクスチャ使わないのでスロットをクリア
+    // UnlitColor用（テクスチャスロットをクリア）
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 
+    // ワールド行列を設定
     Renderer::SetWorldMatrix(
-        //モデルと物理の座標を同期させる
-        UpdatePhysicsWithModel(1.0f));
+        UpdatePhysicsWithModel(m_ModelScale)
+    );
+
     // モデルの描画
     m_ModelRenderer->Draw();
-
 }
-
-
