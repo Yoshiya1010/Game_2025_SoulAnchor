@@ -1,34 +1,32 @@
-// MeshDestroyer.cpp
-// モデルを破壊して破片を生成するシステム
-// 3D立体破片機能対応
-
 #include "MeshDestroyer.h"
 #include <algorithm>
 #include "modelRenderer.h"
 
 void MeshDestroyer::DestroyModel(
-    MODEL* model,
-    const XMMATRIX& worldMatrix,
-    const Vector3& explosionCenter,
-    float explosionForce,
-    Scene* scene
+    MODEL* model,//読み込んだモデル
+    const XMMATRIX& worldMatrix,//モデルからワールド座標にしたもの
+    const Vector3& explosionCenter,//爆発が発生する場所　爆心地
+    float explosionForce,//破壊された時にもらう飛び散る方向
+    Scene* scene//シーンのインスタンス
 )
 {
     if (!model || !scene) return;
 
-    // モデルの各サブセットを処理
+    //モデルの各サブセットを処理　（マテリアルの境界ごとね　色が混ざるからね）
     for (unsigned int subsetIdx = 0; subsetIdx < model->SubsetNum; subsetIdx++) {
         SUBSET& subset = model->SubsetArray[subsetIdx];
 
-        // このサブセットの三角形を処理
+        //このサブセットの三角形を処理
         for (unsigned int i = subset.StartIndex; i < subset.StartIndex + subset.IndexNum; i += 3) {
             // 三角形の3頂点を取得
             if (i + 2 >= model->CollisionIndices.size()) break;
 
+            //三角形の頂点のインデックス番号を貰う
             unsigned int idx0 = model->CollisionIndices[i + 0];
             unsigned int idx1 = model->CollisionIndices[i + 1];
             unsigned int idx2 = model->CollisionIndices[i + 2];
 
+            //頂点番号の境界をチェックする（データが壊れてた場合の対策）
             if (idx0 >= model->CollisionVertices.size() ||
                 idx1 >= model->CollisionVertices.size() ||
                 idx2 >= model->CollisionVertices.size()) {
@@ -36,74 +34,72 @@ void MeshDestroyer::DestroyModel(
             }
 
             // 頂点データを作成（法線とテクスチャ座標は簡易的に設定）
+            //三角メッシュだから頂点３つでとる
             VERTEX_3D vertices[3];
 
-            // 頂点0
-            vertices[0].Position = model->CollisionVertices[idx0];
-            vertices[0].Normal = XMFLOAT3(0, 1, 0);  // 上向き法線（仮）
+            //頂点0
+            vertices[0].Position = model->CollisionVertices[idx0];//モデルの座標　ローカル
+            vertices[0].Normal = XMFLOAT3(0, 1, 0);  // 上向き法線で見る
             vertices[0].Diffuse = XMFLOAT4(1, 1, 1, 1);
             vertices[0].TexCoord = XMFLOAT2(0, 0);
 
-            // 頂点1
+            //頂点1
             vertices[1].Position = model->CollisionVertices[idx1];
             vertices[1].Normal = XMFLOAT3(0, 1, 0);
             vertices[1].Diffuse = XMFLOAT4(1, 1, 1, 1);
             vertices[1].TexCoord = XMFLOAT2(1, 0);
 
-            // 頂点2
+            //頂点2
             vertices[2].Position = model->CollisionVertices[idx2];
             vertices[2].Normal = XMFLOAT3(0, 1, 0);
             vertices[2].Diffuse = XMFLOAT4(1, 1, 1, 1);
             vertices[2].TexCoord = XMFLOAT2(0, 1);
 
-            // まずワールド空間での位置を計算
+            //ワールド空間での位置を計算　ワールド座標系へ変換　(位置は行列変換、法線は回転のみ）
             VERTEX_3D worldVertices[3];
             for (int v = 0; v < 3; v++) {
                 worldVertices[v] = TransformVertex(vertices[v], worldMatrix);
             }
 
-            // 三角形の中心をワールド空間で計算
+            //三角形の中心をワールド空間で計算
+            //破片オブジェクトの原点に使う
             Vector3 triangleCenter = CalculateTriangleCenter(
                 worldVertices[0].Position,
                 worldVertices[1].Position,
                 worldVertices[2].Position
             );
 
-            // 頂点を中心基準のローカル座標に変換
+            //頂点を中心基準のローカル座標に変換
             for (int v = 0; v < 3; v++) {
                 vertices[v].Position.x = worldVertices[v].Position.x - triangleCenter.x;
                 vertices[v].Position.y = worldVertices[v].Position.y - triangleCenter.y;
                 vertices[v].Position.z = worldVertices[v].Position.z - triangleCenter.z;
 
-                // 法線はワールド空間のものを使用
+                // 法線はワールド空間のものを使う
                 vertices[v].Normal = worldVertices[v].Normal;
             }
 
-            // ========================================
-            // 破片を生成
-            // ========================================
+            // 破片を生成 ゲームオブジェクト扱いにしてる
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(triangleCenter);
             fragment->SetScale(Vector3(1, 1, 1));
 
-            // ========================================
-            // 3D立体破片の設定（ここを追加！）
-            // ========================================
+            //3D立体破片の設定
             fragment->SetUseExtrusion(true);             // 3D立体化ON
-            fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
+            fragment->SetExtrusionDepth(0.5f);          // 厚さ15で基本的には問題ないけど　ここ動的な方がいいかも　一旦仮にするわ　TODO
         
-            // ========================================
-
+            //メッシュを三角形（3頂点）としてセット
             fragment->SetTriangleMesh(vertices, 3);
+           
 
-            // マテリアル設定
+            //マテリアル設定
             fragment->SetMaterial(subset.Material.Material);
             if (subset.Material.Texture) {
                 fragment->SetTexture(subset.Material.Texture);
             }
 
-            // 爆発の力を計算して適用
+            //爆発の力を計算して適用
             Vector3 direction = triangleCenter - explosionCenter;
             float distance = direction.Length();
             if (distance > 0.001f) {
@@ -113,12 +109,12 @@ void MeshDestroyer::DestroyModel(
                 float forceMagnitude = explosionForce / (1.0f + distance * 0.1f);
                 Vector3 force = direction * forceMagnitude;
 
-                // ランダム性を追加
+                //指向性だけ渡して、ある程度ランダムにする
                 force.x += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.y += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.z += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
 
-                // Start後に力を適用するため、少し遅延
+                //Start後に力を適用するため、少し遅延　Bodyの生成自体は　Startでやってるからね
                 fragment->Start();
                 if (fragment->GetRigidBody()) {
                     fragment->SetVelocity(force);
@@ -219,21 +215,18 @@ void MeshDestroyer::DestroyModelGrouped(
                     vertex.Position.z -= groupCenter.z;
                 }
 
-                // ========================================
                 // 破片を生成
-                // ========================================
                 TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
                 fragment->Init();
                 fragment->SetPosition(groupCenter);
                 fragment->SetScale(Vector3(1, 1, 1));
+              
 
-                // ========================================
-                // 3D立体破片の設定（ここを追加！）
-                // ========================================
-                fragment->SetUseExtrusion(true);             // 3D立体化ON
-                fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
+
+                // 3D立体破片の設定
+                fragment->SetUseExtrusion(true);//3D立体化ON
+                fragment->SetExtrusionDepth(0.5f);//厚さ50
             
-                // ========================================
 
                 fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());
 
@@ -288,21 +281,18 @@ void MeshDestroyer::DestroyModelGrouped(
                 vertex.Position.z -= groupCenter.z;
             }
 
-            // ========================================
+
             // 破片を生成
-            // ========================================
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(groupCenter);
             fragment->SetScale(Vector3(1, 1, 1));
 
-            // ========================================
-            // 3D立体破片の設定（ここを追加！）
-            // ========================================
+
+            // 3D立体破片の設定
             fragment->SetUseExtrusion(true);             // 3D立体化ON
             fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
-        
-            // ========================================
+            
 
             fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());
 

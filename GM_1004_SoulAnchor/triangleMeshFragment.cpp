@@ -22,7 +22,7 @@ void TriangleMeshFragment::Init()
     m_Material.Shininess = 10.0f;
     m_Material.TextureEnable = false;
 
-    SetName("TriangleMeshFragment");
+    SetName("TriangleMeshFragment");//‰¼‚Å–¼‘O‚ð‚¢‚ê‚é
     SetTag(GameObjectTag::Ground);
 }
 

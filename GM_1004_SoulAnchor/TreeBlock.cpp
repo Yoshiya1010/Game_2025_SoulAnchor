@@ -39,7 +39,7 @@ void TreeBlock::Init()
     SetDestructible(true);
     SetDestructionThreshold(15.0f);
     SetGroupSize(5);
-    SetExplosionForce(15.0f);
+    SetExplosionForce(5.0f);
 
     SetTag(GameObjectTag::Ground);
 }
