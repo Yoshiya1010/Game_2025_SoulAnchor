@@ -55,12 +55,12 @@ void Game::Init()
 
 	AddGameObject<GroundBlock>(OBJECT)->SetPosition({ 0.0f,-2.f,0.f })->SetScale({ 30.f,1.0f,30.f });
 	
-	////初期値のシーンをロード　今はデバック用をいれるけど
-	//Scene* scene = Manager::GetScene();
-	//if (scene)
-	//{
-	//	scene->LoadScene("TestScene.json");
-	//}
+	//初期値のシーンをロード　今はデバック用をいれるけど
+	Scene* scene = Manager::GetScene();
+	if (scene)
+	{
+		scene->LoadScene("TestScene.json");
+	}
 	
 	// ImGui初期化（Renderer::Init()の後）
 	HWND hwnd = GetWindow();

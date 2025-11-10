@@ -64,6 +64,8 @@ void FragmentObject::Start()
         // Boxコライダー作成
         CreateBoxCollider(m_AutoBoxHalfSize, m_mass);
     }
+
+    RecreateCollider();
 }
 
 void FragmentObject::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)

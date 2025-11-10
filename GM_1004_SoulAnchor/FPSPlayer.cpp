@@ -60,6 +60,8 @@ void FPSPlayer::Start()
 
         // üŒ`Œ¸Š‚à’Ç‰Ái‹}’âŽ~‚ð–h‚®j
         m_RigidBody->setLinearFactor(btVector3(1, 1, 1));
+
+        SetupCollisionLayer();
     }
 }
 

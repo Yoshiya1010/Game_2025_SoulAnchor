@@ -41,28 +41,7 @@ void RockTallBlock_A::Init()
 }
 void RockTallBlock_A::Start()
 {
-    if (m_RigidBody) return;
-    // 物理コライダーの設定
-    if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定
-        SetupCollisionLayer();
-
-        // トライアングルメッシュコライダーを作成
-        btBvhTriangleMeshShape* shape = CreateTriangleMeshShape(m_ModelRenderer->GetModel());
-
-        // PhysicsObjectのm_CollisionShapeに設定
-        m_CollisionShape = std::unique_ptr<btCollisionShape>(shape);
-
-        // RigidBodyを作成（質量0で静的オブジェクト）
-        CreateRigidBody(0.0f);
-
-
-        // 破壊設定（オプション）
-        SetDestructionThreshold(15.0f);
-        SetGroupSize(5);
-        SetExplosionForce(15.0f);
-    }
-
+    FragmentObject::Start();
 
 }
 

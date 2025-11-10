@@ -16,7 +16,8 @@
 #include"drawImgui.h"
 #include"FPSCamera.h"
 #include"FPSPlayer.h"
-
+#include"rockTallBlock_A.h"
+#include"skyBox.h"
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
@@ -198,6 +199,9 @@ void Scene::LoadScene(const std::string& fileName)
 		else if (type == "TreeBlock") obj = AddGameObject<TreeBlock>(layer);
 		else if (type == "FPSCamera") obj = AddGameObject<FPSCamera>(layer);
 		else if (type == "FPSPlayer") obj = AddGameObject<FPSPlayer>(layer);
+		else if (type == "RockTallBlock_A") obj = AddGameObject<RockTallBlock_A>(layer);
+		else if (type == "SkyBox") obj = AddGameObject<SkyBox>(layer);
+
 		else obj = AddGameObject<GameObject>(layer);
 
 		if (obj)

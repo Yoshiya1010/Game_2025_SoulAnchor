@@ -353,7 +353,7 @@ public:
 
         case GameObjectTag::Ground:
             m_CollisionGroup = COL_GROUND;
-            m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_BULLET|COL_DEFAULT;
+            m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_BULLET|COL_DEFAULT|COL_GROUND;
             break;
 
         case GameObjectTag::Wall:
