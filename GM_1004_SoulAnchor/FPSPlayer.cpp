@@ -140,6 +140,24 @@ void FPSPlayer::Update()
         UpdatePhysicsWithModel();
        
 
+        m_RigidBody->setAngularFactor(btVector3(0, 0, 0));  // 毎フレーム設定
+        m_RigidBody->setAngularVelocity(btVector3(0, 0, 0)); // 角速度をゼロに
+
+        // 姿勢を強制的にリセット
+        btTransform transform = m_RigidBody->getWorldTransform();
+
+        // Y軸周りの回転のみを保持、X軸とZ軸の回転は0にする
+        btQuaternion currentRotation = transform.getRotation();
+        btScalar yaw, pitch, roll;
+        currentRotation.getEulerZYX(yaw, pitch, roll);
+
+        // Y軸の回転だけ残して、他は0にする
+        btQuaternion correctedRotation;
+        correctedRotation.setEulerZYX(yaw, 0, 0);  // (yaw, pitch=0, roll=0)
+
+        transform.setRotation(correctedRotation);
+        m_RigidBody->setWorldTransform(transform);
+
         //-------------------------------------
         //アンカーの処理
         

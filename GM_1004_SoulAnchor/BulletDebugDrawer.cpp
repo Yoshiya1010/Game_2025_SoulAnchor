@@ -23,7 +23,7 @@ void BulletDebugDrawer::Init()
     // 動的頂点バッファ作成
     D3D11_BUFFER_DESC bufferDesc{};
     bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    bufferDesc.ByteWidth = sizeof(VERTEX_LINE) * 20000; // 線10000本分
+    bufferDesc.ByteWidth = sizeof(VERTEX_LINE) * 200000; // 線10000本分
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 

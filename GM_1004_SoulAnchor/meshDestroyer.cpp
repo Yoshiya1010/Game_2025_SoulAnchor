@@ -87,7 +87,7 @@ void MeshDestroyer::DestroyModel(
 
             //3D立体破片の設定
             fragment->SetUseExtrusion(true);             // 3D立体化ON
-            fragment->SetExtrusionDepth(0.5f);          // 厚さ15で基本的には問題ないけど　ここ動的な方がいいかも　一旦仮にするわ　TODO
+            fragment->SetExtrusionDepth(0.15f);          // 厚さ15で基本的には問題ないけど　ここ動的な方がいいかも　一旦仮にするわ　TODO
         
             //メッシュを三角形（3頂点）としてセット
             fragment->SetTriangleMesh(vertices, 3);
@@ -225,7 +225,7 @@ void MeshDestroyer::DestroyModelGrouped(
 
                 // 3D立体破片の設定
                 fragment->SetUseExtrusion(true);//3D立体化ON
-                fragment->SetExtrusionDepth(0.5f);//厚さ50
+                fragment->SetExtrusionDepth(0.15f);//厚さ
             
 
                 fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());

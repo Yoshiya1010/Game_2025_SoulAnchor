@@ -72,9 +72,6 @@ void DrawImguiWindow()
 				if (ImGui::MenuItem("Load Scene", nullptr, &loadSceneWindowFlag));
 				
 			
-			
-					
-			
 				ImGui::EndMenu();
 			}
 
