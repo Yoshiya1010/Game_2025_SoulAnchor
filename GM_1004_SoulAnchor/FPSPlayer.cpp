@@ -211,16 +211,41 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
 
     // プレイヤー位置＋少し前方に配置
     Vector3 camForward = camera->GetForward();
-    
-    Vector3 spawnPos = Vector3((m_Position.x + (camForward.x * 2.0f)), (m_Position.y + 2.0f+ (camForward.y * 2.0f)), (m_Position.z + (camForward.z * 2.0f)));
+
+    Vector3 spawnPos = Vector3(
+        m_Position.x + (camForward.x * 2.0f),
+        m_Position.y + 2.0f + (camForward.y * 2.0f),
+        m_Position.z + (camForward.z * 2.0f)
+    );
     anchor->SetPosition(spawnPos);
 
-    
-    
+    // ========================================
+    // カメラの向きからアンカーの回転角度を計算
+    // ========================================
+
+    // Y軸周りの回転（Yaw）を計算
+    // atan2(x, z) でXZ平面上の角度を求める
+    float yaw = atan2f(camForward.x, camForward.z);
+
+    // X軸周りの回転（Pitch）を計算
+    // asinで上下の角度を求める
+    float pitch = asinf(-camForward.y);  // 負の符号に注意
+
+    // ラジアンから度数法に変換（DirectXの描画用）
+    float yawDegrees = yaw * (180.0f / 3.14159265f);
+    float pitchDegrees = pitch * (180.0f / 3.14159265f);
+
+
+    DebugImguiWindow::DebugFloat("yawDegrees", &yawDegrees,false);
+    DebugImguiWindow::DebugFloat("pitchDegrees", &pitchDegrees,false);
+
+    // アンカーの回転を設定（度数法）
+    anchor->SetRotation(Vector3(pitchDegrees, yawDegrees, 0.0f));
+
+    // ========================================
 
     // 飛ばす方向の速度設定（Start後に反映される仕組み）
     anchor->SetVelocity(camForward * 50.0f);
-
 
     // 所有者を設定
     anchor->SetOwner(this);

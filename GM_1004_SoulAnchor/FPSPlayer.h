@@ -55,6 +55,23 @@ public:
 	void Draw() override;
 
 
+	Vector3 GetForward() const {
+		Vector3 forward;
+		forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
+		forward.y = sinf(m_Rotation.x);
+		forward.z = cosf(m_Rotation.y) * cosf(m_Rotation.x);
+		return forward;
+	}
+
+	// カメラの右方向ベクトルを取得
+	Vector3 GetRight() const {
+		Vector3 right;
+		right.x = sinf(m_Rotation.y + XM_PIDIV2);
+		right.y = 0.0f;
+		right.z = cosf(m_Rotation.y + XM_PIDIV2);
+		return right;
+	}
+
 	// アンカー投擲（生成のみ）
 	void ThrowAnchor(FPSCamera* camera);
 };

@@ -8,6 +8,7 @@
 #include"ModelFBX.h"
 #include"FPSPlayer.h"
 
+
 void Anchor::Init()
 {
     // ƒ‚ƒfƒ‹‚Ìƒ[ƒh
