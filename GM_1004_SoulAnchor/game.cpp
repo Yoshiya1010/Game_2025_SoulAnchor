@@ -76,9 +76,7 @@ void Game::Update()
 {
 	Scene::Update();
 
-	//if (Scene::GetGameObject<Enemy>() == nullptr) {
-	//	Manager::SetScene<Result>();
-	//}
+	
 
 	if (Scene::IsPaused()==true) return;
 	// •¨—¢ŠE‚ÌXV

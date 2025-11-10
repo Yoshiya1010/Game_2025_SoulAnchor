@@ -148,15 +148,15 @@ void CreateObjectWindow()
 
 	if (ImGui::Button("Add Ground")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		EditorObjectCreator::CreateGroundBlock(pos, Vector3(1.0f,1.0f,1.f));
+		selectedObject=EditorObjectCreator::CreateGroundBlock(pos, Vector3(1.0f,1.0f,1.f));
 	}
 	if (ImGui::Button("Add Tree")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		 EditorObjectCreator::CreateTree(pos, Vector3(1.0f,1.0f,1.0f));
+		selectedObject=EditorObjectCreator::CreateTree(pos, Vector3(1.0f,1.0f,1.0f));
 	}
 	if (ImGui::Button("Add RockTall_A")) {
 		Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
-		EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
+		selectedObject=EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
 	}
 
 
@@ -199,8 +199,6 @@ void SaveSceneWindow(void)
 
 void LoadSceneWindow(void)
 {
-
-	
 	static std::string SelectFileName;
 	
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
@@ -253,33 +251,71 @@ void LoadSceneWindow(void)
 
 void ShowSceneHierarchyWindow(void)
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 1000), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(700, 1000), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Scene Hierarchy");
-	
 
 	auto* layers = Scene::GetAllGameObjects();
 
-	// レイヤーごとに区切って表示
 	for (int i = 0; i < LAYER_NUM; i++)
 	{
-		// レイヤーの中身が空ならスキップ
 		if (layers[i].empty()) continue;
 
-		// 見出しツリー（折りたたみ式）
 		std::string layerName = "Layer " + std::to_string(i);
 		if (ImGui::TreeNode(layerName.c_str()))
 		{
-			for (auto& obj : layers[i])
+			
+			if (ImGui::BeginTable(("hier_table_" + std::to_string(i)).c_str(), 2,
+				ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp))
 			{
-				// オブジェクト名が空のときにImGuiが落ちるのを防止
-				std::string objName = obj->GetName();
-				if (objName.empty()) objName = "Unnamed Object";
+				ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+				ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 90.0f); 
+				ImGui::TableHeadersRow();
 
-				// 選択可能な行を描画
-				if (ImGui::Selectable(objName.c_str(), selectedObject == obj))
+				for (auto& obj : layers[i])
 				{
-					selectedObject = obj;
+					ImGui::TableNextRow();
+					ImGui::PushID(obj); 
+
+					//選択
+					ImGui::TableSetColumnIndex(0);
+
+					std::string objName = obj->GetName();
+					if (objName.empty()) objName = "Unnamed Object";
+
+					// Selectable が列の中だけを占める（行全幅ではない）ので、隣列のボタンと重ならない
+					bool selected = (selectedObject == obj);
+					ImGui::Selectable(objName.c_str(), selected, ImGuiSelectableFlags_SpanAllColumns == 0);
+					if (ImGui::IsItemClicked())
+					{
+						selectedObject = obj;
+					}
+
+					//操作ボタン
+					ImGui::TableSetColumnIndex(1);
+
+					const char* delLabel =U8("削除");
+					ImVec2 textSize = ImGui::CalcTextSize(delLabel);
+					ImVec2 pad = ImGui::GetStyle().FramePadding;
+					float btnW = textSize.x + pad.x * 2.0f;
+
+					float avail = ImGui::GetContentRegionAvail().x;
+
+					
+					const float margin = 16.0f; 
+					float x = ImGui::GetCursorPosX() + std::max(0.0f, avail - btnW - margin);
+					ImGui::SetCursorPosX(x);
+
+					if (ImGui::SmallButton(delLabel)) {
+						obj->SetDestroy();
+						if (selectedObject == obj) selectedObject = nullptr;
+					}
+					
+
+
+					ImGui::PopID();
 				}
+
+				ImGui::EndTable();
 			}
 
 			ImGui::TreePop();
