@@ -44,8 +44,7 @@ void CheckObjectSelect(GameObject* obj)
 void DrawImguiWindow()
 {
 
-	// デモウィンドウ（テスト用）
-	static bool showDemo = true;
+	
 
 
 	static bool showDebugWindow = false;
@@ -60,7 +59,7 @@ void DrawImguiWindow()
 	static bool saveSceneWindowFlag = false;
 	//ロードのウィンドウ
 	static bool loadSceneWindowFlag = false;
-	if (showDemo) {
+	
 	
 		
 		
@@ -75,15 +74,12 @@ void DrawImguiWindow()
 			
 			
 					
-				ImGui::Separator();
-				if (ImGui::MenuItem("Exit")) {
-					PostQuitMessage(0);
-				}
+			
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("View")) {
-				ImGui::MenuItem(" Window", nullptr, &showDemo);
+				
 				ImGui::MenuItem("Scene Hierarchy", nullptr, &showSceneHierarchyWindowFlag);
 				ImGui::MenuItem("Properties", nullptr, &showPropertiesWindowFlag);
 
@@ -134,14 +130,14 @@ void DrawImguiWindow()
 
 
 	
-}
+
 
 
 void CreateObjectWindow()
 {
 	ImGui::Begin("AddCreateObject");
 
-	// 既存のオブジェクト表示コード...（前回と同じ）
+	// 既存のオブジェクト表示コード
 
 	ImGui::Separator();
 	ImGui::Text("Create Objects:");
