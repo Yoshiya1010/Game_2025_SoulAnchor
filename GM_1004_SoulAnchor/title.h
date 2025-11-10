@@ -6,7 +6,7 @@
 class Title :public Scene {
 private:
 
-	PolygonAnimator2D* m_button=nullptr;
+	SpriteAnimator2D* m_button=nullptr;
 	int m_NoPressCounter = 0;
 public:
 	void Init() override;

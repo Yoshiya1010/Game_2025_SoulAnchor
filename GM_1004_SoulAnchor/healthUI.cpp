@@ -4,19 +4,21 @@
 #include "textureManager.h"
 #include"sprite2D.h"
 #include"healthUI.h"
+#include"polygon.h"
+#include"scene.h"
+#include"manager.h"
 
 void HealthUI::Init()
 {
-    m_player_icon = std::make_unique<Sprite2D>();
-    m_player_icon->Init(0, 0, 100, 100,"asset\\texture\\PlayerUI\\player_icon.png");
+    //ƒV[ƒ“‚ðŽæ“¾
+    Scene* scene = Manager::GetScene();
+    Sprite2D *PlayerUi= scene->AddGameObject<Sprite2D>(UI);
+    PlayerUi->Init(0.f, 0.f, 100.f, 100.f, "asset\\texture\\PlayerUI\\player_icon.png");
 }
 
 void HealthUI::Uninit()
 {
-    if (m_player_icon)
-        m_player_icon->Uninit();
-
-    m_player_icon.reset();
+   
 }
 
 void HealthUI::Update()
@@ -25,5 +27,5 @@ void HealthUI::Update()
 
 void HealthUI::Draw()
 {
-    m_player_icon->Draw();
+    
 }

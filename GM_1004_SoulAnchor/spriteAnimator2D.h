@@ -3,7 +3,7 @@
 #include "renderer.h"
 #include "textureManager.h"
 
-class SpriteAnimator2D 
+class SpriteAnimator2D :public GameObject
 {
 private:
     ID3D11Buffer* m_VertexBuffer = nullptr;
@@ -12,7 +12,7 @@ private:
     ID3D11PixelShader* m_PixelShader = nullptr;
     ID3D11InputLayout* m_VertexLayout = nullptr;
 
-    float m_X, m_Y, m_W, m_H;
+
 
 
 

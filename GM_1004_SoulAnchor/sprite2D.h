@@ -2,8 +2,9 @@
 #include "main.h"
 #include "renderer.h"
 #include "textureManager.h"
+#include"gameObject.h"
 
-class Sprite2D
+class Sprite2D :public GameObject
 {
 private:
     ID3D11Buffer* m_VertexBuffer;
@@ -14,20 +15,26 @@ private:
 
     ID3D11ShaderResourceView* m_Texture; // テクスチャ
 
-    float m_X = 0, m_Y = 0;
-    float m_Width = 0, m_Height = 0;
+    
+
+    
 
 public:
     Sprite2D() {}
     ~Sprite2D() { Uninit(); }
 
     void Init(float x, float y, float width, float height, const char* fileName);
-    void Uninit();
-    void Draw();
+    void Init() {};
+    void Uninit() override;
+    void Update() override;
+    void Draw() override;
 
-    void SetPos(float x, float y) { m_X = x; m_Y = y; }
-    void SetSize(float w, float h) { m_Width = w; m_Height = h; RebuildVertex(); }
+  
+   
+
+
+   
 
 private:
-    void RebuildVertex();
+    
 };

@@ -44,9 +44,14 @@ void Sprite2D::Init(float x, float y, float width, float height, const char* fil
 
     Renderer::CreatePixelShader(&m_PixelShader,
         "shader\\unlitTexturePS.cso");
+
+    
 }
 
+void Sprite2D::Update()
+{
 
+}
 
 void Sprite2D::Uninit()
 {
@@ -71,9 +76,9 @@ void Sprite2D::Draw()
     Renderer::SetWorldViewProjection2D();
 
     XMMATRIX world, scale, rot, trans;
-    scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-    rot = XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f);
-    trans = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    scale = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
+    rot = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.z,m_Rotation.y);
+    trans = XMMatrixTranslation(m_Position.x,m_Position.y, m_Position.z);
     world = scale * rot * trans;
 
     Renderer::SetWorldMatrix(world);

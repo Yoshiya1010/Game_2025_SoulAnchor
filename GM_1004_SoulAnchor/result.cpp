@@ -5,11 +5,11 @@
 #include "input.h"
 #include "result.h"
 #include "title.h"
-#include "Polygon.h"
+#include"sprite2D.h"
 
 void Result::Init()
 {
-	AddGameObject<Polygon2D>(UI)->Init(0.0f,0.0f,SCREEN_WIDTH,SCREEN_HEIGHT,"asset\\texture\\Result_BG.png");
+	AddGameObject<Sprite2D>(UI)->Init(0.0f,0.0f,SCREEN_WIDTH,SCREEN_HEIGHT,"asset\\texture\\Result_BG.png");
 }
 
 void Result::Update()

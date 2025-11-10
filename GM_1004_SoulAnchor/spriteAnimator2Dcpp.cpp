@@ -2,7 +2,7 @@
 
 void SpriteAnimator2D::Init(float x, float y, float w, float h, const char* FileName, int cols, int rows)
 {
-    m_X = x; m_Y = y; m_W = w; m_H = h;
+    m_Position.x = x; m_Position.y = y; m_Scale.x = w; m_Scale.y = h;
     m_Cols = cols; m_Rows = rows;
 
     VERTEX_3D v[4] =
@@ -68,10 +68,10 @@ void SpriteAnimator2D::Draw()
     Renderer::SetDepthEnable(false);
 
     //í∏ì_ÇãÅÇﬂÇÈ
-    float cx = m_X;
-    float cy = m_Y;
-    float w = m_W;
-    float h = m_H;
+    float cx = m_Position.x;
+    float cy = m_Position.y;
+    float w = m_Scale.x;
+    float h = m_Scale.y;
 
     float x0 = cx - w / 2.0f;
     float y0 = cy - h / 2.0f;
