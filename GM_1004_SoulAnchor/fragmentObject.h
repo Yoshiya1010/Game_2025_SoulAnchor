@@ -1,8 +1,3 @@
-// fragmentObject.h
-// 破壊機能を持つPhysicsObjectの基底クラス
-// これを継承するだけでメッシュベースの破壊機能が使える
-// コライダータイプ: トライアングルメッシュ or Box（モデルから自動計算）
-
 #pragma once
 
 #include "PhysicsObject.h"
@@ -25,7 +20,7 @@ protected:
     float m_ExplosionForce = 15.0f; // 破片が飛ぶ力の大きさ
 
     // コライダータイプの選択
-    bool m_UseTriangleMesh = false;  // true=トライアングルメッシュ、false=Box
+    bool m_UseTriangleMesh = false;  // true=トライアングルメッシュ、　falseだとBoxになる
 
     // Boxコライダー用の自動サイズ計算
     Vector3 m_AutoBoxHalfSize = Vector3(1.0f, 1.0f, 1.0f);
@@ -37,16 +32,16 @@ public:
         if (m_ModelRenderer) delete m_ModelRenderer;
     }
 
-    // 衝突時のコールバック（オーバーライド可能）
+    // 衝突時のコールバック
     void OnCollisionEnter(GameObject* other, const Vector3& hitPoint) override;
 
-    // 破壊処理（カスタマイズ可能）
+    // 破壊処理
     virtual void DestroyObject(const Vector3& impactPoint);
 
-    // コライダー再作成（スケール変更時などに使用）
+    // コライダー再作成
     void RecreateCollider() override;
 
-    // 質量設定のオーバーライド（トライアングルメッシュの制限対応）
+    // 質量設定のオーバーライド
     PhysicsObject* SetMass(float mass) override;
 
     // 設定用メソッド

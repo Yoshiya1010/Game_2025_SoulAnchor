@@ -6,24 +6,19 @@
 #include <vector>
 #include"modelRenderer.h"
 
-// メッシュを破壊して破片を生成するヘルパークラス
+/
 class MeshDestroyer {
 public:
-    // モデル全体を三角形破片に分解
-    // model: 破壊するモデル
-    // worldMatrix: モデルのワールド変換行列
-    // explosionCenter: 爆発の中心座標
-    // explosionForce: 爆発の力の大きさ
-    // scene: 破片を追加するシーン
+
     static void DestroyModel(
-        MODEL* model,
-        const XMMATRIX& worldMatrix,
-        const Vector3& explosionCenter,
-        float explosionForce,
+        MODEL* model,//破壊するモデル
+        const XMMATRIX& worldMatrix,//モデルのワールド変換行列
+        const Vector3& explosionCenter,//爆心地
+        float explosionForce,//爆発の威力
         Scene* scene
     );
 
-    // モデルを複数のグループに分けて破壊（パフォーマンス考慮版）
+    // モデルを複数のグループに分けて破壊
     // groupSize: 何個の三角形を1つの破片にまとめるか
     static void DestroyModelGrouped(
         MODEL* model,

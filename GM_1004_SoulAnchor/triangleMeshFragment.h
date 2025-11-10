@@ -35,9 +35,9 @@ private:
     Vector3 m_ColliderHalfSize = Vector3(0.5f, 0.5f, 0.5f);
 
     // 3D立体化の設定
-    bool m_UseExtrusion = true;          // 立体化を使用するか
-    float m_ExtrusionDepth = 0.1f;       // 押し出しの深さ（厚み）
-    XMFLOAT4 m_FragmentColor = XMFLOAT4(0.8f, 0.6f, 0.4f, 1.0f);  // 破片の色
+    bool m_UseExtrusion = true;// 立体化を使用するか
+    float m_ExtrusionDepth = 0.1f; // 押し出しの深さ（厚み）
+    XMFLOAT4 m_FragmentColor = XMFLOAT4(0.8f, 0.6f, 0.4f, 1.0f);  // 破片の色　初期値だけ渡しておく
 
 public:
     void Init() override;
@@ -62,13 +62,10 @@ public:
     }
 
 private:
-    // メッシュバッファの作成
-    void CreateMeshBuffers(const VERTEX_3D* vertices, unsigned int vertexCount);
-
     // 3D立体メッシュの作成（三角形を押し出して立体化）
     void CreateExtrudedMesh(const VERTEX_3D* vertices, unsigned int vertexCount);
 
-    // 平面メッシュの作成（従来の方法）
+    // 平面メッシュの作成
     void CreateFlatMesh(const VERTEX_3D* vertices, unsigned int vertexCount);
 
     // メッシュのバウンディングボックスを計算

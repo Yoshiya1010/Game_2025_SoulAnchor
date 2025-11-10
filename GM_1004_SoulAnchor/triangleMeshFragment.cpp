@@ -34,9 +34,9 @@ void TriangleMeshFragment::Start()
         SetupCollisionLayer();
 
         // 計算されたバウンディングボックスサイズを使用
-        CreateBoxCollider(m_ColliderHalfSize, 1.0f);  // 質量1kg
+        CreateBoxCollider(m_ColliderHalfSize, 1.0f);//質量1kg 固定
 
-        // 空気抵抗を設定（すぐ止まるように）
+        // 空気抵抗を設定（すぐ止まるように） 強めに設定してる」
         if (m_RigidBody) {
             m_RigidBody->setDamping(0.5f, 0.7f);
         }
@@ -94,7 +94,7 @@ void TriangleMeshFragment::Draw()
         Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
     }
 
-    // ワールド行列設定
+    //ワールド行列設定
     Renderer::SetWorldMatrix(UpdatePhysicsWithModel(1.0f));
 
     // 描画
@@ -120,10 +120,7 @@ void TriangleMeshFragment::SetTriangleMesh(const VERTEX_3D* vertices, unsigned i
     }
 }
 
-void TriangleMeshFragment::CreateMeshBuffers(const VERTEX_3D* vertices, unsigned int vertexCount)
-{
-    // この関数は使用しない（CreateExtrudedMeshとCreateFlatMeshで直接作成）
-}
+
 
 void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigned int vertexCount)
 {
@@ -180,13 +177,13 @@ void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigne
         indices.push_back(baseIndex + 1);
         indices.push_back(baseIndex + 2);
 
-        // 下面の三角形（5, 4, 3 - 逆順で法線を逆に）
+        // 下面の三角形（逆順で法線を逆にする）
         indices.push_back(baseIndex + 5);
         indices.push_back(baseIndex + 4);
         indices.push_back(baseIndex + 3);
 
-        // 側面の3つの四角形（各辺に1つ）
-        // 側面1: 辺(0-1)
+        // 側面の3つの四角形
+        // 側面1: 辺(
         unsigned int sideBase = baseIndex + 6;
 
         // 辺0-1の側面
@@ -196,7 +193,7 @@ void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigne
         side01[2] = bottomVerts[1];
         side01[3] = bottomVerts[0];
 
-        // 側面の法線を計算
+        //側面の法線を計算
         XMVECTOR s01_edge1 = XMVectorSubtract(XMLoadFloat3(&side01[1].Position), XMLoadFloat3(&side01[0].Position));
         XMVECTOR s01_edge2 = XMVectorSubtract(XMLoadFloat3(&side01[3].Position), XMLoadFloat3(&side01[0].Position));
         XMVECTOR s01_normal = XMVector3Normalize(XMVector3Cross(s01_edge1, s01_edge2));
@@ -206,7 +203,7 @@ void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigne
             extrudedVertices.push_back(side01[j]);
         }
 
-        // 側面1の2つの三角形
+        //側面1の2つの三角形
         indices.push_back(sideBase + 0);
         indices.push_back(sideBase + 1);
         indices.push_back(sideBase + 2);
@@ -351,17 +348,17 @@ Vector3 TriangleMeshFragment::CalculateBoundingBoxHalfSize(const VERTEX_3D* vert
         maxPos.z = fmax(maxPos.z, pos.z);
     }
 
-    // 押し出しを考慮してサイズを拡張
+    //押し出しを考慮してサイズを変更
     float extrusionMargin = m_UseExtrusion ? m_ExtrusionDepth : 0.0f;
 
-    // ハーフサイズを計算
+    //ハーフサイズを計算
     Vector3 halfSize(
         (maxPos.x - minPos.x) * 0.5f + extrusionMargin,
         (maxPos.y - minPos.y) * 0.5f + extrusionMargin,
         (maxPos.z - minPos.z) * 0.5f + extrusionMargin
     );
 
-    // 最小サイズを保証（あまりに小さいと物理演算が不安定になる）
+    // 最小サイズを保証　
     halfSize.x = fmax(halfSize.x, 0.1f);
     halfSize.y = fmax(halfSize.y, 0.1f);
     halfSize.z = fmax(halfSize.z, 0.1f);
