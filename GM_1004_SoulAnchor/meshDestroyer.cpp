@@ -1,6 +1,10 @@
+// MeshDestroyer.cpp
+// モデルを破壊して破片を生成するシステム
+// 3D立体破片機能対応
+
 #include "MeshDestroyer.h"
 #include <algorithm>
-#include"modelRenderer.h"
+#include "modelRenderer.h"
 
 void MeshDestroyer::DestroyModel(
     MODEL* model,
@@ -75,11 +79,22 @@ void MeshDestroyer::DestroyModel(
                 vertices[v].Normal = worldVertices[v].Normal;
             }
 
+            // ========================================
             // 破片を生成
+            // ========================================
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(triangleCenter);
             fragment->SetScale(Vector3(1, 1, 1));
+
+            // ========================================
+            // 3D立体破片の設定（ここを追加！）
+            // ========================================
+            fragment->SetUseExtrusion(true);             // 3D立体化ON
+            fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
+        
+            // ========================================
+
             fragment->SetTriangleMesh(vertices, 3);
 
             // マテリアル設定
@@ -92,7 +107,7 @@ void MeshDestroyer::DestroyModel(
             Vector3 direction = triangleCenter - explosionCenter;
             float distance = direction.Length();
             if (distance > 0.001f) {
-               direction.Normalize();
+                direction.Normalize();
 
                 // 距離に応じて力を減衰
                 float forceMagnitude = explosionForce / (1.0f + distance * 0.1f);
@@ -204,12 +219,23 @@ void MeshDestroyer::DestroyModelGrouped(
                     vertex.Position.z -= groupCenter.z;
                 }
 
+                // ========================================
                 // 破片を生成
+                // ========================================
                 TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
                 fragment->Init();
                 fragment->SetPosition(groupCenter);
                 fragment->SetScale(Vector3(1, 1, 1));
-                fragment->SetTriangleMesh(groupVertices.data(), groupVertices.size());
+
+                // ========================================
+                // 3D立体破片の設定（ここを追加！）
+                // ========================================
+                fragment->SetUseExtrusion(true);             // 3D立体化ON
+                fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
+            
+                // ========================================
+
+                fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());
 
                 // マテリアル設定
                 fragment->SetMaterial(subset.Material.Material);
@@ -262,11 +288,23 @@ void MeshDestroyer::DestroyModelGrouped(
                 vertex.Position.z -= groupCenter.z;
             }
 
+            // ========================================
+            // 破片を生成
+            // ========================================
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(groupCenter);
             fragment->SetScale(Vector3(1, 1, 1));
-            fragment->SetTriangleMesh(groupVertices.data(), groupVertices.size());
+
+            // ========================================
+            // 3D立体破片の設定（ここを追加！）
+            // ========================================
+            fragment->SetUseExtrusion(true);             // 3D立体化ON
+            fragment->SetExtrusionDepth(0.15f);          // 厚さ15cm
+        
+            // ========================================
+
+            fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());
 
             fragment->SetMaterial(subset.Material.Material);
             if (subset.Material.Texture) {
