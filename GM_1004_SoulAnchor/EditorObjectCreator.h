@@ -16,6 +16,5 @@ public:
     // ユーティリティメソッド
     static Vector3 GetSafeSpawnPosition();
  
-private:
-    static int s_CreatedObjectCount; // 連番用
+
 };

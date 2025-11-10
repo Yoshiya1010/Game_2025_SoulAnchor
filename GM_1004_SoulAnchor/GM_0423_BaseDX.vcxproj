@@ -148,6 +148,7 @@
     <ClCompile Include="debugImguiWindow.cpp" />
     <ClCompile Include="drawImgui.cpp" />
     <ClCompile Include="editorObjectCreator.cpp" />
+    <ClCompile Include="editorUICreator.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="field.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameObject.cpp" />
     <ClCompile Include="groundBlock.cpp" />
+    <ClCompile Include="healthUI.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
     <ClCompile Include="Imgui\imgui_draw.cpp" />
@@ -207,6 +209,7 @@
     <ClInclude Include="debugPrintf.h" />
     <ClInclude Include="drawImgui.h" />
     <ClInclude Include="editorObjectCreator.h" />
+    <ClInclude Include="editorUICreator.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="field.h" />
@@ -216,6 +219,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="gameObject.h" />
     <ClInclude Include="groundBlock.h" />
+    <ClInclude Include="healthUI.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_dx11.h" />
     <ClInclude Include="Imgui\imgui_impl_win32.h" />

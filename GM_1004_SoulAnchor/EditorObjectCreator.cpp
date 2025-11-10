@@ -14,7 +14,7 @@
 #include"RockTallBlock_A.h"
 
 
-int EditorObjectCreator::s_CreatedObjectCount = 0;
+
 
 GameObject* EditorObjectCreator::CreateGroundBlock(Vector3 position, Vector3 size) {
     

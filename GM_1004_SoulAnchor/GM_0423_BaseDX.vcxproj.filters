@@ -82,6 +82,12 @@
     <Filter Include="ソース ファイル\アンカー">
       <UniqueIdentifier>{0f4f82e8-a35d-4bcc-b7a8-d1551bbcee18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\プレイヤー\UI">
+      <UniqueIdentifier>{1816e899-6d66-4f76-8f5d-4e2d42870f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\プレイヤー\UI">
+      <UniqueIdentifier>{19cc7c28-50c4-4173-b1ec-b001083031f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -183,9 +189,6 @@
     <ClCompile Include="FPSPlayer.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>ソース ファイル\プレイヤー</Filter>
-    </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>ソース ファイル\プレイヤー</Filter>
     </ClCompile>
@@ -248,6 +251,15 @@
     </ClCompile>
     <ClCompile Include="polygonAnimator.cpp">
       <Filter>ソース ファイル\2D描画</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\プレイヤー</Filter>
+    </ClCompile>
+    <ClCompile Include="healthUI.cpp">
+      <Filter>ソース ファイル\プレイヤー\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="editorUICreator.cpp">
+      <Filter>ソース ファイル\エディター周り</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -427,6 +439,12 @@
     </ClInclude>
     <ClInclude Include="polygonAnimator.h">
       <Filter>ヘッダー ファイル\2D描画</Filter>
+    </ClInclude>
+    <ClInclude Include="healthUI.h">
+      <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="editorUICreator.h">
+      <Filter>ヘッダー ファイル\エディター周り</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

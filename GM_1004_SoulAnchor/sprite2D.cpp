@@ -58,6 +58,8 @@ void Sprite2D::Uninit()
 
 void Sprite2D::Draw()
 {
+    
+
     // 入力レイアウト設定
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
 

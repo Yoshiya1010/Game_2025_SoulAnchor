@@ -22,6 +22,7 @@
 #include"DrawImgui.h"
 #include"scene.h"
 #include <iostream>
+#include"editorUICreator.h"
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 // utf8ヘルパーマクロ
@@ -101,6 +102,8 @@ void DrawImguiWindow()
 		//オブジェクトの作成のWindow
 		CreateObjectWindow();
 
+		CreateUiWindow();
+
 		if (saveSceneWindowFlag)
 		{
 			SaveSceneWindow();
@@ -152,8 +155,23 @@ void CreateObjectWindow()
 		selectedObject=EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
 	}
 
+	
 
 
+
+	ImGui::End();
+}
+
+
+void CreateUiWindow()
+{
+	ImGui::Begin("AddCreateUI");
+
+	if (ImGui::Button("Add PlayerHPUI"))
+	{
+	
+		selectedObject = EditorUICreator::CreateUIPlayerHp();
+	}
 	ImGui::End();
 }
 
