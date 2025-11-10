@@ -392,9 +392,6 @@
     <ClInclude Include="game.h">
       <Filter>ヘッダー ファイル\シーン</Filter>
     </ClInclude>
-    <ClInclude Include="Polygon.h">
-      <Filter>ヘッダー ファイル\2D描画</Filter>
-    </ClInclude>
     <ClInclude Include="RockTallBlock_A.h">
       <Filter>ヘッダー ファイル\BulletObject</Filter>
     </ClInclude>
@@ -429,9 +426,6 @@
       <Filter>ヘッダー ファイル\input</Filter>
     </ClInclude>
     <ClInclude Include="sprite2D.h">
-      <Filter>ヘッダー ファイル\2D描画</Filter>
-    </ClInclude>
-    <ClInclude Include="polygonAnimator.h">
       <Filter>ヘッダー ファイル\2D描画</Filter>
     </ClInclude>
     <ClInclude Include="healthUI.h">

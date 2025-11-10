@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scene.h"
-#include"polygonAnimator.h"
+#include"spriteAnimator2D.h"
 
 class Title :public Scene {
 private:

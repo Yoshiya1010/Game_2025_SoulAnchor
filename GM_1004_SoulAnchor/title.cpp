@@ -4,7 +4,8 @@
 #include "input.h"
 #include "title.h"
 #include "game.h"
-#include "Polygon.h"
+#include"sprite2D.h"
+#include"spriteAnimator2D.h"
 
 
 void Title::Init()

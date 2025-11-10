@@ -24,7 +24,9 @@ private:
     float m_FrameSpeed = 1.0f;
 
     bool  m_Loop = true;
-    bool  m_Playing = true;   
+    bool  m_Playing = true;  
+
+    bool m_DrawFlag=true;
 public:
     void Init() {}
     void Init(float x, float y, float w, float h, const char* FileName, int cols, int rows);
@@ -41,4 +43,7 @@ public:
     void Update();
     void Draw();
     void Uninit();
+
+
+    void SetDrawFlag(bool flag) { m_DrawFlag = flag; };
 };

@@ -239,8 +239,6 @@
     <ClInclude Include="physicsManager.h" />
     <ClInclude Include="physicsObject.h" />
     <ClInclude Include="player.h" />
-    <ClInclude Include="polygon.h" />
-    <ClInclude Include="polygonAnimator.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="rockTallBlock_A.h" />

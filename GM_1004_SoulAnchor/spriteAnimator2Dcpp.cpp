@@ -64,6 +64,8 @@ void SpriteAnimator2D::Update()
 
 void SpriteAnimator2D::Draw()
 {
+
+    if (!m_DrawFlag)return;
     Renderer::SetWorldViewProjection2D();
     Renderer::SetDepthEnable(false);
 

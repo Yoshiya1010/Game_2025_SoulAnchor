@@ -18,7 +18,7 @@ private:
     
 
     
-
+    bool m_DrawFlag = true;
 public:
     Sprite2D() {}
     ~Sprite2D() { Uninit(); }
@@ -30,7 +30,7 @@ public:
     void Draw() override;
 
   
-   
+    void SetDrawFlag(bool flag) { m_DrawFlag = flag; };
 
 
    

@@ -1,10 +1,8 @@
 #include "main.h"
 #include "renderer.h"
-#include "Polygon.h"
 #include "textureManager.h"
 #include"sprite2D.h"
 #include"healthUI.h"
-#include"polygon.h"
 #include"scene.h"
 #include"manager.h"
 

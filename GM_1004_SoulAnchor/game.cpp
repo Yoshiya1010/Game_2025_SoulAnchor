@@ -7,7 +7,6 @@
 #include "field.h"
 #include "player.h"
 #include "enemy.h"
-#include "Polygon.h"
 #include "title.h"
 #include "input.h"
 #include "result.h"
