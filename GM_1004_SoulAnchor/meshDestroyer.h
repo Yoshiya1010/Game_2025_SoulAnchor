@@ -6,7 +6,7 @@
 #include <vector>
 #include"modelRenderer.h"
 
-/
+
 class MeshDestroyer {
 public:
 

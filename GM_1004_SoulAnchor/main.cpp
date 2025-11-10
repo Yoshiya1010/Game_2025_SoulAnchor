@@ -10,7 +10,7 @@
 
 
 const char* CLASS_NAME = "AppClass";
-const char* WINDOW_NAME = "DX11ゲーム";
+const char* WINDOW_NAME = "SoulAnchor";
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -62,6 +62,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
 	}
 
+	
+
+
+
 	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 
 
@@ -84,7 +88,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	dwExecLastTime = timeGetTime();
 	dwCurrentTime = 0;
 
-
+	DWORD fpsLastTime = timeGetTime(); // 前回FPS更新時刻
+	int   fpsFrames = 0;             // 1秒間のフレーム数カウンタ
+	double fpsValue = 0.0;           // 計算済みFPS
 
 	MSG msg;
 	while(1)
@@ -111,6 +117,23 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 				Manager::Update();
 				Manager::Draw();
+
+				++fpsFrames;
+				DWORD now = timeGetTime();
+				DWORD elapsed = now - fpsLastTime;
+				if (elapsed >= 1000) {
+					// 経過時間に対する平均FPSを計算（1秒以上ズレても正確になるように）
+					fpsValue = (double)fpsFrames * 1000.0 / (double)elapsed;
+
+					// タイトル文字列組み立て
+					char title[256];
+					std::snprintf(title, sizeof(title), "%s  %.1f FPS", WINDOW_NAME, fpsValue);
+					SetWindowTextA(g_Window, title);
+
+					// 次の1秒へ
+					fpsFrames = 0;
+					fpsLastTime = now;
+				}
 			}
 		}
 	}
