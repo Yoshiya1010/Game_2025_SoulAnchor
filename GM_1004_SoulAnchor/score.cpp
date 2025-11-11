@@ -50,6 +50,7 @@ void Score::Init()
         "shader\\unlitTexturePS.cso");
 
     m_Value = 0;
+    SetName("Score");
 }
 
 void Score::Uninit()
@@ -123,10 +124,10 @@ void Score::Draw()
         float w = 50.0f;
         float h = 50.0f;
 
-        float tw = 1.0f / 5;
-        float th = 1.0f / 5;
-        float tx = (num % 5) * tw;
-        float ty = (num / 5) * th;
+        float tw = 1.0f / 10;
+        float th = 1.0f / 1;
+        float tx = (num % 10) * tw;
+        float ty = (num / 1) * th;
 
         vertex[0].Position = XMFLOAT3(x, y, 0.0f);
         vertex[0].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
