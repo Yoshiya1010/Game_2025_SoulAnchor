@@ -4,9 +4,9 @@
             "Layer": 0,
             "Name": "FPSCamera",
             "Position": [
-                -13.666736602783203,
-                1.0499999523162842,
-                13.641645431518555
+                -14.290956497192383,
+                1.299999713897705,
+                14.397045135498047
             ],
             "Rotation": [
                 0.11100033670663834,
@@ -25,7 +25,7 @@
             "Name": "FPSPlayer",
             "Position": [
                 -14.290956497192383,
-                -0.7500000596046448,
+                -0.5000001788139343,
                 14.397045135498047
             ],
             "RigidBody": {
@@ -35,8 +35,8 @@
                     0.0
                 ],
                 "ColliderType": "Capsule",
-                "CollisionGroup": 1,
-                "CollisionMask": 78,
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
                 "Mass": 70.0,
                 "OriginalColliderHalfSize": [
                     1.0,
@@ -60,9 +60,9 @@
             "Layer": 2,
             "Name": "SkyBox",
             "Position": [
-                -13.666736602783203,
-                1.0499999523162842,
-                13.641645431518555
+                -14.290956497192383,
+                1.299999713897705,
+                14.397045135498047
             ],
             "Rotation": [
                 0.0,
@@ -91,8 +91,8 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 8,
-                "CollisionMask": 155,
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
                     1.0,
@@ -101,9 +101,9 @@
                 ]
             },
             "Rotation": [
-                -1.3625985964342343e-19,
-                6.18292046230158e-20,
-                3.0045774689920607e-21
+                -4.1507128218553956e-23,
+                1.8834251327377962e-23,
+                9.152465788215726e-25
             ],
             "Scale": [
                 30.0,
@@ -116,9 +116,9 @@
             "Layer": 2,
             "Name": "TreeBlock_001",
             "Position": [
-                -13.7693452835083,
-                3.965477228164673,
-                -0.013476547785103321
+                -13.765807151794434,
+                3.965463161468506,
+                -0.011581998318433762
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -127,8 +127,8 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 8,
-                "CollisionMask": 155,
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
                 "Mass": 1.0,
                 "OriginalColliderHalfSize": [
                     0.19313645362854004,
@@ -137,9 +137,9 @@
                 ]
             },
             "Rotation": [
-                0.004247992765158415,
-                -1.0226673111901619e-05,
-                -7.771104719722643e-06
+                -0.00013745951582677662,
+                -3.607642156566726e-06,
+                -2.988517508129007e-06
             ],
             "Scale": [
                 7.800000190734863,
@@ -152,9 +152,9 @@
             "Layer": 2,
             "Name": "TreeBlock_002",
             "Position": [
-                -8.649129867553711,
-                5.036186695098877,
-                0.03786158189177513
+                -8.645523071289063,
+                5.036186218261719,
+                0.03967500105500221
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -163,8 +163,8 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 8,
-                "CollisionMask": 155,
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
                 "Mass": 8.0,
                 "OriginalColliderHalfSize": [
                     0.19313645362854004,
@@ -173,9 +173,9 @@
                 ]
             },
             "Rotation": [
-                0.0031105855014175177,
-                -3.132655365334358e-06,
-                -2.226510105174384e-06
+                -0.00011706454097293317,
+                -3.14522708322329e-06,
+                -2.5710148747748462e-06
             ],
             "Scale": [
                 9.199999809265137,
@@ -224,9 +224,9 @@
             "Layer": 2,
             "Name": "GroundBlock_002",
             "Position": [
-                -6.509203910827637,
-                -1.000000238418579,
-                6.834770202636719
+                -6.489638805389404,
+                -1.0000001192092896,
+                6.811564922332764
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -235,8 +235,8 @@
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 8,
-                "CollisionMask": 155,
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
                 "Mass": 1.5,
                 "OriginalColliderHalfSize": [
                     1.0,
@@ -245,9 +245,9 @@
                 ]
             },
             "Rotation": [
-                -5.960464477539063e-08,
-                1.5707967281341553,
-                2.131563425064087
+                -4.387261924421182e-06,
+                1.9780878801611834e-07,
+                -5.488573151524179e-08
             ],
             "Scale": [
                 1.0,
@@ -264,22 +264,6 @@
                 -189.3472442626953,
                 -205.59600830078125
             ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 32,
-                "CollisionMask": 140,
-                "Mass": 1.0,
-                "OriginalColliderHalfSize": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
             "Rotation": [
                 -0.0,
                 0.0,
@@ -290,7 +274,7 @@
                 1.0,
                 1.0
             ],
-            "Type": "Anchor"
+            "Type": "GameObject"
         },
         {
             "Layer": 4,
@@ -311,6 +295,306 @@
                 1.0
             ],
             "Type": "Score"
+        },
+        {
+            "Layer": 4,
+            "Name": "playerIcon",
+            "Position": [
+                180.0,
+                100.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "playerIcon",
+            "Position": [
+                180.0,
+                100.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Sprite2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Sprite2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "SpriteAnimator2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Sprite2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "SpriteAnimator2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "Sprite2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "SpriteAnimator2D"
+        },
+        {
+            "Layer": 4,
+            "Name": "HealthUI_001",
+            "Position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                100.0,
+                100.0,
+                100.0
+            ],
+            "Type": "HealthUI"
         }
     ]
 }

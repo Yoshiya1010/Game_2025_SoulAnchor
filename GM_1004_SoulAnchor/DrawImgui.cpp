@@ -179,9 +179,21 @@ void SaveSceneWindow(void)
 	ImGui::SetNextWindowSize(ImVec2(400, 100), ImGuiCond_Once);
 
 	ImGui::Begin("SaveScne");
-
+	Scene* scene = Manager::GetScene();
 	ImGui::Separator();
 	ImGui::Text(U8("Sceneにある全てのオブジェクトをセーブします。"));
+
+	
+
+	ImGui::Text(U8("現在のファイル: "));
+	ImGui::SameLine();
+	ImGui::Text(scene->GetLoadSceneName().c_str());
+	ImGui::SameLine();
+	if(ImGui::Button(U8("上書き保存")))
+	{
+		scene->SaveScene();
+	}
+
 
 	ImGui::PushFont(nullptr, ImGui::GetFontSize() * 1.5f);
 	static char str0[128] = "";
@@ -191,10 +203,10 @@ void SaveSceneWindow(void)
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); // 通常時
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.7f, 1.0f, 1.0f)); // ホバー時
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.3f, 0.5f, 0.9f, 1.0f)); // クリック時
-	if (ImGui::Button("Save")) {
-		Scene* scene = Manager::GetScene();
+	if (ImGui::Button(U8("別名保存"))) {
+		
 		if (scene) {
-			scene->SaveScene(str0);
+			scene->SaveSceneAs(str0);
 			selectedObject = nullptr;
 		}
 		strcpy_s(str0, "");//リセット

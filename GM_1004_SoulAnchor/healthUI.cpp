@@ -39,6 +39,8 @@ void HealthUI::Init()
          m_pinchHPs.push_back(Hp);
 
      }
+
+     SetName("HealthUI");//©•ª©g‚É–¼‘O‚ğ•t‚¯‚é
 }
 
 void HealthUI::Uninit()

@@ -127,7 +127,11 @@ void Scene::UpdateDeltaTime()
 }
 
 
-void Scene::SaveScene(const std::string& fileName)
+void Scene::SaveScene()
+{
+	SaveSceneAs(m_LoadSceneName);
+}
+void Scene::SaveSceneAs(const std::string& fileName)
 {
 	json root;
 
@@ -140,13 +144,25 @@ void Scene::SaveScene(const std::string& fileName)
 		}
 	}
 
-	std::string path = "JsonSaveData/" + fileName + ".json";
+	// ÉpÉXê≥ãKâª
+	namespace fs = std::filesystem;
+	fs::path p = fileName;// éÛÇØéÊÇ¡ÇΩñºëO
+	std::string ext = p.has_extension() ? p.extension().string() : "";
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+	if (ext != ".json") {
+		fileName + ".json";
+	}
+
+	std::string path = "JsonSaveData/" + fileName ; 
 	std::ofstream(path) << root.dump(4);
-	
 }
+
 
 void Scene::LoadScene(const std::string& fileName)
 {
+
+	m_LoadSceneName = fileName;
 
 	std::ifstream ifs("JsonSaveData/" + fileName);
 	if (!ifs.is_open()) return;
@@ -211,6 +227,9 @@ void Scene::LoadScene(const std::string& fileName)
 	}
 	
 }
+
+
+
 
 std::string Scene::GenerateUniqueName(const std::string& baseName)
 {

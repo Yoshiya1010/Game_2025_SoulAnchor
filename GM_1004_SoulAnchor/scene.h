@@ -7,6 +7,7 @@
 #include"json.hpp"
 #include"Layer.h"
 #include"main.h"
+#include <fstream>
 
 using json = nlohmann::json;
 
@@ -27,6 +28,8 @@ private:
 	
 	static bool m_isPaused;   // ポーズ中フラグ
 
+	std::string m_LoadSceneName{};
+
 
 	
 	std::unordered_map<std::string, int> m_NameCounter; // 各種類の連番管理
@@ -41,12 +44,14 @@ public:
 	static bool IsPaused() { return m_isPaused; }
 
 
-	void SaveScene(const std::string& fileName);
+	void SaveScene();
+	void SaveSceneAs(const std::string& fileName);
 	void LoadScene(const std::string& fileName);
 
 	static void SetDebugFlag(bool flag) { debugFlag = flag; }
 	static bool GetDebugFlag(void) { return debugFlag; }
 
+	const std::string& GetLoadSceneName()const { return m_LoadSceneName; }
 
 	template <typename T>
 	T* AddGameObject(int Layer)
