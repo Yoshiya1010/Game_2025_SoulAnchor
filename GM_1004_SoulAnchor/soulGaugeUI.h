@@ -12,14 +12,11 @@ class SoulGaugeUI : public GameObject {
 
 private:
 
-	//プレイヤーのアイコン
-	Sprite2D* playerIcon;//プレイヤーのアイコン
 
 
-	std::vector<SpriteAnimator2D*> m_pinchHPs;//HPの振動
 
 
-	std::vector<Sprite2D*> m_HPBgs;//HPの背景
+	
 
 
 
