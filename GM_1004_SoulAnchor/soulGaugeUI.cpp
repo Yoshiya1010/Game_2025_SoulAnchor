@@ -5,6 +5,7 @@
 #include"scene.h"
 #include"manager.h"
 #include<memory>
+#include"input.h"
 
 
 void SoulGaugeUI::Init()
@@ -15,6 +16,9 @@ void SoulGaugeUI::Init()
     Vector3 position{ 180.f,500.f,0.f };
     Vector3 size{ 260.f,450.f,0.f };
 
+    Vector3 GaugePosition{ 140.0f,475.0f,0.f };
+    Vector3 GaugeSize{ 55.f,300.f,1.f };
+
     //背景を設定
 
     //ゲージのボーダー
@@ -23,9 +27,11 @@ void SoulGaugeUI::Init()
     soulGaugeBorder->SetName("GaugeBorder");
 
     //ゲージ
-    auto soulGaugeYellow = scene->AddGameObject<Sprite2D>(UI);
-    soulGaugeYellow->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\gauge_yellow.png");
-    soulGaugeYellow->SetName("GaugeYellow");
+    m_Gauge = scene->AddGameObject<SpriteSoulGauge>(UI);
+    m_Gauge->Init(GaugePosition.x, GaugePosition.y, GaugeSize.x, GaugeSize.y, "asset\\texture\\SoulGauge\\gauge_blue.png","asset\\texture\\SoulGauge\\gauge_yellow.png", "asset\\texture\\SoulGauge\\gauge_red.png");
+    m_Gauge->SetName("GaugeYellow");
+    m_Gauge->SetValue(0.f);
+
 
     //ゲージの仕切り
     auto soulGaugeDivision = scene->AddGameObject<Sprite2D>(UI);
@@ -37,11 +43,12 @@ void SoulGaugeUI::Init()
     soulGaugeOutLine->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\gauge_out_line.png");
     soulGaugeOutLine->SetName("GaugeOutLine");
 
+    //　レベル表示の際の右端の羽のBG
     auto soulGaugeLevelBg = scene->AddGameObject<Sprite2D>(UI);
     soulGaugeLevelBg->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\level_bg.png");
     soulGaugeLevelBg->SetName("GaugeLevelBg");
     
-
+    //　レベル表示の際の右端の羽のアウトライン
     auto soulGaugeLevelOutLine = scene->AddGameObject<Sprite2D>(UI);
     soulGaugeLevelOutLine->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\level_line.png");
     soulGaugeLevelOutLine->SetName("GaugeLevelOutLine");
@@ -81,7 +88,15 @@ void SoulGaugeUI::Uninit()
 
 void SoulGaugeUI::Update()
 {
+    if (Input::GetKeyTrigger(KK_O)) 
+    {
+        m_Gauge->SetTargetValue(m_Gauge->GetTargetValue()+10.f);
+    }
 
+    if (Input::GetKeyTrigger(KK_L))
+    {
+        m_Gauge->SetTargetValue(m_Gauge->GetTargetValue() - 10.f);
+    }
    
 }
 

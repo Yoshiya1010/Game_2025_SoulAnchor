@@ -258,6 +258,9 @@
     <ClCompile Include="soulGaugeUI.cpp">
       <Filter>ソース ファイル\プレイヤー\UI</Filter>
     </ClCompile>
+    <ClCompile Include="spriteSoulGauge.cpp">
+      <Filter>ソース ファイル\2D描画</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -439,6 +442,9 @@
     </ClInclude>
     <ClInclude Include="soulGaugeUI.h">
       <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="spriteSoulGauge.h">
+      <Filter>ヘッダー ファイル\2D描画</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

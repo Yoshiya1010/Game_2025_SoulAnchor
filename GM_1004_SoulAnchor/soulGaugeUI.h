@@ -7,6 +7,7 @@
 #include"spriteAnimator2D.h"
 #include "gameObject.h"
 #include"input.h"
+#include"spriteSoulGauge.h"
 #include <memory>
 class SoulGaugeUI : public GameObject {
 
@@ -14,7 +15,7 @@ private:
 
 
 
-
+	SpriteSoulGauge *m_Gauge;
 
 	
 
