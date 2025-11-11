@@ -178,50 +178,45 @@ Vector3 FragmentObject::CalculateModelBounds()
 
 void FragmentObject::RecreateCollider()
 {
-    // コライダーがない場合は何もしない
-    if (!m_CollisionShape) return;
     auto* world = PhysicsManager::GetWorld();
     if (!world) return;
 
-    // 既存の剛体を一旦削除
     if (m_RigidBody) {
         world->removeRigidBody(m_RigidBody.get());
         m_RigidBody->setUserPointer(nullptr);
+        m_RigidBody.reset();
     }
 
-    // トライアングルメッシュの場合
     if (m_UseTriangleMesh && m_ModelRenderer) {
-        // トライアングルメッシュを再作成（スケールを反映）
-        btTriangleMesh* triMesh = new btTriangleMesh();
+
+        m_CollisionShape.reset();        //Shapeを破棄
+        m_TriMesh = std::make_unique<btTriangleMesh>();  
+
         MODEL* model = m_ModelRenderer->GetModel();
+        if (!model) return;
 
-        if (model) {
-            for (unsigned int i = 0; i < model->CollisionIndices.size(); i += 3) {
-                auto& p0 = model->CollisionVertices[model->CollisionIndices[i + 0]];
-                auto& p1 = model->CollisionVertices[model->CollisionIndices[i + 1]];
-                auto& p2 = model->CollisionVertices[model->CollisionIndices[i + 2]];
+        m_TriMesh = std::make_unique<btTriangleMesh>();
 
-                // スケールを適用して頂点座標を作成
-                triMesh->addTriangle(
-                    btVector3(p0.x * m_Scale.x, p0.y * m_Scale.y, p0.z * m_Scale.z),
-                    btVector3(p1.x * m_Scale.x, p1.y * m_Scale.y, p1.z * m_Scale.z),
-                    btVector3(p2.x * m_Scale.x, p2.y * m_Scale.y, p2.z * m_Scale.z)
-                );
-            }
+        for (unsigned int i = 0; i < model->CollisionIndices.size(); i += 3) {
+            auto& p0 = model->CollisionVertices[model->CollisionIndices[i]];
+            auto& p1 = model->CollisionVertices[model->CollisionIndices[i + 1]];
+            auto& p2 = model->CollisionVertices[model->CollisionIndices[i + 2]];
 
-            m_CollisionShape = std::unique_ptr<btCollisionShape>(
-                new btBvhTriangleMeshShape(triMesh, true)
+            m_TriMesh->addTriangle(
+                btVector3(p0.x * m_Scale.x, p0.y * m_Scale.y, p0.z * m_Scale.z),
+                btVector3(p1.x * m_Scale.x, p1.y * m_Scale.y, p1.z * m_Scale.z),
+                btVector3(p2.x * m_Scale.x, p2.y * m_Scale.y, p2.z * m_Scale.z)
             );
         }
 
-        // トライアングルメッシュは必ず静的（mass=0）で作成
+        m_CollisionShape = std::make_unique<btBvhTriangleMeshShape>(m_TriMesh.get(), true);
+
         CreateRigidBody(0.0f);
         m_mass = 0.0f;
+        return;
     }
-    else {
-        // Boxコライダーの場合は親クラスの処理を呼ぶ
-        PhysicsObject::RecreateCollider();
-    }
+
+    PhysicsObject::RecreateCollider();
 }
 
 PhysicsObject* FragmentObject::SetMass(float mass)

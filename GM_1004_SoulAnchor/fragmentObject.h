@@ -25,11 +25,20 @@ protected:
     // Boxコライダー用の自動サイズ計算
     Vector3 m_AutoBoxHalfSize = Vector3(1.0f, 1.0f, 1.0f);
 
+
+    std::unique_ptr<btTriangleMesh> m_TriMesh;
+
 public:
     void Start() override;
 
     virtual ~FragmentObject() {
+      
+        if (auto* world = PhysicsManager::GetWorld(); world && m_RigidBody)
+            world->removeRigidBody(m_RigidBody.get());
+        m_CollisionShape.reset();  
+        m_TriMesh.reset();
         if (m_ModelRenderer) delete m_ModelRenderer;
+
     }
 
     // 衝突時のコールバック
