@@ -45,7 +45,31 @@ void HealthUI::Init()
 
 void HealthUI::Uninit()
 {
-   
+
+    //ハートのアニメーション
+    for (auto*& anim : m_pinchHPs)
+    {
+        if (anim)
+        {
+            anim = nullptr;
+        }
+    }
+    m_pinchHPs.clear();
+
+    // ハート背景
+    for (auto*& bg : m_HPBgs) 
+    {
+        if (bg)
+        {
+            bg = nullptr;
+        }
+    }
+    m_HPBgs.clear();
+
+    if (playerIcon) 
+    {
+        playerIcon = nullptr;
+    }
 }
 
 void HealthUI::Update()

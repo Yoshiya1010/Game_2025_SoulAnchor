@@ -255,6 +255,9 @@
     <ClCompile Include="editorUICreator.cpp">
       <Filter>ソース ファイル\エディター周り</Filter>
     </ClCompile>
+    <ClCompile Include="soulGaugeUI.cpp">
+      <Filter>ソース ファイル\プレイヤー\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -433,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="editorUICreator.h">
       <Filter>ヘッダー ファイル\エディター周り</Filter>
+    </ClInclude>
+    <ClInclude Include="soulGaugeUI.h">
+      <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

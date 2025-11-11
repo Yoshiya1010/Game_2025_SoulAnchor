@@ -171,6 +171,12 @@ void CreateUiWindow()
 	
 		selectedObject = EditorUICreator::CreateUIPlayerHp();
 	}
+
+
+	if (ImGui::Button("Add SoulGauge"))
+	{
+		selectedObject = EditorUICreator::CreateUISoulGauge();
+	}
 	ImGui::End();
 }
 

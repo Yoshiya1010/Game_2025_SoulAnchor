@@ -19,6 +19,7 @@
 #include"rockTallBlock_A.h"
 #include"skyBox.h"
 #include"healthUI.h"
+#include"soulGaugeUI.h"
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
@@ -219,6 +220,7 @@ void Scene::LoadScene(const std::string& fileName)
 		else if (type == "RockTallBlock_A") obj = AddGameObject<RockTallBlock_A>(layer);
 		else if (type == "SkyBox") obj = AddGameObject<SkyBox>(layer);
 		else if (type == "HealthUI")obj = AddGameObject<HealthUI>(layer);
+		else if (type == "SoulGauge")obj = AddGameObject<SoulGaugeUI>(layer);
 
 		else obj = AddGameObject<GameObject>(layer);
 
