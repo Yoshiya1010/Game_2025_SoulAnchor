@@ -88,6 +88,51 @@ void Scene::Update()
 
 void Scene::Draw()
 {
+
+	// ライトの位置と方向を設定
+	Vector3 lightPos(50.0f, 100.0f, 50.0f);
+	Vector3 lightTarget(0.0f, 0.0f, 0.0f);
+
+	// ライトから見たビュー行列
+	XMMATRIX lightView = XMMatrixLookAtLH(
+		XMVectorSet(lightPos.x, lightPos.y, lightPos.z, 1.0f),
+		XMVectorSet(lightTarget.x, lightTarget.y, lightTarget.z, 1.0f),
+		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
+	);
+
+	// ライトから見たプロジェクション行列
+	float orthoSize = 100.0f;
+	XMMATRIX lightProj = XMMatrixOrthographicLH(
+		orthoSize, orthoSize, 1.0f, 200.0f
+	);
+
+	// ライトビュープロジェクション行列
+	XMMATRIX lightVP = XMMatrixMultiply(lightView, lightProj);
+
+	// シャドウバッファを設定
+	SHADOW_BUFFER shadowBuffer;
+	XMStoreFloat4x4(&shadowBuffer.LightViewProjection, XMMatrixTranspose(lightVP));
+	shadowBuffer.LightPosition = XMFLOAT4(lightPos.x, lightPos.y, lightPos.z, 1.0f);
+	Renderer::SetShadowBuffer(shadowBuffer);
+
+	// シャドウマップへの描画開始
+	Renderer::BeginShadowMap();
+	Renderer::SetViewMatrix(lightView);
+	Renderer::SetProjectionMatrix(lightProj);
+
+
+	// TreeBlockをシャドウマップに描画
+	for (GameObject* object : m_GameObjects[0])
+	{
+		TreeBlock* treeBlock = dynamic_cast<TreeBlock*>(object);
+		if (treeBlock)
+		{
+			treeBlock->DrawShadowMap();
+		}
+	}
+
+	Renderer::EndShadowMap();
+
 	// Zソート
 	Camera* camera = GetGameObject<Camera>();
 
@@ -99,6 +144,8 @@ void Scene::Draw()
 			return a->GetDistance(CameraPosition) > b->GetDistance(CameraPosition);
 			});
 	}
+
+
 
 
 	/// カメラを最初に描画すること。

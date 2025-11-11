@@ -44,6 +44,13 @@ struct LIGHT
 };
 
 
+struct SHADOW_BUFFER
+{
+	XMFLOAT4X4	LightViewProjection;
+	XMFLOAT4	LightPosition;
+};
+
+
 struct VERTEX_LINE
 {
 	XMFLOAT3 Position;
@@ -80,6 +87,15 @@ private:
 	static ID3D11BlendState*		m_BlendStateATC;
 
 
+	//シャドウバッファ
+	static ID3D11Buffer* m_ShadowBuffer;
+
+	// シャドウマップ用
+	static ID3D11Texture2D* m_ShadowMapTexture;
+	static ID3D11DepthStencilView* m_ShadowMapDSV;
+	static ID3D11ShaderResourceView* m_ShadowMapSRV;
+	static ID3D11RenderTargetView* m_ShadowMapRTV;
+
 
 public:
 	static void Init();
@@ -107,4 +123,10 @@ public:
 	static void CreatePixelShader(ID3D11PixelShader** PixelShader, const char* FileName);
 
 	static void SetCullNone(bool enable);
+
+	//Shadow用
+	static void SetShadowBuffer(SHADOW_BUFFER ShadowBuffer);
+	static void BeginShadowMap();
+	static void EndShadowMap();
+	static ID3D11ShaderResourceView* GetShadowMapSRV() { return m_ShadowMapSRV; }
 };

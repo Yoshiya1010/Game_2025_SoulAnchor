@@ -21,6 +21,12 @@ ID3D11Buffer*			Renderer::m_LightBuffer{};
 ID3D11Buffer*			Renderer::m_CameraBuffer{};
 ID3D11Buffer*			Renderer::m_ParameterBuffer{};
 
+ID3D11Buffer*			Renderer::m_ShadowBuffer{};
+ID3D11Texture2D*		Renderer::m_ShadowMapTexture{};
+ID3D11DepthStencilView* Renderer::m_ShadowMapDSV{};
+ID3D11ShaderResourceView* Renderer::m_ShadowMapSRV{};
+ID3D11RenderTargetView* Renderer::m_ShadowMapRTV{};
+
 
 ID3D11DepthStencilState* Renderer::m_DepthStateEnable{};
 ID3D11DepthStencilState* Renderer::m_DepthStateDisable{};
@@ -264,7 +270,43 @@ void Renderer::Init()
 
 
 	
+	// シャドウマップの初期化
+	const int SHADOW_MAP_SIZE = 2048;
 
+	// シャドウマップ用のテクスチャを作成
+	D3D11_TEXTURE2D_DESC shadowTexDesc{};
+	shadowTexDesc.Width = SHADOW_MAP_SIZE;
+	shadowTexDesc.Height = SHADOW_MAP_SIZE;
+	shadowTexDesc.MipLevels = 1;
+	shadowTexDesc.ArraySize = 1;
+	shadowTexDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	shadowTexDesc.SampleDesc.Count = 1;
+	shadowTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	shadowTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+	m_Device->CreateTexture2D(&shadowTexDesc, NULL, &m_ShadowMapTexture);
+
+	// デプスステンシルビュー作成
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+
+	m_Device->CreateDepthStencilView(m_ShadowMapTexture, &dsvDesc, &m_ShadowMapDSV);
+
+	// シェーダーリソースビュー作成
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	m_Device->CreateShaderResourceView(m_ShadowMapTexture, &srvDesc, &m_ShadowMapSRV);
+
+	// シャドウバッファ作成
+	bufferDesc.ByteWidth = sizeof(SHADOW_BUFFER);
+	m_Device->CreateBuffer(&bufferDesc, NULL, &m_ShadowBuffer);
+	m_DeviceContext->VSSetConstantBuffers(7, 1, &m_ShadowBuffer);
+	m_DeviceContext->PSSetConstantBuffers(7, 1, &m_ShadowBuffer);
 }
 
 
@@ -285,9 +327,18 @@ void Renderer::Uninit()
 	m_DeviceContext->Release();
 	m_Device->Release();
 
+	// シャドウマップの解放
+	if (m_ShadowMapSRV) m_ShadowMapSRV->Release();
+	if (m_ShadowMapDSV) m_ShadowMapDSV->Release();
+	if (m_ShadowMapRTV) m_ShadowMapRTV->Release();
+	if (m_ShadowMapTexture) m_ShadowMapTexture->Release();
+	if (m_ShadowBuffer) m_ShadowBuffer->Release();
+
 	ModelRenderer::UnloadAll();
 	StaticFBXModel::UnloadAllCachedModels();
 	TextureManager::Release();
+
+
 }
 
 
@@ -477,4 +528,45 @@ void Renderer::CreatePixelShader( ID3D11PixelShader** PixelShader, const char* F
 
 void Renderer::SetCullNone(bool enable) {
 	m_DeviceContext->RSSetState(enable ? gRS_CullNone : gRS_CullBack);
+}
+
+
+void Renderer::SetShadowBuffer(SHADOW_BUFFER ShadowBuffer)
+{
+	m_DeviceContext->UpdateSubresource(m_ShadowBuffer, 0, NULL, &ShadowBuffer, 0, 0);
+}
+
+void Renderer::BeginShadowMap()
+{
+	// シャドウマップをクリア
+	m_DeviceContext->ClearDepthStencilView(m_ShadowMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	// シャドウマップをレンダーターゲットに設定
+	m_DeviceContext->OMSetRenderTargets(0, nullptr, m_ShadowMapDSV);
+
+	// ビューポート設定
+	D3D11_VIEWPORT viewport;
+	viewport.Width = 2048.0f;
+	viewport.Height = 2048.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	m_DeviceContext->RSSetViewports(1, &viewport);
+}
+
+void Renderer::EndShadowMap()
+{
+	// 通常のレンダーターゲットに戻す
+	m_DeviceContext->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView);
+
+	// ビューポートを元に戻す
+	D3D11_VIEWPORT viewport;
+	viewport.Width = (FLOAT)SCREEN_WIDTH;
+	viewport.Height = (FLOAT)SCREEN_HEIGHT;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	m_DeviceContext->RSSetViewports(1, &viewport);
 }

@@ -17,6 +17,10 @@ private:
 	ID3D11InputLayout* m_VertexLayout;	// 頂点レイアウトオブジェクト
 
 
+	// シャドウマップ生成用シェーダー
+	ID3D11VertexShader* m_ShadowMapVS;
+	ID3D11PixelShader* m_ShadowMapPS;
+	ID3D11InputLayout* m_ShadowMapLayout;
 
 
 
@@ -28,5 +32,6 @@ public:
 	void Draw() override;
 
 
-
+	// シャドウマップ用の描画
+	void DrawShadowMap();
 };

@@ -15,10 +15,15 @@ void TreeBlock::Init()
 
     // シェーダー読み込み
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\unlitColorVS.cso");
+        "shader\\toonShadowVS.cso");
 
     Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\unlitColorPS.cso");
+        "shader\\toonShadowPS.cso");
+
+    Renderer::CreateVertexShader(&m_ShadowMapVS, &m_ShadowMapLayout,
+        "shader\\shadowMapVS.cso");
+    Renderer::CreatePixelShader(&m_ShadowMapPS,
+        "shader\\shadowMapPS.cso");
 
     m_Started = false;
 
@@ -88,6 +93,25 @@ void TreeBlock::Draw()
     // UnlitColor用（テクスチャスロットをクリア）
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
+
+    // ワールド行列を設定
+    Renderer::SetWorldMatrix(
+        UpdatePhysicsWithModel(m_ModelScale)
+    );
+
+    // モデルの描画
+    m_ModelRenderer->Draw();
+}
+
+// シャドウマップ用の描画
+void TreeBlock::DrawShadowMap()
+{
+    if (!m_ModelRenderer) return;
+
+    // シャドウマップ用シェーダーをセット
+    Renderer::GetDeviceContext()->IASetInputLayout(m_ShadowMapLayout);
+    Renderer::GetDeviceContext()->VSSetShader(m_ShadowMapVS, nullptr, 0);
+    Renderer::GetDeviceContext()->PSSetShader(m_ShadowMapPS, nullptr, 0);
 
     // ワールド行列を設定
     Renderer::SetWorldMatrix(
