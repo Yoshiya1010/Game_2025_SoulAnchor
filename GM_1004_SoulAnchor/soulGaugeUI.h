@@ -17,7 +17,7 @@ private:
 
 	SpriteSoulGauge *m_Gauge;
 
-	
+	std::vector<Sprite2D*> m_GaugeMark;
 
 
 

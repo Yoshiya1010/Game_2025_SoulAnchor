@@ -54,6 +54,22 @@ void SoulGaugeUI::Init()
     soulGaugeLevelOutLine->SetName("GaugeLevelOutLine");
 
 
+    auto soulGaugeLevel1Mark = scene->AddGameObject<Sprite2D>(UI);
+    soulGaugeLevel1Mark->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\level1.png");
+    soulGaugeLevel1Mark->SetName("GaugeLevel1Mark");
+    m_GaugeMark.push_back(soulGaugeLevel1Mark);
+
+    auto soulGaugeLevel2Mark = scene->AddGameObject<Sprite2D>(UI);
+    soulGaugeLevel2Mark->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\level2.png");
+    soulGaugeLevel2Mark->SetName("GaugeLevel2Mark");
+    m_GaugeMark.push_back(soulGaugeLevel2Mark);
+
+    auto soulGaugeLevel3Mark = scene->AddGameObject<Sprite2D>(UI);
+    soulGaugeLevel3Mark->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\level3.png");
+    soulGaugeLevel3Mark->SetName("GaugeLevel2Mark");
+    m_GaugeMark.push_back(soulGaugeLevel3Mark);
+
+
     //宝石をはめるスロット
     auto soulGaugeSlot = scene->AddGameObject<Sprite2D>(UI);
     soulGaugeSlot->Init(position.x, position.y, size.x, size.y, "asset\\texture\\SoulGauge\\gauge_slot.png");
@@ -96,6 +112,28 @@ void SoulGaugeUI::Update()
     if (Input::GetKeyTrigger(KK_L))
     {
         m_Gauge->SetTargetValue(m_Gauge->GetTargetValue() - 10.f);
+    }
+
+    //ゲージの量を取ってくる
+    const float value = m_Gauge->GetValue();
+
+    //一旦全部オフに
+    m_GaugeMark[0]->SetDrawFlag(false);
+    m_GaugeMark[1]->SetDrawFlag(false);
+    m_GaugeMark[2]->SetDrawFlag(false);
+
+    
+    if (value <= 30.0f) {
+        m_GaugeMark[0]->SetDrawFlag(true);
+    }
+    else if (value <= 70.0f) {
+        m_GaugeMark[0]->SetDrawFlag(true);
+        m_GaugeMark[1]->SetDrawFlag(true);
+    }
+    else {
+        m_GaugeMark[0]->SetDrawFlag(true); 
+        m_GaugeMark[1]->SetDrawFlag(true);
+        m_GaugeMark[2]->SetDrawFlag(true); 
     }
    
 }
