@@ -22,11 +22,32 @@ private:
 
 
 
-	int m_health = 6;//プレイヤーのHP
-public:
+	bool m_ChangeHpFlag=false;
+	int m_health = 3;//プレイヤーのHP
+
+
+	float CalcHpAnimSpeed(int hp, int maxHearts)
+	{
+		if (hp <= 0) return 0.0f;          
+		if (maxHearts <= 1) return 0.3f;   
+
+		const float slow = 0.08f;//HPフル
+		const float fast = 0.50f;//瀕死
 	
+		float t = 1.0f - float(hp - 1) / float(maxHearts - 1);
+		return slow + (fast - slow) * t;
+	}
+public:
+
 	void Init();
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+
+	void ChangeHp(int hp)//ダメージをくらった時はマイナスを入れて
+	{
+		m_health += hp;
+		m_ChangeHpFlag = true;
+	}
+
 };

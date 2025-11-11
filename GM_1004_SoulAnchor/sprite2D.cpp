@@ -52,8 +52,9 @@ void Sprite2D::Init(float x, float y, float width, float height, const char* fil
     Renderer::CreatePixelShader(&m_PixelShader,
         "shader\\unlitTexturePS.cso");
 
+    //’l‚ð“ü‚ê‚Æ‚­
     m_Position.x=x;
-    m_Position.y = y;
+    m_Position.y=y;
  
     
 }

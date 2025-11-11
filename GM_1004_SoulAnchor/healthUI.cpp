@@ -48,9 +48,39 @@ void HealthUI::Uninit()
 
 void HealthUI::Update()
 {
+    
+    if (Input::GetKeyPress(KK_P)) 
+    {
+        ChangeHp(-1);
+    }
 
+    if (Input::GetKeyPress(KK_O))
+    {
+        ChangeHp(1);
+    }
+
+
+    if (!m_ChangeHpFlag)return;
+
+    const int maxHearts = static_cast<int>(m_pinchHPs.size());
+    if (m_health < 0)           m_health = 0;
+    if (m_health > maxHearts)   m_health = maxHearts;
   
 
+    const float spd = CalcHpAnimSpeed(m_health, maxHearts);
+    // ハート（アニメ）表示切替：左から m_health 個だけ表示
+    for (int i = 0; i < maxHearts; ++i)
+    {
+        const bool visible = (i < m_health);
+        if (m_pinchHPs[i])
+        {
+            m_pinchHPs[i]->SetDrawFlag(visible);
+            m_pinchHPs[i]->SetFrameSpeed(spd);
+        
+        }
+    }
+
+    m_ChangeHpFlag = false;
 }
 
 void HealthUI::Draw()
