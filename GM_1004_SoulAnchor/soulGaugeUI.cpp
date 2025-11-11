@@ -99,7 +99,15 @@ void SoulGaugeUI::Init()
 
 void SoulGaugeUI::Uninit()
 {
-
+    if (m_Gauge) {
+        m_Gauge->SetDestroy();
+        m_Gauge = nullptr;
+    }
+    for (auto*& mark : m_GaugeMark) {
+        if (mark) mark->SetDestroy();
+        mark = nullptr;
+    }
+    m_GaugeMark.clear();
 }
 
 void SoulGaugeUI::Update()
