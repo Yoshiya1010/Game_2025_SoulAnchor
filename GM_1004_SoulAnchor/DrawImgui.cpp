@@ -154,6 +154,13 @@ void CreateObjectWindow()
 		selectedObject=EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
 	}
 
+	if (ImGui::Button("Add Sun")) {
+		Vector3 pos{ 50.f,100.f,50.f };
+		selectedObject = EditorObjectCreator::CreateSun(pos, Vector3(1.0f, 1.0f, 1.0f));
+	}
+
+
+
 	
 
 

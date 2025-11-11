@@ -29,7 +29,7 @@ HWND GetWindow()
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef _DEBUG
-	_CrtSetBreakAlloc(4698);
+	/*_CrtSetBreakAlloc(4698);*/
 #endif
 
 #ifdef _DEBUG

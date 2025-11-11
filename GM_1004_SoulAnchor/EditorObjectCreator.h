@@ -13,6 +13,8 @@ public:
     static GameObject* CreateTree(Vector3 position , Vector3 scale);
     static GameObject* CreateRockTall_A(Vector3 position, Vector3 scale);
 
+    static GameObject* CreateSun(Vector3 position, Vector3 scale);
+
     // ユーティリティメソッド
     static Vector3 GetSafeSpawnPosition();
  

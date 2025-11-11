@@ -12,6 +12,7 @@
 #include"camera.h"
 #include"TreeBlock.h"
 #include"RockTallBlock_A.h"
+#include"sun.h"
 
 
 
@@ -73,6 +74,27 @@ GameObject* EditorObjectCreator::CreateRockTall_A(Vector3 position, Vector3 size
 
     return block;
 }
+
+
+
+GameObject* EditorObjectCreator::CreateSun(Vector3 position, Vector3 size) {
+
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* block = scene->AddGameObject<Sun>(OBJECT);
+    block->SetPosition(position);
+    block->SetScale(size);
+
+
+    // シーンからユニークな名前をもらう
+    block->SetName(scene->GenerateUniqueName("Sun"));
+
+
+    return block;
+}
+
 
 
 Vector3 EditorObjectCreator::GetSafeSpawnPosition() {

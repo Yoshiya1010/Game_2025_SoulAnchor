@@ -189,6 +189,7 @@
     <ClCompile Include="sprite2D.cpp" />
     <ClCompile Include="spriteAnimator2Dcpp.cpp" />
     <ClCompile Include="spriteSoulGauge.cpp" />
+    <ClCompile Include="suncpp.cpp" />
     <ClCompile Include="textureManager.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="treeBlock.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="sprite2D.h" />
     <ClInclude Include="spriteAnimator2D.h" />
     <ClInclude Include="spriteSoulGauge.h" />
+    <ClInclude Include="sun.h" />
     <ClInclude Include="textureManager.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="treeBlock.h" />
