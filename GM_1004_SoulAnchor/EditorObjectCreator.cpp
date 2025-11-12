@@ -77,24 +77,45 @@ GameObject* EditorObjectCreator::CreateRockTall_A(Vector3 position, Vector3 size
 
 
 
+
+
+
 GameObject* EditorObjectCreator::CreateSun(Vector3 position, Vector3 size) {
 
 
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
-    auto* block = scene->AddGameObject<Sun>(OBJECT);
-    block->SetPosition(position);
-    block->SetScale(size);
+    auto*  sun= scene->AddGameObject<Sun>(OBJECT);
+    sun->SetPosition(position);
+    sun->SetScale(size);
 
 
     // シーンからユニークな名前をもらう
-    block->SetName(scene->GenerateUniqueName("Sun"));
+    sun->SetName(scene->GenerateUniqueName("Sun"));
 
 
-    return block;
+    return sun;
 }
 
+
+GameObject* EditorObjectCreator::CreateEnemy() {
+
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* enemy = scene->AddGameObject<Enemy>(OBJECT);
+    enemy->SetPosition(Vector3{0.f,0.f,0.f});
+    enemy->SetScale(Vector3{1.0f,1.0f,1.0f});
+
+
+    // シーンからユニークな名前をもらう
+    enemy->SetName(scene->GenerateUniqueName("Enemy"));
+
+
+    return enemy;
+}
 
 
 Vector3 EditorObjectCreator::GetSafeSpawnPosition() {

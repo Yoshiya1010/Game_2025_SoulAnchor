@@ -15,6 +15,8 @@ public:
 
     static GameObject* CreateSun(Vector3 position, Vector3 scale);
 
+    static GameObject* CreateEnemy();
+
     // ユーティリティメソッド
     static Vector3 GetSafeSpawnPosition();
  

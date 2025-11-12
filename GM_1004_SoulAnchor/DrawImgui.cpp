@@ -171,6 +171,12 @@ void CreateObjectWindow()
 		selectedObject = EditorObjectCreator::CreateSun(pos, Vector3(1.0f, 1.0f, 1.0f));
 	}
 
+	if (ImGui::Button("Add Enemy")) {
+		
+		selectedObject = EditorObjectCreator::CreateEnemy();
+	}
+
+
 
 
 	
