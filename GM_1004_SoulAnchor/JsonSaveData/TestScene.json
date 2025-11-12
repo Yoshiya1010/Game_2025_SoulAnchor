@@ -4,13 +4,13 @@
             "Layer": 0,
             "Name": "FPSCamera",
             "Position": [
-                -14.290956497192383,
-                1.299999713897705,
-                14.397045135498047
+                -18.31563377380371,
+                8.29999828338623,
+                17.01343536376953
             ],
             "Rotation": [
-                0.11100033670663834,
-                2.4509940147399902,
+                -0.00899957399815321,
+                1.8720009326934814,
                 0.0
             ],
             "Scale": [
@@ -24,9 +24,9 @@
             "Layer": 2,
             "Name": "FPSPlayer",
             "Position": [
-                -14.290956497192383,
-                -0.5000001788139343,
-                14.397045135498047
+                -18.31563377380371,
+                6.499998569488525,
+                17.01343536376953
             ],
             "RigidBody": {
                 "ColliderOffset": [
@@ -60,9 +60,9 @@
             "Layer": 2,
             "Name": "SkyBox",
             "Position": [
-                -14.290956497192383,
-                1.299999713897705,
-                14.397045135498047
+                -18.31563377380371,
+                8.29999828338623,
+                17.01343536376953
             ],
             "Rotation": [
                 0.0,
@@ -78,118 +78,46 @@
         },
         {
             "Layer": 2,
-            "Name": "GroundBlock_001",
+            "Name": "GroundBlock_003",
             "Position": [
-                -1.7307746702499571e-06,
-                -3.0,
-                -3.9497983379988e-05
+                0.0,
+                -20.0,
+                0.0
             ],
             "RigidBody": {
                 "ColliderOffset": [
                     0.0,
-                    0.0,
+                    0.5,
                     0.0
                 ],
                 "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
+                "CollisionGroup": 8,
+                "CollisionMask": 155,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
-                    1.0,
-                    1.0,
-                    1.0
+                    0.5,
+                    0.5,
+                    0.5
                 ]
             },
             "Rotation": [
-                -1.2643794796148335e-26,
-                5.73724091892659e-27,
-                2.7880005023605105e-28
+                -0.0,
+                0.0,
+                0.0
             ],
             "Scale": [
-                30.0,
-                1.0,
-                30.0
+                50.0,
+                50.0,
+                50.0
             ],
             "Type": "GroundBlock"
         },
         {
             "Layer": 2,
-            "Name": "TreeBlock_001",
-            "Position": [
-                -13.762287139892578,
-                3.965463399887085,
-                -0.009681211784482002
-            ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.7648029923439026,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Mass": 1.0,
-                "OriginalColliderHalfSize": [
-                    0.19313645362854004,
-                    0.7648029923439026,
-                    0.19597500562667847
-                ]
-            },
-            "Rotation": [
-                -0.000136209448100999,
-                -3.672982757052523e-06,
-                -3.00182068713184e-06
-            ],
-            "Scale": [
-                7.800000190734863,
-                7.800000190734863,
-                7.800000190734863
-            ],
-            "Type": "TreeBlock"
-        },
-        {
-            "Layer": 2,
-            "Name": "TreeBlock_002",
-            "Position": [
-                -8.641918182373047,
-                5.036186218261719,
-                0.04149170219898224
-            ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.7648029923439026,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Mass": 8.0,
-                "OriginalColliderHalfSize": [
-                    0.19313645362854004,
-                    0.7648029923439026,
-                    0.19597500562667847
-                ]
-            },
-            "Rotation": [
-                -0.00011804794485215098,
-                -3.1450892947759712e-06,
-                -2.5718661618157057e-06
-            ],
-            "Scale": [
-                9.199999809265137,
-                9.199999809265137,
-                9.199999809265137
-            ],
-            "Type": "TreeBlock"
-        },
-        {
-            "Layer": 2,
-            "Name": "RockTallBlock_A_001",
+            "Name": "RockTallBlock_A_002",
             "Position": [
                 0.0,
-                -1.7000000476837158,
+                5.400000095367432,
                 0.0
             ],
             "RigidBody": {
@@ -214,58 +142,22 @@
                 0.0
             ],
             "Scale": [
-                10.300000190734863,
-                10.300000190734863,
-                10.300000190734863
+                10.0,
+                10.0,
+                10.0
             ],
             "Type": "RockTallBlock_A"
         },
         {
             "Layer": 2,
-            "Name": "GroundBlock_002",
+            "Name": "Sun_001",
             "Position": [
-                -6.489639759063721,
-                -1.0000001192092896,
-                6.811564922332764
-            ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Mass": 1.5,
-                "OriginalColliderHalfSize": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "Rotation": [
-                -6.460684858211607e-07,
-                2.130759213514466e-07,
-                -4.276294163219063e-08
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "Type": "GroundBlock"
-        },
-        {
-            "Layer": 2,
-            "Name": "Anchor",
-            "Position": [
-                167.4996795654297,
-                -189.3472442626953,
-                -205.59600830078125
+                50.0,
+                20.0,
+                50.0
             ],
             "Rotation": [
-                -0.0,
+                0.0,
                 0.0,
                 0.0
             ],
@@ -274,7 +166,115 @@
                 1.0,
                 1.0
             ],
-            "Type": "GameObject"
+            "Type": "Sun"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock_004",
+            "Position": [
+                -1.4656949043273926,
+                6.15000057220459,
+                7.853578090667725
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.5,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 8,
+                "CollisionMask": 155,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    0.5,
+                    0.5,
+                    0.5
+                ]
+            },
+            "Rotation": [
+                -0.009601605124771595,
+                9.310882091995154e-07,
+                6.466363515755802e-07
+            ],
+            "Scale": [
+                2.299999952316284,
+                2.299999952316284,
+                2.299999952316284
+            ],
+            "Type": "GroundBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "TreeBlock_004",
+            "Position": [
+                0.8737959861755371,
+                9.588818550109863,
+                12.931441307067871
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.7648029923439026,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 8,
+                "CollisionMask": 155,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    0.19313645362854004,
+                    0.7648029923439026,
+                    0.19597500562667847
+                ]
+            },
+            "Rotation": [
+                -0.0017748699756339192,
+                -4.823698418476852e-06,
+                -2.322604814253282e-06
+            ],
+            "Scale": [
+                6.0,
+                6.0,
+                6.0
+            ],
+            "Type": "TreeBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "TreeBlock_005",
+            "Position": [
+                6.779860973358154,
+                10.200662612915039,
+                10.4121675491333
+            ],
+            "RigidBody": {
+                "ColliderOffset": [
+                    0.0,
+                    0.7648029923439026,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 8,
+                "CollisionMask": 155,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    0.19313645362854004,
+                    0.7648029923439026,
+                    0.19597500562667847
+                ]
+            },
+            "Rotation": [
+                2.660747486515902e-05,
+                5.180347216082737e-06,
+                9.591865364200203e-07
+            ],
+            "Scale": [
+                6.800000190734863,
+                6.800000190734863,
+                6.800000190734863
+            ],
+            "Type": "TreeBlock"
         },
         {
             "Layer": 4,
@@ -295,6 +295,146 @@
                 1.0
             ],
             "Type": "Score"
+        },
+        {
+            "Layer": 4,
+            "Name": "playerIcon",
+            "Position": [
+                180.0,
+                100.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
         },
         {
             "Layer": 4,
@@ -875,6 +1015,266 @@
                 100.0
             ],
             "Type": "HealthUI"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeBorder",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeYellow",
+            "Position": [
+                140.0,
+                475.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeDivision",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelBg",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel1Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeSlot",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "blueJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "redJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "yellowJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
         },
         {
             "Layer": 4,

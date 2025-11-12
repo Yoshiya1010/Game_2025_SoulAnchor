@@ -12,16 +12,27 @@ void GroundBlock::Init()
   
 
     // モデルのロード
-    m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
+  
+      // モデルのロード
+    LoadModel("asset\\model\\BullutObject\\cliff_block_stone.obj");
+
+    SetShaderType(ShaderType::TOON_SHADOW);
 
 
-    // シェーダー読み込み
-    Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\unlitTextureVS.cso");
+    // オプション1: Boxコライダー（動的可能、倒れる）
+    m_UseTriangleMesh = false;
+    SetMass(0.0f);
 
-    Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\unlitTexturePS.cso");
+
+
+    // スケール設定
+    SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+    // 破壊設定
+    SetDestructible(false);
+    SetDestructionThreshold(15.0f);
+    SetGroupSize(1);
+    SetExplosionForce(0.0f);
 
 
 
@@ -35,37 +46,18 @@ void GroundBlock::Init()
 }
 void GroundBlock::Start()
 {
-    if (m_RigidBody) return;
-    // 物理コライダーの設定
-    if (PhysicsManager::GetWorld()) {
-        // 衝突レイヤー設定
-        SetupCollisionLayer();
-
-        // 物理コライダー生成
-        CreateBoxCollider(m_Scale, 0.0f);  
-
-    }
-
- 
+    FragmentObject::Start();
 }
 
 
 void GroundBlock::Uninit()
 {
-    // 物理オブジェクトの削除
-    if (m_RigidBody && PhysicsManager::GetWorld()) {
-        PhysicsManager::GetWorld()->removeRigidBody(m_RigidBody.get());
-        m_RigidBody->setUserPointer(nullptr);
+    if (m_RigidBody)
+    {
+        PhysicsObject::Uninit();
     }
 
-    m_RigidBody.reset();
-    m_MotionState.reset();
-    m_CollisionShape.reset();
-
-    m_ModelRenderer.reset();
-    if (m_VertexLayout)     m_VertexLayout->Release();
-    if (m_VertexShader)     m_VertexShader->Release();
-    if (m_PixelShader)      m_PixelShader->Release();
+ 
 }
 
 void GroundBlock::Update()
@@ -82,18 +74,13 @@ void GroundBlock::Update()
 void GroundBlock::Draw()
 {
 
-    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
-
+    if (!m_ModelRenderer) return;
     // UnlitColor はテクスチャ使わないのでスロットをクリア（保険）
-    ID3D11ShaderResourceView* nullSRV = nullptr;
-    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
+  
 
     Renderer::SetWorldMatrix( 
         //モデルと物理の座標を同期させる
-        UpdatePhysicsWithModel(m_modelScale));
+        UpdatePhysicsWithModel(1.0));
     // モデルの描画
     m_ModelRenderer->Draw();
 
