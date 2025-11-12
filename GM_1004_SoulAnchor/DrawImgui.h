@@ -9,3 +9,4 @@ void LoadSceneWindow();
 void ShowSceneHierarchyWindow();
 void ShowPropertiesWindow();
 void DrawShaderManagerWindow();
+void ShowAnimationControlWindow();

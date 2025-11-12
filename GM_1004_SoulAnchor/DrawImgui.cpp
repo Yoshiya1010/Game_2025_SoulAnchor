@@ -23,6 +23,7 @@
 #include <iostream>
 #include"editorUICreator.h"
 #include"sun.h"
+#include"animationModel.h"
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 // utf8ヘルパーマクロ
@@ -56,6 +57,9 @@ void DrawImguiWindow()
 	
 	static bool showPropertiesWindowFlag = true;
 
+	//アニメーションシステム制御ウィンドウ
+	static bool showAnimationWindowFlag = true;
+
 	//シェーダーの設定の設定
 	static bool showShaderWindowFlag = true;
 
@@ -84,6 +88,7 @@ void DrawImguiWindow()
 				ImGui::MenuItem("Scene Hierarchy", nullptr, &showSceneHierarchyWindowFlag);
 				ImGui::MenuItem("Properties", nullptr, &showPropertiesWindowFlag);
 				ImGui::MenuItem("ShaderWindow", nullptr, &showShaderWindowFlag);
+				ImGui::MenuItem("Animation Control", nullptr, &showAnimationWindowFlag);
 
 
 			
@@ -132,6 +137,10 @@ void DrawImguiWindow()
 		if (showShaderWindowFlag)
 		{
 			DrawShaderManagerWindow();
+		}
+		if (showAnimationWindowFlag)
+		{
+			ShowAnimationControlWindow();
 		}
 
 	
@@ -486,6 +495,223 @@ void ShowPropertiesWindow(void)
 			selectedObject->SetDestroy();  // 削除フラグを立てる
 			selectedObject = nullptr;
 			
+		}
+	}
+
+	ImGui::End();
+}
+
+
+// アニメーション制御ウィンドウ
+void ShowAnimationControlWindow()
+{
+	// ウィンドウサイズ設定
+	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
+
+	if (ImGui::Begin("Animation Control"))
+	{
+		// オブジェクトが選択されていない場合
+		if (!selectedObject)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+				"オブジェクトを選択してください");
+			ImGui::End();
+			return;
+		}
+
+		// EnemyクラスかどうかをチェックしてAnimationModelを取得
+		Enemy* enemy = dynamic_cast<Enemy*>(selectedObject);
+		if (!enemy)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+				"選択中のオブジェクトはアニメーションを持っていません");
+			ImGui::End();
+			return;
+		}
+
+		AnimationModel* animModel = enemy->GetAnimationModel();
+		if (!animModel)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+				"AnimationModelが見つかりません");
+			ImGui::End();
+			return;
+		}
+
+		// オブジェクト名表示
+		ImGui::Text("Object: %s", selectedObject->GetName().c_str());
+		ImGui::Separator();
+
+		// アニメーション選択
+		ImGui::Text("Animation Selection");
+
+		// 読み込まれているアニメーションのリストを取得
+		std::vector<std::string> animNames = animModel->GetAnimationNames();
+
+		if (animNames.empty())
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+				"読み込まれているアニメーションがありません");
+		}
+		else
+		{
+			// 現在のアニメーション名を表示
+			std::string currentAnim = animModel->GetCurrentAnimationName();
+			ImGui::Text("Current: %s", currentAnim.c_str());
+
+			ImGui::Separator();
+
+			// アニメーション選択ボタンを表示
+			for (const std::string& animName : animNames)
+			{
+				// 現在再生中のアニメーションは色を変える
+				if (animName == currentAnim)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
+				}
+
+				if (ImGui::Button(animName.c_str(), ImVec2(-1, 0)))
+				{
+					// アニメーション再生開始
+					animModel->Play(animName.c_str(), true);
+				}
+
+				if (animName == currentAnim)
+				{
+					ImGui::PopStyleColor();
+				}
+			}
+		}
+
+		ImGui::Separator();
+
+		// 再生制御
+		ImGui::Text("Playback Control");
+
+		// 再生状態を取得
+		AnimationState state = animModel->GetState();
+		const char* stateText = "";
+		ImVec4 stateColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		switch (state)
+		{
+		case AnimationState::PLAYING:
+			stateText = "PLAYING";
+			stateColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+			break;
+		case AnimationState::PAUSED:
+			stateText = "PAUSED";
+			stateColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+			break;
+		case AnimationState::STOPPED:
+			stateText = "STOPPED";
+			stateColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+			break;
+		}
+
+		ImGui::Text("State: ");
+		ImGui::SameLine();
+		ImGui::TextColored(stateColor, "%s", stateText);
+
+		// 再生ボタン
+		if (state == AnimationState::PAUSED)
+		{
+			if (ImGui::Button("Resume", ImVec2(-1, 0)))
+			{
+				animModel->Resume();
+			}
+		}
+		else if (state == AnimationState::PLAYING)
+		{
+			if (ImGui::Button("Pause", ImVec2(-1, 0)))
+			{
+				animModel->Pause();
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Play", ImVec2(-1, 0)))
+			{
+				std::string currentAnim = animModel->GetCurrentAnimationName();
+				if (!currentAnim.empty())
+				{
+					animModel->Play(currentAnim.c_str(), true);
+				}
+			}
+		}
+
+		// 停止ボタン
+		if (ImGui::Button("Stop", ImVec2(-1, 0)))
+		{
+			animModel->Stop();
+		}
+
+		ImGui::Separator();
+
+		// 再生スピード調整
+		ImGui::Text("Play Speed");
+		float speed = animModel->GetPlaySpeed();
+		if (ImGui::SliderFloat("Speed", &speed, 0.1f, 5.0f, "%.1f"))
+		{
+			animModel->SetPlaySpeed(speed);
+		}
+
+		// クイック速度設定ボタン
+		if (ImGui::Button("0.5x", ImVec2(80, 0)))
+		{
+			animModel->SetPlaySpeed(0.5f);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("1.0x", ImVec2(80, 0)))
+		{
+			animModel->SetPlaySpeed(1.0f);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("2.0x", ImVec2(80, 0)))
+		{
+			animModel->SetPlaySpeed(2.0f);
+		}
+
+		ImGui::Separator();
+
+		// フレーム情報
+		ImGui::Text("Frame Info");
+		float currentFrame = animModel->GetCurrentFrame();
+		int maxFrame = animModel->GetMaxFrame();
+		ImGui::Text("Current Frame: %.1f / %d", currentFrame, maxFrame);
+
+		// フレームスライダー
+		if (maxFrame > 0)
+		{
+			float frame = currentFrame;
+			if (ImGui::SliderFloat("Frame", &frame, 0.0f, (float)(maxFrame - 1), "%.1f"))
+			{
+				animModel->SetFrame(frame);
+			}
+		}
+
+		ImGui::Separator();
+
+		// ループ設定
+		bool isLooping = animModel->IsLooping();
+		if (ImGui::Checkbox("Loop Animation", &isLooping))
+		{
+			// ループ設定はPlay時に指定する必要があるので、現在のアニメーションを再生し直す
+			std::string currentAnim = animModel->GetCurrentAnimationName();
+			if (!currentAnim.empty())
+			{
+				float currentFrame = animModel->GetCurrentFrame();
+				animModel->Play(currentAnim.c_str(), isLooping);
+				animModel->SetFrame(currentFrame);
+				if (state == AnimationState::PAUSED)
+				{
+					animModel->Pause();
+				}
+				else if (state == AnimationState::STOPPED)
+				{
+					animModel->Stop();
+				}
+			}
 		}
 	}
 
