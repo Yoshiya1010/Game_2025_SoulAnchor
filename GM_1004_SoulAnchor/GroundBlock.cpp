@@ -16,12 +16,6 @@ void GroundBlock::Init()
     m_ModelRenderer->Load("asset\\model\\GroundBlock.fbx");
 
 
-    // シェーダー読み込み
-    Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\unlitTextureVS.cso");
-
-    Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\unlitTexturePS.cso");
 
 
 
@@ -63,9 +57,7 @@ void GroundBlock::Uninit()
     m_CollisionShape.reset();
 
     m_ModelRenderer.reset();
-    if (m_VertexLayout)     m_VertexLayout->Release();
-    if (m_VertexShader)     m_VertexShader->Release();
-    if (m_PixelShader)      m_PixelShader->Release();
+
 }
 
 void GroundBlock::Update()
@@ -82,10 +74,7 @@ void GroundBlock::Update()
 void GroundBlock::Draw()
 {
 
-    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+ 
 
     // UnlitColor はテクスチャ使わないのでスロットをクリア（保険）
     ID3D11ShaderResourceView* nullSRV = nullptr;

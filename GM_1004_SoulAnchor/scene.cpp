@@ -30,9 +30,43 @@ bool Scene::debugFlag = false;
 bool Scene::m_isPaused = false;
 
 
+ID3D11VertexShader* Scene::m_ToonVS = nullptr;
+ID3D11PixelShader* Scene::m_ToonPS = nullptr;
+ID3D11InputLayout* Scene::m_ToonLayout = nullptr;
+
+ID3D11VertexShader* Scene::m_ShadowVS = nullptr;
+ID3D11PixelShader* Scene::m_ShadowPS = nullptr;
+ID3D11InputLayout* Scene::m_ShadowLayout = nullptr;
+
 void Scene::Init()
 {
 	
+}
+
+void Scene::InitToonShaders()
+{
+	// Toonシェーダーの読み込み
+	Renderer::CreateVertexShader(&m_ToonVS, &m_ToonLayout,
+		"shader\\toonShadowVS.cso");
+	Renderer::CreatePixelShader(&m_ToonPS,
+		"shader\\toonShadowPS.cso");
+
+	// シャドウマップ用シェーダーの読み込み
+	Renderer::CreateVertexShader(&m_ShadowVS, &m_ShadowLayout,
+		"shader\\shadowMapVS.cso");
+	Renderer::CreatePixelShader(&m_ShadowPS,
+		"shader\\shadowMapPS.cso");
+}
+
+void Scene::UninitToonShaders()
+{
+	if (m_ToonLayout) m_ToonLayout->Release();
+	if (m_ToonVS) m_ToonVS->Release();
+	if (m_ToonPS) m_ToonPS->Release();
+
+	if (m_ShadowLayout) m_ShadowLayout->Release();
+	if (m_ShadowVS) m_ShadowVS->Release();
+	if (m_ShadowPS) m_ShadowPS->Release();
 }
 
 
@@ -124,17 +158,6 @@ void Scene::Draw()
 
 	Renderer::EndShadowMap();
 
-	// TreeBlockをシャドウマップに描画
-	for (GameObject* object : m_GameObjects[0])
-	{
-		TreeBlock* treeBlock = dynamic_cast<TreeBlock*>(object);
-		if (treeBlock)
-		{
-			treeBlock->DrawShadowMap();
-		}
-	}
-
-	Renderer::EndShadowMap();
 
 	// Zソート
 	Camera* camera = GetGameObject<Camera>();

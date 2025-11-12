@@ -34,11 +34,24 @@ private:
 	
 	std::unordered_map<std::string, int> m_NameCounter; // 各種類の連番管理
 
+
+	// Toon+Shadowシェーダー（OBJECT層用）
+	static ID3D11VertexShader* m_ToonVS;
+	static ID3D11PixelShader* m_ToonPS;
+	static ID3D11InputLayout* m_ToonLayout;
+
+	static ID3D11VertexShader* m_ShadowVS;
+	static ID3D11PixelShader* m_ShadowPS;
+	static ID3D11InputLayout* m_ShadowLayout;
+
 public:
 	virtual void Init();
 	virtual void Uninit();
 	virtual void Update();
 	virtual void Draw();
+
+	static void InitToonShaders();
+	static void UninitToonShaders();
 
 	static void SetPaused(bool pause) { m_isPaused = pause; }
 	static bool IsPaused() { return m_isPaused; }

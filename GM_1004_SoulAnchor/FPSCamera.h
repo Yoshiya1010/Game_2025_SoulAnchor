@@ -31,4 +31,6 @@ public:
 	void	Draw() override;
 
 	XMMATRIX GetViewMatrix() const { return m_ViewMatrix; }
+
+	XMMATRIX GetProjectionMatrix() const { return m_ProjectionMatrix; }
 };
