@@ -146,6 +146,7 @@ void Scene::Draw()
 
 
 
+
 	/// カメラを最初に描画すること。
 	for (auto& list : m_GameObjects) {
 		for (auto& gameObject : list)
@@ -159,10 +160,33 @@ void Scene::Draw()
 			}
 			gameObject->Draw();
 
-			if(debugFlag)
+
+		}
+	
+
+		
+		
+	}
+
+	if (debugFlag)
+	{
+		// 3Dカメラを取得（既にZソートで取得済み）
+		auto* camera = GetGameObject<FPSCamera>();
+	
+
+		if (camera)
+		{
+			// 3Dカメラの行列を明示的に再設定（2D行列をリセット）
+			Renderer::SetViewMatrix(camera->GetViewMatrix());
+			Renderer::SetProjectionMatrix(camera->GetProjectionMatrix());
+			Renderer::SetWorldMatrix(XMMatrixIdentity());
+
+			// デバッグ描画実行
 			PhysicsManager::DrawDebugWorld();
 		}
+		
 	}
+
 	
 	
 

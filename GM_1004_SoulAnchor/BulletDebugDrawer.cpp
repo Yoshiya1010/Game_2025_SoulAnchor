@@ -1,6 +1,7 @@
 #include "BulletDebugDrawer.h"
 #include "renderer.h"
 #include "input.h"
+#include"shaderManager.h"
 
 BulletDebugDrawer::BulletDebugDrawer()
     : m_DebugMode(btIDebugDraw::DBG_DrawWireframe)
@@ -46,6 +47,15 @@ void BulletDebugDrawer::Uninit()
 void BulletDebugDrawer::Begin()
 {
     m_Lines.clear();
+
+    // デプステストを有効化
+    Renderer::SetDepthEnable(true);
+
+    // シェーダー設定
+    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, NULL, 0);
+    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, NULL, 0);
+
+  
 }
 
 void BulletDebugDrawer::End()

@@ -19,6 +19,11 @@ ID3D11VertexShader* ShaderManager::s_UnlitColorVS = nullptr;
 ID3D11PixelShader* ShaderManager::s_UnlitColorPS = nullptr;
 ID3D11InputLayout* ShaderManager::s_UnlitColorLayout = nullptr;
 
+
+ID3D11VertexShader* ShaderManager::s_LineVS = nullptr;
+ID3D11PixelShader* ShaderManager::s_LinePS = nullptr;
+ID3D11InputLayout* ShaderManager::s_LineLayout = nullptr;
+
 void ShaderManager::Init()
 {
     // Toonシェーダー
@@ -44,6 +49,11 @@ void ShaderManager::Init()
         "shader\\unlitColorVS.cso");
     Renderer::CreatePixelShader(&s_UnlitColorPS,
         "shader\\unlitColorPS.cso");
+
+
+    // 線描画用シェーダー読み込み
+    Renderer::CreateLineVertexShader(&s_LineVS, &s_LineLayout, "shader/lineVS.cso");
+    Renderer::CreatePixelShader(&s_LinePS, "shader/linePS.cso");
 }
 
 void ShaderManager::Uninit()
@@ -63,6 +73,10 @@ void ShaderManager::Uninit()
     if (s_UnlitColorLayout) s_UnlitColorLayout->Release();
     if (s_UnlitColorVS) s_UnlitColorVS->Release();
     if (s_UnlitColorPS) s_UnlitColorPS->Release();
+
+    if (s_LineLayout) s_LineLayout->Release();
+    if (s_LineVS) s_LineVS->Release();
+    if (s_LinePS) s_LinePS->Release();
 }
 
 void ShaderManager::SetShader(ShaderType type)
@@ -99,6 +113,12 @@ void ShaderManager::SetShader(ShaderType type)
             ID3D11ShaderResourceView* nullSRV = nullptr;
             context->PSSetShaderResources(0, 1, &nullSRV);
         }
+        break;
+
+    case ShaderType::LINE:
+        context->IASetInputLayout(s_LineLayout);
+        context->VSSetShader(s_LineVS, nullptr, 0);
+        context->PSSetShader(s_LinePS, nullptr, 0);
         break;
 
     case ShaderType::CUSTOM:
