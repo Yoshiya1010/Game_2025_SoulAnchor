@@ -8,6 +8,7 @@
 #include"json.hpp"
 #include <iostream>
 #include"Layer.h"
+#include"shaderType.h"
 
 
 using std::unique_ptr;
@@ -57,6 +58,8 @@ protected:
 
 	//ƒ‚ƒfƒ‹
 	std::string m_ModelPath;
+
+	ShaderType m_ShaderType=ShaderType::CUSTOM;
 public:
 
 	virtual ~GameObject() = default;
@@ -109,7 +112,8 @@ public:
 	const std::string& GetName() const { return m_Name; }
 
 
-	
+	void SetShaderType(ShaderType type) { m_ShaderType = type; }
+	ShaderType GetShaderType() const { return m_ShaderType; }
 
 	public:
 		//JsonŽü‚è

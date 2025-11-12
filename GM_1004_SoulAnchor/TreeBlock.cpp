@@ -13,24 +13,9 @@ void TreeBlock::Init()
     // モデルのロード
     LoadModel("asset\\model\\BullutObject\\tree_pineTallA.obj");
 
-    // シェーダー読み込み
-    Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\toonShadowVS.cso");
+    SetShaderType(ShaderType::TOON_SHADOW);
 
-    Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\toonShadowPS.cso");
-
-    Renderer::CreateVertexShader(&m_ShadowMapVS, &m_ShadowMapLayout,
-        "shader\\shadowMapVS.cso");
-    Renderer::CreatePixelShader(&m_ShadowMapPS,
-        "shader\\shadowMapPS.cso");
-
-    m_Started = false;
-
-    SetName("TreeBlock");
-
-
-
+    
     // オプション1: Boxコライダー（動的可能、倒れる）
     m_UseTriangleMesh = false; 
     SetMass(50.0f);            
@@ -46,7 +31,9 @@ void TreeBlock::Init()
     SetGroupSize(5);
     SetExplosionForce(50.0f);
 
+    m_Started = false;
     SetTag(GameObjectTag::Ground);
+    SetName("TreeBlock");
 }
 
 void TreeBlock::Start()
@@ -62,10 +49,6 @@ void TreeBlock::Uninit()
     {
         PhysicsObject::Uninit();
     }
-
-    if (m_VertexLayout) m_VertexLayout->Release();
-    if (m_VertexShader) m_VertexShader->Release();
-    if (m_PixelShader) m_PixelShader->Release();
 }
 
 void TreeBlock::Update()
@@ -85,33 +68,11 @@ void TreeBlock::Draw()
 {
     if (!m_ModelRenderer) return;
 
-    // レイアウト・シェーダをセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+
 
     // UnlitColor用（テクスチャスロットをクリア）
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
-
-    // ワールド行列を設定
-    Renderer::SetWorldMatrix(
-        UpdatePhysicsWithModel(m_ModelScale)
-    );
-
-    // モデルの描画
-    m_ModelRenderer->Draw();
-}
-
-// シャドウマップ用の描画
-void TreeBlock::DrawShadowMap()
-{
-    if (!m_ModelRenderer) return;
-
-    // シャドウマップ用シェーダーをセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_ShadowMapLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_ShadowMapVS, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_ShadowMapPS, nullptr, 0);
 
     // ワールド行列を設定
     Renderer::SetWorldMatrix(

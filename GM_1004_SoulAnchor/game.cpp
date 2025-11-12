@@ -39,6 +39,9 @@ void Game::Init()
 	//衝突管理マネージャーの初期化
 	PhysicsCollisionManager::Init();
 
+	//シェーダーマネージャーをリセット
+	ShaderManager::Init();
+
 	// audioのロード
 	m_BGM = new Audio();
 	m_BGM->Load("asset\\audio\\bgm.wav");

@@ -184,6 +184,7 @@
     <ClCompile Include="rockTallBlock_A.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
+    <ClCompile Include="shaderManager.cpp" />
     <ClCompile Include="skyBox.cpp" />
     <ClCompile Include="soulGaugeUI.cpp" />
     <ClCompile Include="sprite2D.cpp" />
@@ -247,6 +248,8 @@
     <ClInclude Include="rockTallBlock_A.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
+    <ClInclude Include="shaderManager.h" />
+    <ClInclude Include="shaderType.h" />
     <ClInclude Include="skyBox.h" />
     <ClInclude Include="soulGaugeUI.h" />
     <ClInclude Include="sprite2D.h" />

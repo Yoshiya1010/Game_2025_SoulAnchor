@@ -30,44 +30,15 @@ bool Scene::debugFlag = false;
 bool Scene::m_isPaused = false;
 
 
-ID3D11VertexShader* Scene::m_ToonVS = nullptr;
-ID3D11PixelShader* Scene::m_ToonPS = nullptr;
-ID3D11InputLayout* Scene::m_ToonLayout = nullptr;
 
-ID3D11VertexShader* Scene::m_ShadowVS = nullptr;
-ID3D11PixelShader* Scene::m_ShadowPS = nullptr;
-ID3D11InputLayout* Scene::m_ShadowLayout = nullptr;
 
 void Scene::Init()
 {
 	
 }
 
-void Scene::InitToonShaders()
-{
-	// Toonシェーダーの読み込み
-	Renderer::CreateVertexShader(&m_ToonVS, &m_ToonLayout,
-		"shader\\toonShadowVS.cso");
-	Renderer::CreatePixelShader(&m_ToonPS,
-		"shader\\toonShadowPS.cso");
 
-	// シャドウマップ用シェーダーの読み込み
-	Renderer::CreateVertexShader(&m_ShadowVS, &m_ShadowLayout,
-		"shader\\shadowMapVS.cso");
-	Renderer::CreatePixelShader(&m_ShadowPS,
-		"shader\\shadowMapPS.cso");
-}
 
-void Scene::UninitToonShaders()
-{
-	if (m_ToonLayout) m_ToonLayout->Release();
-	if (m_ToonVS) m_ToonVS->Release();
-	if (m_ToonPS) m_ToonPS->Release();
-
-	if (m_ShadowLayout) m_ShadowLayout->Release();
-	if (m_ShadowVS) m_ShadowVS->Release();
-	if (m_ShadowPS) m_ShadowPS->Release();
-}
 
 
 void Scene::Uninit()
@@ -85,6 +56,8 @@ void Scene::Uninit()
 	for (auto& list : m_GameObjects) {
 		list.clear();
 	}
+
+	ShaderManager::Uninit();
 }
 
 void Scene::Update()
@@ -124,40 +97,39 @@ void Scene::Update()
 void Scene::Draw()
 {
 
-	Sun* sun = GetGameObject<Sun>();  // レイヤー1にSunがあると仮定
-	if (!sun) return;
+	Sun* sun = GetGameObject<Sun>();
 
-	// ===== パス1: シャドウマップの生成 =====
-
-	// ライトの行列を取得
-	XMMATRIX lightView = sun->GetLightViewMatrix();
-	XMMATRIX lightProj = sun->GetLightProjectionMatrix();
-	XMMATRIX lightVP = sun->GetLightViewProjectionMatrix();
-
-	// シャドウバッファを設定
-	SHADOW_BUFFER shadowBuffer;
-	XMStoreFloat4x4(&shadowBuffer.LightViewProjection, XMMatrixTranspose(lightVP));
-	Vector3 sunPos = sun->GetPosition();
-	shadowBuffer.LightPosition = XMFLOAT4(sunPos.x, sunPos.y, sunPos.z, 1.0f);
-	Renderer::SetShadowBuffer(shadowBuffer);
-
-	// シャドウマップへの描画開始
-	Renderer::BeginShadowMap();
-	Renderer::SetViewMatrix(lightView);
-	Renderer::SetProjectionMatrix(lightProj);
-
-	// TreeBlockをシャドウマップに描画
-	for (GameObject* object : m_GameObjects[0])
+	// ===== パス1: シャドウマップ =====
+	if (sun)
 	{
-		TreeBlock* treeBlock = dynamic_cast<TreeBlock*>(object);
-		if (treeBlock)
+		SHADOW_BUFFER shadowBuffer;
+		XMMATRIX lightVP = sun->GetLightViewProjectionMatrix();
+		XMStoreFloat4x4(&shadowBuffer.LightViewProjection, XMMatrixTranspose(lightVP));
+		Vector3 sunPos = sun->GetPosition();
+		shadowBuffer.LightPosition = XMFLOAT4(sunPos.x, sunPos.y, sunPos.z, 1.0f);
+		Renderer::SetShadowBuffer(shadowBuffer);
+
+		Renderer::BeginShadowMap();
+		Renderer::SetViewMatrix(sun->GetLightViewMatrix());
+		Renderer::SetProjectionMatrix(sun->GetLightProjectionMatrix());
+
+		// シャドウシェーダーをセット
+		ShaderManager::SetShadowShader();
+
+		// Toonシェーダーを使うオブジェクトのみ影を生成
+		for (auto& list : m_GameObjects)
 		{
-			treeBlock->DrawShadowMap();
+			for (auto& obj : list)
+			{
+				if (obj->GetShaderType() == ShaderType::TOON_SHADOW)
+				{
+					obj->Draw();
+				}
+			}
 		}
+
+		Renderer::EndShadowMap();
 	}
-
-	Renderer::EndShadowMap();
-
 
 	// Zソート
 	Camera* camera = GetGameObject<Camera>();
@@ -178,6 +150,13 @@ void Scene::Draw()
 	for (auto& list : m_GameObjects) {
 		for (auto& gameObject : list)
 		{
+			ShaderType type = gameObject->GetShaderType();
+
+			// シェーダーをセット
+			if (type != ShaderType::CUSTOM)
+			{
+				ShaderManager::SetShader(type);
+			}
 			gameObject->Draw();
 
 			if(debugFlag)
