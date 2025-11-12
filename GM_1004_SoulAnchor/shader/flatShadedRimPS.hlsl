@@ -3,13 +3,18 @@
 
 float4 main(in PS_IN_FLAT input) : SV_TARGET
 {
-  
-    
     // フラットシェーディング用の法線を動的に計算
-    float3 flatNormal = normalize(cross(
+    float3 flatNormal = -normalize(cross(
         ddx(input.WorldPosition.xyz),
         ddy(input.WorldPosition.xyz)
     ));
+    
+    // フラットシェーディングの法線が正しく計算できない場合は元の法線を使用
+    // (ddx/ddyが0になる場合などのフォールバック)
+    if (length(flatNormal) < 0.1)
+    {
+        flatNormal = normalize(input.Normal);
+    }
     
     // ライトの方向ベクトルを正規化
     float3 lightDir = normalize(-Light.Direction.xyz);
@@ -55,20 +60,20 @@ float4 main(in PS_IN_FLAT input) : SV_TARGET
     float lighting = diffuse * shadow;
     
     // 環境光
-    float3 ambient = Light.Ambient.rgb * 0.3;
+    float3 ambient = Light.Ambient.rgb * 0.5;
     
     // リムライトの計算
     float3 viewDir = normalize(CameraPosition.xyz - input.WorldPosition.xyz);
     float rim = 1.0 - saturate(dot(viewDir, flatNormal));
     rim = pow(rim, 3.0);
     
-    // リムライトの色（青白い光を想定）
-    float3 rimColor = float3(0.3, 0.3, 0.4) * rim;
+    // リムライトの色
+    float3 rimColor = float3(0.1, 0.1, 0.1) * rim;
     
     // 最終カラー
     float4 outColor;
     outColor.rgb = input.Diffuse.rgb * (lighting + ambient);
-    outColor.rgb += rimColor;
+    outColor.rgb *= (1.0 + rimColor);
     outColor.a = input.Diffuse.a;
     
     return outColor;

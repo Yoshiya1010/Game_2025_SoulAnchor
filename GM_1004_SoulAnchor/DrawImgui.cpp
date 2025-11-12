@@ -57,7 +57,7 @@ void DrawImguiWindow()
 	static bool showPropertiesWindowFlag = true;
 
 	//シェーダーの設定の設定
-	static bool showShaderWindowFlag = false;
+	static bool showShaderWindowFlag = true;
 
 	//セーブのウィンドウ
 	static bool saveSceneWindowFlag = false;
