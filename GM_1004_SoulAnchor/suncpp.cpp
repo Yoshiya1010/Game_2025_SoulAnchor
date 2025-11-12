@@ -39,75 +39,13 @@ void Sun::Uninit()
 
 void Sun::Update()
 {
-    //// ImGuiウィンドウの表示
-    //if (m_ShowImGui)
-    //{
-    //    ImGui::Begin("Sun Control", &m_ShowImGui);
 
-    //    // 位置の調整
-    //    ImGui::Text("Position");
-    //    ImGui::DragFloat3("Sun Pos", &m_Position.x, 1.0f, -200.0f, 200.0f);
 
-    //    ImGui::Separator();
+    
 
-    //    // ターゲット位置の調整
-    //    ImGui::Text("Target");
-    //    ImGui::DragFloat3("Look At", &m_TargetPosition.x, 1.0f, -100.0f, 100.0f);
+      
 
-    //    ImGui::Separator();
-
-    //    // ライトの方向（手動調整用）
-    //    ImGui::Text("Light Direction (Manual)");
-    //    ImGui::DragFloat3("Direction", &m_LightDirection.x, 0.01f, -1.0f, 1.0f);
-
-    //    ImGui::Separator();
-
-    //    // 光の強さ
-    //    ImGui::Text("Intensity");
-    //    ImGui::SliderFloat("Light", &m_Intensity, 0.0f, 3.0f);
-    //    ImGui::SliderFloat("Ambient", &m_AmbientStrength, 0.0f, 1.0f);
-
-    //    ImGui::Separator();
-
-    //    // シャドウマップの範囲
-    //    ImGui::Text("Shadow Settings");
-    //    ImGui::SliderFloat("Ortho Size", &m_OrthoSize, 50.0f, 300.0f);
-
-    //    ImGui::Separator();
-
-    //    // プリセットボタン
-    //    if (ImGui::Button("Morning Sun"))
-    //    {
-    //        m_Position = Vector3(80.0f, 50.0f, 0.0f);
-    //        m_LightDirection = Vector3(1.0f, -0.5f, 0.0f);
-    //        m_Intensity = 1.2f;
-    //        m_AmbientStrength = 0.4f;
-    //    }
-    //    ImGui::SameLine();
-    //    if (ImGui::Button("Noon Sun"))
-    //    {
-    //        m_Position = Vector3(0.0f, 100.0f, 0.0f);
-    //        m_LightDirection = Vector3(0.0f, -1.0f, 0.0f);
-    //        m_Intensity = 1.8f;
-    //        m_AmbientStrength = 0.3f;
-    //    }
-    //    ImGui::SameLine();
-    //    if (ImGui::Button("Evening Sun"))
-    //    {
-    //        m_Position = Vector3(-80.0f, 40.0f, 0.0f);
-    //        m_LightDirection = Vector3(-1.0f, -0.4f, 0.0f);
-    //        m_Intensity = 1.0f;
-    //        m_AmbientStrength = 0.5f;
-    //    }
-
-    //    ImGui::End();
-    //}
-
-    //// Tキーでウィンドウの表示/非表示
-    //if (Input::GetKeyTrigger('T'))
-    //{
-    //    m_ShowImGui = !m_ShowImGui;
-    //}
+   
 
     // ライト設定を更新
     ApplyLight();

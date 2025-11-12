@@ -22,6 +22,7 @@
 #include"scene.h"
 #include <iostream>
 #include"editorUICreator.h"
+#include"sun.h"
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 // utf8ヘルパーマクロ
@@ -440,6 +441,36 @@ void ShowPropertiesWindow(void)
 		{
 			physics->SyncToPhysics();
 		}
+	}
+
+
+	// 物理オブジェクトなら質量も編集できる
+	if (auto sun = dynamic_cast<Sun*>(selectedObject))
+	{
+		// ターゲット位置の調整
+		ImGui::Text("Target");
+		ImGui::DragFloat3("Look At", &sun->m_TargetPosition.x, 1.0f, -100.0f, 100.0f);
+
+		ImGui::Separator();
+
+		// ライトの方向（手動調整用）
+		ImGui::Text("Light Direction (Manual)");
+		ImGui::DragFloat3("Direction", &sun->m_LightDirection.x, 0.01f, -1.0f, 1.0f);
+
+		ImGui::Separator();
+
+		// 光の強さ
+		ImGui::Text("Intensity");
+		ImGui::SliderFloat("Light", &sun->m_Intensity, 0.0f, 3.0f);
+		ImGui::SliderFloat("Ambient", &sun->m_AmbientStrength, 0.0f, 1.0f);
+
+		ImGui::Separator();
+
+		// シャドウマップの範囲
+		ImGui::Text("Shadow Settings");
+		ImGui::SliderFloat("Ortho Size", &sun->m_OrthoSize, 50.0f, 300.0f);
+
+		ImGui::Separator();
 	}
 
 	if (ImGui::Button(U8("選択してるオブジェクトを削除する")))

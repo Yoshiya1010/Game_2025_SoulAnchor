@@ -273,6 +273,7 @@ void Scene::LoadScene(const std::string& fileName)
 		else if (type == "SkyBox") obj = AddGameObject<SkyBox>(layer);
 		else if (type == "HealthUI")obj = AddGameObject<HealthUI>(layer);
 		else if (type == "SoulGaugeUI")obj = AddGameObject<SoulGaugeUI>(layer);
+		else if (type == "Sun")obj = AddGameObject<Sun>(layer);
 
 		else obj = AddGameObject<GameObject>(layer);
 

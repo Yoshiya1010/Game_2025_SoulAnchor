@@ -16,12 +16,6 @@ private:
     ID3D11PixelShader* m_PixelShader;
     ID3D11InputLayout* m_VertexLayout;
 
-    // 太陽のパラメータ
-    Vector3 m_LightDirection;    // ライトの方向
-    Vector3 m_TargetPosition;    // 見ている場所
-    float m_Intensity;           // 光の強さ
-    float m_AmbientStrength;     // 環境光の強さ
-    float m_OrthoSize;           // シャドウマップの範囲
 
     // 表示用モデル
     std::unique_ptr<ModelRenderer> m_ModelRenderer;
@@ -37,6 +31,14 @@ public:
     void Uninit() override;
     void Update() override;
     void Draw() override;
+
+
+    // 太陽のパラメータ
+    Vector3 m_LightDirection;    // ライトの方向
+    Vector3 m_TargetPosition;    // 見ている場所
+    float m_Intensity;           // 光の強さ
+    float m_AmbientStrength;     // 環境光の強さ
+    float m_OrthoSize;           // シャドウマップの範囲
 
     // ライトの設定をRendererに反映
     void ApplyLight();
