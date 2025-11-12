@@ -19,14 +19,8 @@ void RockTallBlock_A::Init()
     m_ModelRenderer->Load("asset\\model\\BullutObject\\rock_tallA.obj");
 
 
-    // シェーダー読み込み
-    Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\unlitTextureVS.cso");
 
-    Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\unlitTexturePS.cso");
-
-
+    SetShaderType(ShaderType::TOON_SHADOW);
 
     m_Started = false;
 
@@ -58,10 +52,6 @@ void RockTallBlock_A::Uninit()
     m_MotionState.reset();
     m_CollisionShape.reset();
 
-   
-    if (m_VertexLayout)     m_VertexLayout->Release();
-    if (m_VertexShader)     m_VertexShader->Release();
-    if (m_PixelShader)      m_PixelShader->Release();
 }
 
 void RockTallBlock_A::Update()
@@ -81,10 +71,7 @@ void RockTallBlock_A::Update()
 void RockTallBlock_A::Draw()
 {
 
-    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+    if (!m_ModelRenderer)return;
 
     // UnlitColor はテクスチャ使わないのでスロットをクリア（保険）
     ID3D11ShaderResourceView* nullSRV = nullptr;
