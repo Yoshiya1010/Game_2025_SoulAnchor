@@ -173,7 +173,6 @@ void Scene::Draw()
 		// 3Dカメラを取得（既にZソートで取得済み）
 		auto* camera = GetGameObject<FPSCamera>();
 	
-
 		if (camera)
 		{
 			// 3Dカメラの行列を明示的に再設定（2D行列をリセット）

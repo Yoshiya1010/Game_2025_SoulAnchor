@@ -1,5 +1,3 @@
-// Toon + Shadow共通定義
-
 #include "common.hlsl"
 
 // シャドウマップ用のバッファ (b7)

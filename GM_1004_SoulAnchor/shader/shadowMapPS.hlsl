@@ -1,6 +1,3 @@
-// シャドウマップ生成用のピクセルシェーダー
-// 深度値をテクスチャに書き込む
-
 struct PS_IN_SHADOW
 {
     float4 Position : SV_POSITION;
