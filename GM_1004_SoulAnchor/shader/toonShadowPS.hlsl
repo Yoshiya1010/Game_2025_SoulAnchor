@@ -62,6 +62,9 @@ void main(in PS_IN_TOON In, out float4 outColor : SV_Target)
     
     // 環境光
     float3 ambient = Light.Ambient.rgb * 0.3;
+    
+    // 最終的な色を計算
+    // モデルの色 × (Toonレベル × 影 + 環境光)
     outColor.rgb = In.Diffuse.rgb * (toonLevel * shadow + ambient);
     outColor.a = In.Diffuse.a;
 }

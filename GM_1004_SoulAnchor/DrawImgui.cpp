@@ -539,6 +539,9 @@ void DrawShaderManagerWindow()
 							shaderName = "Toon";
 							color = ImVec4(1.0f, 0.5f, 1.0f, 1.0f);
 							break;
+						case ShaderType::FLAT_RIM:
+							shaderName = "FlatRim";
+							color = ImVec4(0.5f, 1.0f, 1.0f, 1.0f);
 						case ShaderType::CUSTOM:
 							shaderName = "Custom";
 							color = ImVec4(0.5f, 0.5f, 1.0f, 1.0f);
@@ -560,6 +563,11 @@ void DrawShaderManagerWindow()
 						if (ImGui::SmallButton("Toon"))
 						{
 							obj->SetShaderType(ShaderType::TOON_SHADOW);
+						}
+						ImGui::SameLine();
+						if (ImGui::SmallButton("FlatRim"))
+						{
+							obj->SetShaderType(ShaderType::FLAT_RIM);
 						}
 						ImGui::SameLine();
 						if (ImGui::SmallButton("Tex"))
@@ -588,10 +596,12 @@ void DrawShaderManagerWindow()
 			const char* types[] = {
 				"Unlit Texture",
 				"Unlit Color",
-				"Toon Shadow"
+				"Toon Shadow",
+				"Flat Rim"
+
 			};
 
-			ImGui::Combo(U8("一括変更するシェーダー"), &batchShaderType, types, 3);
+			ImGui::Combo(U8("一括変更するシェーダー"), &batchShaderType, types, 4);
 			ImGui::Spacing();
 
 			auto* allLayers = Scene::GetAllGameObjects();

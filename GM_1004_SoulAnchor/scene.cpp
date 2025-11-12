@@ -121,8 +121,8 @@ void Scene::Draw()
 		{
 			for (auto& obj : list)
 			{
-				if (obj->GetShaderType() == ShaderType::TOON_SHADOW)
-				{
+				auto t = obj->GetShaderType();
+				if (t == ShaderType::TOON_SHADOW || t == ShaderType::FLAT_RIM) {
 					obj->Draw();
 				}
 			}

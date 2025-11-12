@@ -19,6 +19,9 @@ ID3D11VertexShader* ShaderManager::s_UnlitColorVS = nullptr;
 ID3D11PixelShader* ShaderManager::s_UnlitColorPS = nullptr;
 ID3D11InputLayout* ShaderManager::s_UnlitColorLayout = nullptr;
 
+ID3D11VertexShader* ShaderManager::s_FlatRimVS = nullptr;
+ID3D11PixelShader* ShaderManager::s_FlatRimPS = nullptr;
+ID3D11InputLayout* ShaderManager::s_FlatRimLayout = nullptr;
 
 ID3D11VertexShader* ShaderManager::s_LineVS = nullptr;
 ID3D11PixelShader* ShaderManager::s_LinePS = nullptr;
@@ -51,6 +54,13 @@ void ShaderManager::Init()
         "shader\\unlitColorPS.cso");
 
 
+    // FlatRimシェーダー
+    Renderer::CreateVertexShader(&s_FlatRimVS, &s_FlatRimLayout,
+        "shader\\flatShadedRimVS.cso");
+    Renderer::CreatePixelShader(&s_FlatRimPS,
+        "shader\\flatShadedRimPS.cso");
+
+
     // 線描画用シェーダー読み込み
     Renderer::CreateLineVertexShader(&s_LineVS, &s_LineLayout, "shader/lineVS.cso");
     Renderer::CreatePixelShader(&s_LinePS, "shader/linePS.cso");
@@ -73,6 +83,10 @@ void ShaderManager::Uninit()
     if (s_UnlitColorLayout) s_UnlitColorLayout->Release();
     if (s_UnlitColorVS) s_UnlitColorVS->Release();
     if (s_UnlitColorPS) s_UnlitColorPS->Release();
+
+    if (s_FlatRimLayout) s_FlatRimLayout->Release();
+    if (s_FlatRimVS) s_FlatRimVS->Release();
+    if (s_FlatRimPS) s_FlatRimPS->Release();
 
     if (s_LineLayout) s_LineLayout->Release();
     if (s_LineVS) s_LineVS->Release();
@@ -112,6 +126,18 @@ void ShaderManager::SetShader(ShaderType type)
         {
             ID3D11ShaderResourceView* nullSRV = nullptr;
             context->PSSetShaderResources(0, 1, &nullSRV);
+        }
+        break;
+
+    case ShaderType::FLAT_RIM:
+        context->IASetInputLayout(s_FlatRimLayout);
+        context->VSSetShader(s_FlatRimVS, nullptr, 0);
+        context->PSSetShader(s_FlatRimPS, nullptr, 0);
+
+        // シャドウマップをセット
+        {
+            ID3D11ShaderResourceView* shadowMap = Renderer::GetShadowMapSRV();
+            context->PSSetShaderResources(0, 1, &shadowMap);
         }
         break;
 

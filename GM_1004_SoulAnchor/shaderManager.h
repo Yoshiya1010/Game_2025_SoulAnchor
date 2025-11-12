@@ -26,6 +26,11 @@ private:
     static ID3D11PixelShader* s_UnlitColorPS;
     static ID3D11InputLayout* s_UnlitColorLayout;
 
+    // FlatRim
+    static ID3D11VertexShader* s_FlatRimVS;
+    static ID3D11PixelShader* s_FlatRimPS;
+    static ID3D11InputLayout* s_FlatRimLayout;
+
     //Line
     static ID3D11VertexShader* s_LineVS;
     static ID3D11PixelShader* s_LinePS;
