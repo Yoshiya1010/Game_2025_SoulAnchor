@@ -36,7 +36,6 @@ void RockTallBlock_A::Init()
 void RockTallBlock_A::Start()
 {
     FragmentObject::Start();
-
 }
 
 

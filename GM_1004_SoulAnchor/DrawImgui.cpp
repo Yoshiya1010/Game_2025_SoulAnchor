@@ -124,6 +124,10 @@ void DrawImguiWindow()
 			ShowPropertiesWindow();
 		}
 
+		DrawShaderManagerWindow();
+
+		DrawIndividualShaderWindows();
+
 	}
 	
 
@@ -442,4 +446,252 @@ void ShowPropertiesWindow(void)
 	}
 
 	ImGui::End();
+}
+// DrawShaderManagerWindow() の修正
+
+void DrawShaderManagerWindow()
+{
+	static bool showShaderManager = true;
+
+	if (!showShaderManager) return;
+
+	ImGui::SetNextWindowSize(ImVec2(500, 600), ImGuiCond_FirstUseEver);
+
+	if (ImGui::Begin("Shader Manager", &showShaderManager))
+	{
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+			"Select object and press 'S' for shader settings");
+		ImGui::Separator();
+
+		// 全オブジェクトのシェーダー一覧
+		if (ImGui::CollapsingHeader("All Objects", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			// 全レイヤーのリストを取得
+			auto* allLayers = Scene::GetAllGameObjects();
+
+			// レイヤー名の定義
+			const char* layerNames[] = { "SYSTEM", "FIELD", "OBJECT", "EFFECT", "UI" };
+
+			for (int layer = 0; layer < LAYER_NUM; layer++)
+			{
+				// レイヤーが空ならスキップ
+				if (allLayers[layer].empty()) continue;
+
+				if (ImGui::TreeNode(layerNames[layer]))
+				{
+					for (auto& obj : allLayers[layer])
+					{
+						ImGui::PushID(obj);
+
+						// シェーダータイプ名と色を取得
+						const char* shaderName = "";
+						ImVec4 color = ImVec4(1, 1, 1, 1);
+
+						switch (obj->GetShaderType())
+						{
+						case ShaderType::UNLIT_TEXTURE:
+							shaderName = "Tex";
+							color = ImVec4(0.5f, 1.0f, 0.5f, 1.0f);
+							break;
+						case ShaderType::UNLIT_COLOR:
+							shaderName = "Color";
+							color = ImVec4(1.0f, 1.0f, 0.5f, 1.0f);
+							break;
+						case ShaderType::TOON_SHADOW:
+							shaderName = "Toon";
+							color = ImVec4(1.0f, 0.5f, 1.0f, 1.0f);
+							break;
+						case ShaderType::CUSTOM:
+							shaderName = "Custom";
+							color = ImVec4(0.5f, 0.5f, 1.0f, 1.0f);
+							break;
+						}
+
+						// オブジェクト名
+						ImGui::Text("%s:", obj->GetName().c_str());
+
+						// シェーダータイプ表示
+						ImGui::SameLine();
+						ImGui::TextColored(color, "[%s]", shaderName);
+
+						// 編集ボタン
+						ImGui::SameLine();
+						if (ImGui::SmallButton("Edit"))
+						{
+							// GameObjectにSetShowShaderUI()がない場合は直接アクセス
+							// obj->SetShowShaderUI(true);
+							// または public メンバなら
+							// obj->m_ShowShaderUI = true;
+						}
+
+						// クイック切り替えボタン
+						ImGui::SameLine();
+						if (ImGui::SmallButton("Toon"))
+						{
+							obj->SetShaderType(ShaderType::TOON_SHADOW);
+						}
+						ImGui::SameLine();
+						if (ImGui::SmallButton("Tex"))
+						{
+							obj->SetShaderType(ShaderType::UNLIT_TEXTURE);
+						}
+						ImGui::SameLine();
+						if (ImGui::SmallButton("Col"))
+						{
+							obj->SetShaderType(ShaderType::UNLIT_COLOR);
+						}
+
+						ImGui::PopID();
+					}
+					ImGui::TreePop();
+				}
+			}
+		}
+
+		ImGui::Separator();
+
+		// 一括変更
+		if (ImGui::CollapsingHeader("Batch Operations"))
+		{
+			static int batchShaderType = 2;  // デフォルトはToon
+			const char* types[] = {
+				"Unlit Texture",
+				"Unlit Color",
+				"Toon Shadow"
+			};
+
+			ImGui::Combo("Target Shader", &batchShaderType, types, 3);
+			ImGui::Spacing();
+
+			auto* allLayers = Scene::GetAllGameObjects();
+
+			// 各レイヤーごとのボタン
+			const char* layerNames[] = { "SYSTEM", "FIELD", "OBJECT", "EFFECT", "UI" };
+
+			for (int layer = 0; layer < LAYER_NUM; layer++)
+			{
+				std::string buttonLabel = "Apply to " + std::string(layerNames[layer]) + " Layer";
+
+				if (ImGui::Button(buttonLabel.c_str(), ImVec2(-1, 0)))
+				{
+					for (auto& obj : allLayers[layer])
+					{
+						obj->SetShaderType((ShaderType)batchShaderType);
+					}
+				}
+			}
+
+			ImGui::Spacing();
+			ImGui::Separator();
+
+			if (ImGui::Button("Apply to ALL Objects", ImVec2(-1, 0)))
+			{
+				for (int layer = 0; layer < LAYER_NUM; layer++)
+				{
+					for (auto& obj : allLayers[layer])
+					{
+						obj->SetShaderType((ShaderType)batchShaderType);
+					}
+				}
+			}
+		}
+
+		ImGui::Separator();
+
+		// 統計情報
+		if (ImGui::CollapsingHeader("Statistics"))
+		{
+			auto* allLayers = Scene::GetAllGameObjects();
+			int countToon = 0, countTexture = 0, countColor = 0, countCustom = 0;
+
+			for (int layer = 0; layer < LAYER_NUM; layer++)
+			{
+				for (auto& obj : allLayers[layer])
+				{
+					switch (obj->GetShaderType())
+					{
+					case ShaderType::TOON_SHADOW: countToon++; break;
+					case ShaderType::UNLIT_TEXTURE: countTexture++; break;
+					case ShaderType::UNLIT_COLOR: countColor++; break;
+					case ShaderType::CUSTOM: countCustom++; break;
+					}
+				}
+			}
+
+			ImGui::TextColored(ImVec4(1.0f, 0.5f, 1.0f, 1.0f), "Toon Shadow: %d", countToon);
+			ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "Unlit Texture: %d", countTexture);
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.5f, 1.0f), "Unlit Color: %d", countColor);
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 1.0f, 1.0f), "Custom: %d", countCustom);
+		}
+	}
+	ImGui::End();
+}
+
+// DrawIndividualShaderWindows() の修正
+void DrawIndividualShaderWindows()
+{
+	auto* allLayers = Scene::GetAllGameObjects();
+
+	for (int layer = 0; layer < LAYER_NUM; layer++)
+	{
+		for (auto& obj : allLayers[layer])
+		{
+			// m_ShowShaderUIがpublicでない場合はGetShowShaderUI()を使う
+			// または実装を追加
+
+			// ここではm_ShowShaderUIがpublicと仮定
+			// if (!obj->m_ShowShaderUI) continue;
+
+			// 仮の実装：選択されたオブジェクトのみ表示
+			if (obj != selectedObject) continue;
+
+			// 個別ウィンドウを表示
+			std::string windowName = "Shader: " + obj->GetName();
+			bool open = true;
+
+			ImGui::SetNextWindowSize(ImVec2(350, 250), ImGuiCond_FirstUseEver);
+
+			if (ImGui::Begin(windowName.c_str(), &open))
+			{
+				ImGui::Text("Object: %s", obj->GetName().c_str());
+				ImGui::Text("Layer: %d", obj->GetLayer());
+				ImGui::Separator();
+
+				// シェーダータイプ選択
+				const char* shaderTypes[] = {
+					"Unlit Texture",
+					"Unlit Color",
+					"Toon Shadow",
+					"Custom"
+				};
+				int currentShader = (int)obj->GetShaderType();
+
+				if (ImGui::Combo("Shader Type", &currentShader, shaderTypes, 4))
+				{
+					obj->SetShaderType((ShaderType)currentShader);
+				}
+
+				ImGui::Separator();
+
+				// シェーダー説明
+				ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "Description:");
+				switch (obj->GetShaderType())
+				{
+				case ShaderType::UNLIT_TEXTURE:
+					ImGui::TextWrapped("Standard texture shader with lighting disabled");
+					break;
+				case ShaderType::UNLIT_COLOR:
+					ImGui::TextWrapped("Uses model vertex colors only, no texture");
+					break;
+				case ShaderType::TOON_SHADOW:
+					ImGui::TextWrapped("Toon cel-shading with real-time shadows");
+					break;
+				case ShaderType::CUSTOM:
+					ImGui::TextWrapped("Custom shader managed by object class");
+					break;
+				}
+			}
+			ImGui::End();
+		}
+	}
 }

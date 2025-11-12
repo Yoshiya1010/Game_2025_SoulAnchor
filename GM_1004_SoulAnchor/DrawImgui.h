@@ -8,3 +8,5 @@ void SaveSceneWindow();
 void LoadSceneWindow();
 void ShowSceneHierarchyWindow();
 void ShowPropertiesWindow();
+void DrawShaderManagerWindow();
+void DrawIndividualShaderWindows();

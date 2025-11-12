@@ -93,6 +93,8 @@ public:
 	// •`‰æi”h¶‚ÅÀ‘•j
 	virtual void Draw() {}
 
+	
+
 	void SetLayer(int layer) { m_Layer = layer; }
 	int  GetLayer() const { return m_Layer; }
 	
