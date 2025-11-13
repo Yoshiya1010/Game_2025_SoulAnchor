@@ -105,6 +105,7 @@ void DrawImguiWindow()
 			ImGui::EndMainMenuBar();
 
 		}
+	
 
 		//セーブのWindow
 		if (saveSceneWindowFlag)
@@ -581,11 +582,18 @@ void ShowSceneHierarchyWindow()
 
 void ShowPropertiesTab(void)
 {
-	if (!selectedObject) return;
+	
 
 	if (ImGui::BeginTabItem("Properties"))
 	{
-
+		// オブジェクトが選択されていない場合
+		if (!selectedObject)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+				U8("オブジェクトを選択してください"));
+			ImGui::EndTabItem();
+			return;
+		}
 		ImGui::Text("Editing: %s", selectedObject->GetName().c_str());
 		ImGui::Separator();
 
