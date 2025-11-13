@@ -2,14 +2,16 @@
 #include "manager.h"
 #include "input.h"
 #include "imgui.h"
+#include"shaderManager.h"
 
 void Sun::Init()
 {
     SetName("Sun");
+    SetShaderType(ShaderType::TOON_SHADOW);
 
     // 太陽のモデルを読み込み（球体）
     m_ModelRenderer = std::make_unique<ModelRenderer>();
-    m_ModelRenderer->Load("asset\\model\\bullet.obj");  // 球体モデルのパス
+    m_ModelRenderer->Load("asset\\model\\SunSphere.obj");  // 球体モデルのパス
     m_ModelScale = 3.0f;  // 表示サイズ
 
     // シェーダーの読み込み（UnlitColorを使用）
@@ -40,13 +42,6 @@ void Sun::Uninit()
 void Sun::Update()
 {
 
-
-    
-
-      
-
-   
-
     // ライト設定を更新
     ApplyLight();
 }
@@ -55,26 +50,12 @@ void Sun::Draw()
 {
     if (!m_ModelRenderer) return;
 
-    // シェーダーをセット
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
-
-    // テクスチャスロットをクリア
-    ID3D11ShaderResourceView* nullSRV = nullptr;
-    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
-
-    // ワールド行列を設定（太陽の位置にモデルを配置）
-    XMMATRIX scale = XMMatrixScaling(m_ModelScale, m_ModelScale, m_ModelScale);
-    XMMATRIX trans = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
-    Renderer::SetWorldMatrix(scale * trans);
-
-    // マテリアルを明るい黄色に設定
-    MATERIAL material;
-    material.Diffuse = XMFLOAT4(1.0f, 1.0f, 0.3f, 1.0f);  // 黄色
-    material.Ambient = XMFLOAT4(1.0f, 1.0f, 0.3f, 1.0f);
-    material.Emission = XMFLOAT4(0.5f, 0.5f, 0.0f, 1.0f); // 発光
-    Renderer::SetMaterial(material);
+    XMMATRIX world, scale, rot, trans;
+    scale = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
+    rot = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
+    trans = XMMatrixTranslation(m_Position.x, m_Position.y , m_Position.z);
+    world = scale * rot * trans;
+    Renderer::SetWorldMatrix(world);
 
     // モデルの描画
     m_ModelRenderer->Draw();

@@ -13,11 +13,11 @@ void Enemy::Init()
     // モデルのアニメーションをロード
     m_AnimationModel->LoadAllAnimations("asset\\model\\GOLEM.fbx");
 
-    SetShaderType(ShaderType::TOON_SHADOW);
+    SetShaderType(ShaderType::UNLIT_TEXTURE);
 
 
 
-
+    SetScale(Vector3(0.01f, 0.01f, 0.01f));
     std::vector<std::string> animNames = m_AnimationModel->GetAnimationNames();
     if (!animNames.empty())
     {

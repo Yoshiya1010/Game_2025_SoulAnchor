@@ -62,7 +62,8 @@ void AnimationModel::Load(const char* FileName)
 {
 	const std::string modelPath(FileName);
 
-	m_AiScene = aiImportFile(FileName, aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+	m_AiScene = aiImportFile(FileName,
+		aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
 	assert(m_AiScene);
 
 	m_VertexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
@@ -207,7 +208,8 @@ void AnimationModel::Load(const char* FileName)
 void AnimationModel::LoadAllAnimations(const char* FileName)
 {
 	// FBXファイルをロード
-	const aiScene* scene = aiImportFile(FileName, aiProcess_ConvertToLeftHanded);
+	const aiScene* scene = aiImportFile(FileName,
+		aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
 	if (!scene)
 	{
 		return;
@@ -318,6 +320,9 @@ void AnimationModel::LoadAnimationByIndex(const char* FileName, int index, const
 void AnimationModel::CreateBone(aiNode* node)
 {
 	BONE bone;
+	bone.AnimationMatrix = node->mTransformation;
+	bone.OffsetMatrix = aiMatrix4x4();
+
 	m_Bone[node->mName.C_Str()] = bone;
 
 	for (unsigned int n = 0; n < node->mNumChildren; n++)
@@ -400,34 +405,41 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			}
 		}
 
-		aiQuaternion rot1;
-		aiVector3D pos1;
+		// ★★★ ここを修正！アニメーションがない場合はスキップ ★★★
+		if (!nodeAnim1 && !nodeAnim2) {
+			// このボーンはアニメーションに含まれていないので、
+			// CreateBone()で設定した初期トランスフォームをそのまま使う
+			continue;
+		}
+
+		aiQuaternion rot1(1.0f, 0.0f, 0.0f, 0.0f);
+		aiVector3D pos1(0.0f, 0.0f, 0.0f);
 		int f;
 
 		if (nodeAnim1) {
-			f = Frame1 % nodeAnim1->mNumRotationKeys; // 簡易実装
+			f = Frame1 % nodeAnim1->mNumRotationKeys;
 			rot1 = nodeAnim1->mRotationKeys[f].mValue;
 
-			f = Frame1 % nodeAnim1->mNumPositionKeys; // 簡易実装
+			f = Frame1 % nodeAnim1->mNumPositionKeys;
 			pos1 = nodeAnim1->mPositionKeys[f].mValue;
 		}
 
-		aiQuaternion rot2;
-		aiVector3D pos2;
+		aiQuaternion rot2(1.0f, 0.0f, 0.0f, 0.0f);
+		aiVector3D pos2(0.0f, 0.0f, 0.0f);
 
 		if (nodeAnim2) {
-			f = Frame2 % nodeAnim2->mNumRotationKeys; // 簡易実装
+			f = Frame2 % nodeAnim2->mNumRotationKeys;
 			rot2 = nodeAnim2->mRotationKeys[f].mValue;
 
-			f = Frame2 % nodeAnim2->mNumPositionKeys; // 簡易実装
+			f = Frame2 % nodeAnim2->mNumPositionKeys;
 			pos2 = nodeAnim2->mPositionKeys[f].mValue;
 		}
 
 		aiVector3D pos;
-		pos = pos1 * (1.0f - BlendRate) + pos2 * BlendRate; // 線形補間
+		pos = pos1 * (1.0f - BlendRate) + pos2 * BlendRate;
 
 		aiQuaternion rot;
-		aiQuaternion::Interpolate(rot, rot1, rot2, BlendRate); // 球面線形補間
+		aiQuaternion::Interpolate(rot, rot1, rot2, BlendRate);
 
 		bone->AnimationMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f), rot, pos);
 	}
@@ -451,10 +463,16 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			DEFORM_VERTEX* deformVertex = &m_DeformVertex[m][v];
 
 			aiMatrix4x4 matrix[4];
-			matrix[0] = m_Bone[deformVertex->BoneName[0]].Matrix;
-			matrix[1] = m_Bone[deformVertex->BoneName[1]].Matrix;
-			matrix[2] = m_Bone[deformVertex->BoneName[2]].Matrix;
-			matrix[3] = m_Bone[deformVertex->BoneName[3]].Matrix;
+
+			// ★★★ 空のボーン名をチェック ★★★
+			for (int i = 0; i < 4; i++) {
+				if (deformVertex->BoneName[i].empty() || deformVertex->BoneName[i] == "") {
+					matrix[i] = aiMatrix4x4();  // 単位行列
+				}
+				else {
+					matrix[i] = m_Bone[deformVertex->BoneName[i]].Matrix;
+				}
+			}
 
 			aiMatrix4x4 outMatrix;
 			outMatrix = matrix[0] * deformVertex->BoneWeight[0]
@@ -465,7 +483,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			deformVertex->Position = mesh->mVertices[v];
 			deformVertex->Position *= outMatrix;
 
-			// 法線変化尿に移動成分を削除
+			// 法線変換用に移動成分を削除
 			outMatrix.a4 = 0.0f;
 			outMatrix.b4 = 0.0f;
 			outMatrix.c4 = 0.0f;
