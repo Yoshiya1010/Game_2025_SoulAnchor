@@ -5,11 +5,11 @@
 
 void AnimationModel::Draw()
 {
-	// プリミティブトポロジ設定
+	//プリミティブトポロジ設定
 	Renderer::GetDeviceContext()->IASetPrimitiveTopology(
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// マテリアル設定
+	//マテリアル設定
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -21,7 +21,7 @@ void AnimationModel::Draw()
 	{
 		aiMesh* mesh = m_AiScene->mMeshes[m];
 
-		// マテリアル設定
+		//マテリアル設定
 		aiString texture;
 		aiColor3D diffuse;
 		float opacity;
@@ -45,15 +45,15 @@ void AnimationModel::Draw()
 		material.Ambient = material.Diffuse;
 		Renderer::SetMaterial(material);
 
-		// 頂点バッファ設定
+		//頂点バッファ設定
 		UINT stride = sizeof(VERTEX_3D);
 		UINT offset = 0;
 		Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer[m], &stride, &offset);
 
-		// インデックスバッファ設定
+		//インデックスバッファ設定
 		Renderer::GetDeviceContext()->IASetIndexBuffer(m_IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
 
-		// ポリゴン描画
+		//ポリゴン描画
 		Renderer::GetDeviceContext()->DrawIndexed(mesh->mNumFaces * 3, 0, 0);
 	}
 }
@@ -79,7 +79,7 @@ void AnimationModel::Load(const char* FileName)
 	{
 		aiMesh* mesh = m_AiScene->mMeshes[m];
 
-		// 頂点バッファ生成
+		//頂点バッファ生成
 		{
 			VERTEX_3D* vertex = new VERTEX_3D[mesh->mNumVertices];
 
@@ -107,7 +107,7 @@ void AnimationModel::Load(const char* FileName)
 			delete[] vertex;
 		}
 
-		// インデックスバッファ生成
+		//インデックスバッファ生成
 		{
 			unsigned int* index = new unsigned int[mesh->mNumFaces * 3];
 
@@ -194,7 +194,7 @@ void AnimationModel::Load(const char* FileName)
 		}
 	}
 
-	// テクスチャ読み込み
+	//テクスチャ読み込み
 	for (int i = 0; i < m_AiScene->mNumTextures; i++)
 	{
 		aiTexture* aitexture = m_AiScene->mTextures[i];
@@ -223,7 +223,7 @@ void AnimationModel::Load(const char* FileName)
 //全てのアニメーションを自動でロードする機能
 void AnimationModel::LoadAllAnimations(const char* FileName)
 {
-	// FBXファイルをロード
+	//FBXファイルをロード
 	const aiScene* scene = aiImportFile(FileName,
 		aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
 	if (!scene)
@@ -319,7 +319,7 @@ void AnimationModel::LoadAnimationByIndex(const char* FileName, int index, const
 		return;
 	}
 
-	// インデックスが範囲内かチェック
+	//インデックスが範囲内かチェック
 	if (index < 0 || index >= (int)scene->mNumAnimations)
 	{
 		index = 0;
@@ -396,7 +396,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 	if (!animInfo2.scene->HasAnimations())
 		return;
 
-	// 指定されたインデックスのアニメーションを取得
+	//指定されたインデックスのアニメーションを取得
 	aiAnimation* animation1 = animInfo1.scene->mAnimations[animInfo1.animationIndex];
 	aiAnimation* animation2 = animInfo2.scene->mAnimations[animInfo2.animationIndex];
 
@@ -421,10 +421,9 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			}
 		}
 
-		// ★★★ ここを修正！アニメーションがない場合はスキップ ★★★
+	
 		if (!nodeAnim1 && !nodeAnim2) {
 			// このボーンはアニメーションに含まれていないので、
-			// CreateBone()で設定した初期トランスフォームをそのまま使う
 			continue;
 		}
 
@@ -460,13 +459,13 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 		bone->AnimationMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f), rot, pos);
 	}
 
-	// 再帰的にボーンマトリクスを更新
+	//再帰的にボーンマトリクスを更新
 	aiMatrix4x4 rootMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f),
 		aiQuaternion((float)AI_MATH_PI, 0.0f, 0.0f), aiVector3D(0.0f, 0.0f, 0.0f));
 
 	UpdateBoneMatrix(m_AiScene->mRootNode, rootMatrix);
 
-	// 頂点変換(CPUスキニング)
+	//頂点変換(CPUスキニング)
 	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++) {
 		aiMesh* mesh = m_AiScene->mMeshes[m];
 
@@ -480,7 +479,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 
 			aiMatrix4x4 matrix[4];
 
-			// ★★★ 空のボーン名をチェック ★★★
+		
 			for (int i = 0; i < 4; i++) {
 				if (deformVertex->BoneName[i].empty() || deformVertex->BoneName[i] == "") {
 					matrix[i] = aiMatrix4x4();  // 単位行列
@@ -499,7 +498,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			deformVertex->Position = mesh->mVertices[v];
 			deformVertex->Position *= outMatrix;
 
-			// 法線変換用に移動成分を削除
+			//法線変換用に移動成分を削除
 			outMatrix.a4 = 0.0f;
 			outMatrix.b4 = 0.0f;
 			outMatrix.c4 = 0.0f;
@@ -507,7 +506,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 			deformVertex->Normal = mesh->mNormals[v];
 			deformVertex->Normal *= outMatrix;
 
-			// 頂点バッファへ書き込み
+			//頂点バッファへ書き込み
 			vertex[v].Position.x = deformVertex->Position.x;
 			vertex[v].Position.y = deformVertex->Position.y;
 			vertex[v].Position.z = deformVertex->Position.z;
@@ -587,7 +586,7 @@ void AnimationModel::UpdateBoneMatrix(aiNode* node, aiMatrix4x4 matrix)
 	BONE* bone = &m_Bone[node->mName.C_Str()];
 
 	aiMatrix4x4 worldMatrix;
-	worldMatrix = matrix * bone->AnimationMatrix; // assimpの場合は親のマトリクスは前からかける
+	worldMatrix = matrix * bone->AnimationMatrix; //assimpの場合は親のマトリクスは前からかける
 
 	bone->Matrix = worldMatrix * bone->OffsetMatrix;
 
