@@ -68,10 +68,10 @@ void AnimationModel::Load(const char* FileName)
 	m_VertexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
 	m_IndexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
 
-	// 変形後頂点配列生成
+	//頂点配列生成
 	m_DeformVertex = new std::vector<DEFORM_VERTEX>[m_AiScene->mNumMeshes];
 
-	// 再帰的にボーン生成
+	//ボーン生成
 	CreateBone(m_AiScene->mRootNode);
 
 	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
@@ -137,7 +137,7 @@ void AnimationModel::Load(const char* FileName)
 			delete[] index;
 		}
 
-		// 変形後頂点データ初期化
+		//頂点データ初期化
 		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
 		{
 			DEFORM_VERTEX deformVertex;
@@ -154,14 +154,14 @@ void AnimationModel::Load(const char* FileName)
 			m_DeformVertex[m].push_back(deformVertex);
 		}
 
-		// ボーンデータ初期化
+		//ボーンデータ初期化
 		for (unsigned int b = 0; b < mesh->mNumBones; b++)
 		{
 			aiBone* bone = mesh->mBones[b];
 
 			m_Bone[bone->mName.C_Str()].OffsetMatrix = bone->mOffsetMatrix;
 
-			// 変形後頂点にボーンデータ格納
+			//頂点にボーンデータ格納
 			for (unsigned int w = 0; w < bone->mNumWeights; w++)
 			{
 				aiVertexWeight weight = bone->mWeights[w];
@@ -194,7 +194,7 @@ void AnimationModel::Load(const char* FileName)
 		m_Texture[aitexture->mFilename.data] = texture;
 	}
 
-	// アニメーション再生制御の初期化
+	//アニメーション設定の初期化
 	m_CurrentFrame = 0.0f;
 	m_PlaySpeed = 1.0f;
 	m_BlendRate = 0.0f;
@@ -203,7 +203,7 @@ void AnimationModel::Load(const char* FileName)
 	m_MaxFrame = 0;
 }
 
-// 全てのアニメーションを自動でロード
+//全てのアニメーションを自動でロードする機能
 void AnimationModel::LoadAllAnimations(const char* FileName)
 {
 	// FBXファイルをロード
@@ -219,7 +219,7 @@ void AnimationModel::LoadAllAnimations(const char* FileName)
 		return;
 	}
 
-	// 全てのアニメーションをロード
+	//全てのアニメーションをロード
 	for (unsigned int i = 0; i < scene->mNumAnimations; i++)
 	{
 		aiAnimation* anim = scene->mAnimations[i];
@@ -247,7 +247,7 @@ void AnimationModel::LoadAllAnimations(const char* FileName)
 	}
 }
 
-// アニメーションをFBXファイルから名前で検索してロード
+//アニメーションをFBXファイルから名前で検索してロード
 void AnimationModel::LoadAnimation(const char* FileName, const char* Name)
 {
 	// FBXファイルをロード
@@ -274,7 +274,7 @@ void AnimationModel::LoadAnimation(const char* FileName, const char* Name)
 		}
 	}
 
-	// 見つからなかった場合は最初のアニメーションを使用
+	//見つからなかった場合は最初のアニメーションを使用
 	if (foundIndex == -1)
 	{
 		foundIndex = 0;
@@ -288,7 +288,7 @@ void AnimationModel::LoadAnimation(const char* FileName, const char* Name)
 	m_Animation[Name] = info;
 }
 
-// FBXファイルからインデックスでアニメーションをロード
+//FBXファイルからインデックスでアニメーションをロード
 void AnimationModel::LoadAnimationByIndex(const char* FileName, int index, const char* Name)
 {
 	// FBXファイルをロード
@@ -357,7 +357,7 @@ void AnimationModel::Uninit()
 	}
 }
 
-// 旧Update関数 - 互換性のために残す
+//授業で作ったUpdate、アニメーションのFBXがモデルに含まれてない場合はこっちを使う
 void AnimationModel::Update(const char* AnimationName1, int Frame1,
 	const char* AnimationName2, int Frame2, float BlendRate)
 {
@@ -492,30 +492,31 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
 	}
 }
 
-// 新しい自動更新関数
+
+//アニメーションモデルの更新処理
 void AnimationModel::Update()
 {
-	// 停止中または再生するアニメーションがない場合は何もしない
+	//停止中または再生するアニメーションがない場合は返す
 	if (m_State == AnimationState::STOPPED || m_CurrentAnimationName.empty())
 		return;
 
-	// 一時停止中は何もしない
+	//一時停止中は返す
 	if (m_State == AnimationState::PAUSED)
 		return;
 
-	// アニメーションが存在しない場合は何もしない
+	//アニメーションが存在しない場合は何もしない
 	if (!HasAnimation(m_CurrentAnimationName.c_str()))
 		return;
 
-	// アニメーション情報を取得
+	//アニメーション情報を取得
 	AnimationInfo& animInfo = m_Animation[m_CurrentAnimationName];
 	if (!animInfo.scene->HasAnimations())
 		return;
 
-	// 正しいインデックスのアニメーションを取得
+	//正しいインデックスのアニメーションを取得
 	aiAnimation* animation = animInfo.scene->mAnimations[animInfo.animationIndex];
 
-	// 最大フレーム数を更新
+	//最大フレーム数を更新
 	m_MaxFrame = 0;
 	for (unsigned int c = 0; c < animation->mNumChannels; c++) {
 		if (animation->mChannels[c]->mNumRotationKeys > m_MaxFrame) {
@@ -523,10 +524,10 @@ void AnimationModel::Update()
 		}
 	}
 
-	// フレームを進める(再生スピードを考慮)
+	//フレームを進める(再生スピードを考慮)
 	m_CurrentFrame += m_PlaySpeed;
 
-	// ループ処理
+	//ループ処理
 	if (m_CurrentFrame >= m_MaxFrame) {
 		if (m_IsLooping) {
 			m_CurrentFrame = 0.0f;
@@ -537,12 +538,12 @@ void AnimationModel::Update()
 		}
 	}
 
-	// 現在のフレームが負の値にならないようにする
+	//現在のフレームが負の値にならないようにする
 	if (m_CurrentFrame < 0.0f) {
 		m_CurrentFrame = 0.0f;
 	}
 
-	// 旧Update関数を使用してアニメーションを更新
+	
 	int frame = (int)m_CurrentFrame;
 	Update(m_CurrentAnimationName.c_str(), frame, m_CurrentAnimationName.c_str(), frame, 0.0f);
 }
@@ -561,7 +562,7 @@ void AnimationModel::UpdateBoneMatrix(aiNode* node, aiMatrix4x4 matrix)
 	}
 }
 
-// アニメーション再生開始
+//アニメーション再生開始
 void AnimationModel::Play(const char* AnimationName, bool loop)
 {
 	if (!HasAnimation(AnimationName))
@@ -573,14 +574,14 @@ void AnimationModel::Play(const char* AnimationName, bool loop)
 	m_State = AnimationState::PLAYING;
 }
 
-// アニメーション停止
+//アニメーション停止
 void AnimationModel::Stop()
 {
 	m_State = AnimationState::STOPPED;
 	m_CurrentFrame = 0.0f;
 }
 
-// アニメーション一時停止
+//アニメーション一時停止
 void AnimationModel::Pause()
 {
 	if (m_State == AnimationState::PLAYING) {
@@ -588,7 +589,7 @@ void AnimationModel::Pause()
 	}
 }
 
-// アニメーション再開
+//アニメーション再開
 void AnimationModel::Resume()
 {
 	if (m_State == AnimationState::PAUSED) {
@@ -596,13 +597,13 @@ void AnimationModel::Resume()
 	}
 }
 
-// 再生スピード設定
+//再生スピード設定
 void AnimationModel::SetPlaySpeed(float speed)
 {
 	m_PlaySpeed = speed;
 }
 
-// フレームを直接設定
+//フレームを直接設定
 void AnimationModel::SetFrame(float frame)
 {
 	m_CurrentFrame = frame;
@@ -616,16 +617,17 @@ void AnimationModel::SetFrame(float frame)
 	}
 }
 
-// ブレンド率設定
+//ブレンド率設定
 void AnimationModel::SetBlendRate(float rate)
 {
 	m_BlendRate = rate;
-	// 0.0~1.0の範囲にクランプ
+	
+	//正規の値に調整する
 	if (m_BlendRate < 0.0f) m_BlendRate = 0.0f;
 	if (m_BlendRate > 1.0f) m_BlendRate = 1.0f;
 }
 
-// 読み込まれているアニメーション名のリストを取得
+//読み込まれているアニメーション名のリストを取得
 std::vector<std::string> AnimationModel::GetAnimationNames() const
 {
 	std::vector<std::string> names;
@@ -635,7 +637,7 @@ std::vector<std::string> AnimationModel::GetAnimationNames() const
 	return names;
 }
 
-// アニメーションの元の名前を取得
+//アニメーションの元の名前を取得
 std::string AnimationModel::GetOriginalAnimationName(const char* name) const
 {
 	if (m_Animation.count(name) == 0)
@@ -644,7 +646,7 @@ std::string AnimationModel::GetOriginalAnimationName(const char* name) const
 	return m_Animation.at(name).originalName;
 }
 
-// アニメーションが存在するかチェック
+//アニメーションが存在するかチェック
 bool AnimationModel::HasAnimation(const char* name) const
 {
 	return m_Animation.count(name) > 0;
