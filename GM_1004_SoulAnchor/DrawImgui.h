@@ -1,12 +1,17 @@
 #pragma once
 
 void CheckObjectSelect(GameObject* obj);
-void DrawImguiWindow();
-void CreateObjectWindow();
-void CreateUiWindow();
 void SaveSceneWindow();
 void LoadSceneWindow();
+void DrawImguiWindow();
+void CreateObjectTab();
+void CreateUiTab();
+void CreateAddGameObjectWindow();
+void ShowSceneHierarchyTab();
+void DrawShaderManagerTab();
 void ShowSceneHierarchyWindow();
+
+
 void ShowPropertiesWindow();
-void DrawShaderManagerWindow();
-void ShowAnimationControlWindow();
+void ShowPropertiesTab();
+void ShowAnimationControlTab();

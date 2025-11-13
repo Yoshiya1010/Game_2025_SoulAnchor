@@ -38,7 +38,7 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-    // 入力レイアウト設定
+
 
   
 
