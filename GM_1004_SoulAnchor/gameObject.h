@@ -188,7 +188,7 @@ public:
 			return up;
 		}
 
-		Vector3 GetForward() {
+		virtual Vector3 GetForward() {
 			XMMATRIX matrix = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
 			Vector3 forward;
 			XMStoreFloat3((XMFLOAT3*)&forward, matrix.r[2]);

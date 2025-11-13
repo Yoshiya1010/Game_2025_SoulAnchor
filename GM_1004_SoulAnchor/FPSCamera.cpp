@@ -72,12 +72,11 @@ void	FPSCamera::Update()
 		m_Position = playerPos + Vector3(0.0f, 1.8f, 0.0f); // 頭の高さ
 
 		//カメラの注視点を向いている方向に設定
-		Vector3 forward;
-		forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
-		forward.y = sinf(m_Rotation.x);
-		forward.z = cosf(m_Rotation.y) * cosf(m_Rotation.x);
+		m_Forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
+		m_Forward.y = sinf(m_Rotation.x);
+		m_Forward.z = cosf(m_Rotation.y) * cosf(m_Rotation.x);
 
-		m_AtPosition = m_Position + forward;
+		m_AtPosition = m_Position + m_Forward;
 
 		// View行列・Projection行列設定
 		m_ViewMatrix = XMMatrixLookAtLH(XMLoadFloat3((XMFLOAT3*)&m_Position),

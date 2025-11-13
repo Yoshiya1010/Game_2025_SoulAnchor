@@ -35,16 +35,23 @@ void Anchor::Init()
 }
 void Anchor::Start()
 {
-    // Rigidbody未生成なら作る
+    if (m_PendingRotation.x != 0.0f || m_PendingRotation.y != 0.0f || m_PendingRotation.z != 0.0f)
+    {
+        m_Rotation = m_PendingRotation;
+        m_PendingRotation = Vector3(0, 0, 0);
+    }
+
+    // Rigidbody未生成なら作る（この時点でm_Rotationが使われる）
     if (!m_RigidBody && PhysicsManager::GetWorld()) {
         SetupCollisionLayer();
         m_ColliderOffset = Vector3(0, 0, 0);
-        CreateBoxCollider(Vector3(1.0f, 1.0f, 1.0f), 1.0f);
+        CreateBoxCollider(Vector3(2.0f, 1.0f, 3.0f), 1.0f);
     }
 
     // PendingVelocityがあれば反映
     SetVelocity(m_PendingVelocity);
     m_PendingVelocity = Vector3(0, 0, 0);
+
 
    
 }

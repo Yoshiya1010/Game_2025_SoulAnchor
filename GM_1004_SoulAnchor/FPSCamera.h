@@ -24,6 +24,8 @@ private:
 	float		m_cameraHeight;		// カメラの高さオフセット
 	float		m_sensitivity;		// スティック感度
 
+	Vector3		m_Forward;
+
 public:
 	void	Init() override;
 	void	Uninit() override;
@@ -33,4 +35,6 @@ public:
 	XMMATRIX GetViewMatrix() const { return m_ViewMatrix; }
 
 	XMMATRIX GetProjectionMatrix() const { return m_ProjectionMatrix; }
+
+	Vector3 GetForward() override { return m_Forward; }
 };

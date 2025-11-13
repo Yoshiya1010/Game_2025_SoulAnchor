@@ -19,13 +19,16 @@ public:
     static void Draw(); // ImGui‘¤‚Å‚Ü‚Æ‚ß‚Ä•`‰æ
 
 
-    static void DebugFloat(const std::string& label, float* value,bool deleteFlag=true)
+    static void DebugFloat(const std::string& label, float value,bool deleteFlag=true)
     {
         DebugImguiWindow::Add(label, [value]() {
-            ImGui::Text("%.3f", *value);
+            ImGui::Text("%.6f", value);
             },
             deleteFlag);
     }
+
+
+
     static void DebugVector3(const std::string& label, Vector3* v, bool deleteFlag = true)
     {
         DebugImguiWindow::Add(label, [v]() {

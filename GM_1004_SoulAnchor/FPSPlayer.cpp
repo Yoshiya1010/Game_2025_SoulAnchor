@@ -219,30 +219,29 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
     );
     anchor->SetPosition(spawnPos);
 
-    // ========================================
-    // カメラの向きからアンカーの回転角度を計算
-    // ========================================
+    // カメラの回転（ラジアン）を取得
+    Vector3 cameraRotation = camera->GetRotation();
 
-    // Y軸周りの回転（Yaw）を計算
-    // atan2(x, z) でXZ平面上の角度を求める
-    float yaw = atan2f(camForward.x, camForward.z);
+    // ラジアンから度数法に変換（SetRotationは度数法を期待）
+  
+    float pitchDeg = cameraRotation.x * RAD2DEG;
+    float yawDeg = cameraRotation.y * RAD2DEG;
+    float rollDeg = cameraRotation.z * RAD2DEG;
 
-    // X軸周りの回転（Pitch）を計算
-    // asinで上下の角度を求める
-    float pitch = asinf(-camForward.y);  // 負の符号に注意
+    // デバッグ用：変換前と変換後を確認
+    DebugImguiWindow::DebugFloat("camera.x (rad)", pitchDeg, false);
+    DebugImguiWindow::DebugFloat("camera.y (rad)", yawDeg, false);
+    DebugImguiWindow::DebugFloat("pitchDeg", pitchDeg, false);
+    DebugImguiWindow::DebugFloat("yawDeg", yawDeg, false);
 
-    // ラジアンから度数法に変換（DirectXの描画用）
-    float yawDegrees = yaw * (180.0f / 3.14159265f);
-    float pitchDegrees = pitch * (180.0f / 3.14159265f);
+    // モデルの前方が-Y方向なので、X軸周りに90度回転を追加
+    // これによりモデルの-Y軸がカメラの前方向きに一致する
+ 
 
-
-    DebugImguiWindow::DebugFloat("yawDegrees", &yawDegrees,false);
-    DebugImguiWindow::DebugFloat("pitchDegrees", &pitchDegrees,false);
+    
 
     // アンカーの回転を設定（度数法）
-    anchor->SetRotation(Vector3(pitchDegrees, yawDegrees, 0.0f));
-
-    // ========================================
+    anchor->SetRotation(Vector3(pitchDeg, yawDeg, rollDeg));
 
     // 飛ばす方向の速度設定（Start後に反映される仕組み）
     anchor->SetVelocity(camForward * 50.0f);

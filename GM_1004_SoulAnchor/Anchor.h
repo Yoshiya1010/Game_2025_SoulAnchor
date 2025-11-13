@@ -19,7 +19,7 @@ private:
 	const float m_modelScale = 1.0f;
 
 	Vector3 m_PendingVelocity = { 0,0,0 }; // まだRigidBodyがない場合の一時保存
-
+	Vector3 m_PendingRotation = { 0,0,0 }; // まだRigidBodyがない場合の回転一時保存
 private:
 	// アンカーの状態
 	bool m_Attached = false;
@@ -82,6 +82,22 @@ public:
 		{
 			// Start()後に適用するために保持しておく
 			m_PendingVelocity = vel;
+		}
+	}
+
+	// 回転設定（投擲時用）- SetRotationをオーバーライド
+	void SetRotation(Vector3 Rotation)
+	{
+		m_Rotation = Rotation;
+		if (m_RigidBody)
+		{
+			// Rigidbodyが存在すれば物理エンジンに即反映
+			SyncToPhysics();
+		}
+		else
+		{
+			// Start()後に適用するために保持しておく
+			m_PendingRotation = Rotation;
 		}
 	}
 
