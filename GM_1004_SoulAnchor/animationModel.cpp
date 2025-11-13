@@ -159,21 +159,37 @@ void AnimationModel::Load(const char* FileName)
 		for (unsigned int b = 0; b < mesh->mNumBones; b++)
 		{
 			aiBone* bone = mesh->mBones[b];
-
 			m_Bone[bone->mName.C_Str()].OffsetMatrix = bone->mOffsetMatrix;
 
 			//頂点にボーンデータ格納
 			for (unsigned int w = 0; w < bone->mNumWeights; w++)
 			{
 				aiVertexWeight weight = bone->mWeights[w];
-
 				int num = m_DeformVertex[m][weight.mVertexId].BoneNum;
-
 				m_DeformVertex[m][weight.mVertexId].BoneWeight[num] = weight.mWeight;
 				m_DeformVertex[m][weight.mVertexId].BoneName[num] = bone->mName.C_Str();
 				m_DeformVertex[m][weight.mVertexId].BoneNum++;
-
 				assert(m_DeformVertex[m][weight.mVertexId].BoneNum <= 4);
+			}
+		}
+		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
+		{
+			DEFORM_VERTEX* deformVertex = &m_DeformVertex[m][v];
+
+			// ウェイトの合計を計算
+			float totalWeight = 0.0f;
+			for (int i = 0; i < 4; i++)
+			{
+				totalWeight += deformVertex->BoneWeight[i];
+			}
+
+			// ウェイトを正規化（合計が1.0になるように）
+			if (totalWeight > 0.0f)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					deformVertex->BoneWeight[i] /= totalWeight;
+				}
 			}
 		}
 	}
