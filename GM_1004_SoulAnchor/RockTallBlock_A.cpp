@@ -78,7 +78,7 @@ void RockTallBlock_A::Draw()
 
     Renderer::SetWorldMatrix(
         //ƒ‚ƒfƒ‹‚Æ•¨—‚ÌÀ•W‚ð“¯Šú‚³‚¹‚é
-        UpdatePhysicsWithModel(1.0f));
+        UpdatePhysicsWithModel());
     // ƒ‚ƒfƒ‹‚Ì•`‰æ
     m_ModelRenderer->Draw();
 

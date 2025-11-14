@@ -248,7 +248,7 @@ public:
 
 
 
-    XMMATRIX UpdatePhysicsWithModel(float ModelScale=1.0f)
+    XMMATRIX UpdatePhysicsWithModel(Vector3 ModelScale={1.0f,1.0f,1.0f})
     {
         if (!m_RigidBody || !m_RigidBody->getMotionState()) return XMMatrixIdentity();
 
@@ -282,16 +282,16 @@ public:
 
 
         XMVECTOR offsetVec = {
-        m_ColliderOffset.x * m_Scale.x * ModelScale,
-        m_ColliderOffset.y * m_Scale.y * ModelScale,
-        m_ColliderOffset.z * m_Scale.z * ModelScale,
+        m_ColliderOffset.x * m_Scale.x * ModelScale.x,
+        m_ColliderOffset.y * m_Scale.y * ModelScale.y,
+        m_ColliderOffset.z * m_Scale.z * ModelScale.z,
         0.0f
         };
 
         offsetVec = XMVector3Rotate(offsetVec, rotationQuaternion); 
 
         // 回転を考慮した平行移動
-        XMMATRIX S_p = XMMatrixScaling(m_Scale.x * ModelScale, m_Scale.y * ModelScale, m_Scale.z * ModelScale);
+        XMMATRIX S_p = XMMatrixScaling(m_Scale.x * ModelScale.x, m_Scale.y * ModelScale.y, m_Scale.z * ModelScale.z);
         XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
         XMMATRIX T_p = XMMatrixTranslation(
             m_Position.x - XMVectorGetX(offsetVec),

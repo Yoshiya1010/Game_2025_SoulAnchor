@@ -15,6 +15,8 @@ void ChainLink::Init()
 
     SetName("ChainLink");
     SetTag(GameObjectTag::None);
+    m_ModelRenderer = new ModelRenderer();
+    m_ModelRenderer->Load("asset\\model\\bullet.obj");
 }
 
 void ChainLink::InitializeLink(Vector3 position, float radius, float length, float mass)
@@ -27,7 +29,7 @@ void ChainLink::InitializeLink(Vector3 position, float radius, float length, flo
     if (PhysicsManager::GetWorld())
     {
         m_ColliderOffset = Vector3(0, 0, 0);
-        CreateCapsuleCollider(radius, length, mass);
+        CreateBoxCollider(Vector3(radius, length,length), mass);
 
         if (m_RigidBody)
         {
@@ -80,26 +82,27 @@ void ChainLink::Update()
 
 void ChainLink::Draw()
 {
-    // シンプルな円柱描画
-    // 実際のプロジェクトではモデルを使用することを推奨
-    Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
-    Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
-    Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
+    //// シンプルな円柱描画
+    //// 実際のプロジェクトではモデルを使用することを推奨
+    //Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
+    //Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
+    //Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    ID3D11ShaderResourceView* nullSRV = nullptr;
-    Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
+    //ID3D11ShaderResourceView* nullSRV = nullptr;
+    //Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 
-    // ワールド行列を設定
-    XMMATRIX world = UpdatePhysicsWithModel(1.0f);
+    //// ワールド行列を設定
+    //XMMATRIX world = UpdatePhysicsWithModel();
 
-    // スケール調整（カプセル形状に合わせる）
-    XMMATRIX scale = XMMatrixScaling(m_Radius, m_Length, m_Radius);
-    world = scale * world;
+    //// スケール調整（カプセル形状に合わせる）
+    //XMMATRIX scale = XMMatrixScaling(m_Radius, m_Length, m_Radius);
+    //world = scale * world;
 
-    Renderer::SetWorldMatrix(world);
+    //Renderer::SetWorldMatrix(world);
 
-    // 簡易的な描画（実装に応じて変更してください）
-    // ここでは既存の描画システムを使用
+
+    //// モデルの描画
+    //m_ModelRenderer->Draw();
 }
 
 Vector3 ChainLink::GetConnectionPoint() 

@@ -80,7 +80,7 @@ void GroundBlock::Draw()
 
     Renderer::SetWorldMatrix( 
         //ƒ‚ƒfƒ‹‚Æ•¨—‚ÌÀ•W‚ð“¯Šú‚³‚¹‚é
-        UpdatePhysicsWithModel(1.0));
+        UpdatePhysicsWithModel());
     // ƒ‚ƒfƒ‹‚Ì•`‰æ
     m_ModelRenderer->Draw();
 

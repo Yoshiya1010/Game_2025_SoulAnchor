@@ -95,7 +95,7 @@ void TriangleMeshFragment::Draw()
     }
 
     //ƒ[ƒ‹ƒhs—ñİ’è
-    Renderer::SetWorldMatrix(UpdatePhysicsWithModel(1.0f));
+    Renderer::SetWorldMatrix(UpdatePhysicsWithModel());
 
     // •`‰æ
     UINT stride = sizeof(VERTEX_3D);

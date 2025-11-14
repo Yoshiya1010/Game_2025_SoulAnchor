@@ -5,7 +5,6 @@
 #include "scene.h"
 #include <cmath>
 
-
 void ChainSystem::Init()
 {
     // シェーダー読み込み
@@ -16,20 +15,28 @@ void ChainSystem::Init()
 
     m_StartObject = nullptr;
     m_EndObject = nullptr;
-    m_PhysicsLinkCount = 6;
     m_VisualLinkCount = 20;
-    m_LinkRadius = 0.05f;
-    m_LinkLength = 0.3f;
-    m_LinkMass = 0.1f;
+    m_LinkRadius = 0.05f;    // リンクの太さ
+    m_LinkLength = 0.5f;    // リンクの長さ
+    m_LinkMass = 0.1f; // リンクの質量
+    m_MaxChainLength = 50.0f;// 最大チェーン長さ
+    m_CurrentDistance = 0.0f;// 現在の距離
+    m_LinkSpacing = 20.0f; // リンク間の距離
+    m_IsRetracting = false;// 巻き戻し中か
+    m_RetractSpeed = 100.0f;// 巻き戻し速度
 
-    SetName("ChainSystem");
+    // 視覚更新の最適化（2フレームに1回）
+    m_VisualUpdateCounter = 0;
+    m_VisualUpdateInterval = 2;
 
     m_ModelRenderer = new ModelRenderer();
-    m_ModelRenderer->Load("asset\\model\\bullet.obj");
+    m_ModelRenderer->Load("asset\\model\\AnchorChain.obj");
+
+    SetName("ChainSystem");
 }
 
 void ChainSystem::CreateChain(GameObject* startObj, GameObject* endObj,
-    int physicsLinkCount,
+    float maxLength,
     float linkRadius,
     float linkLength,
     float linkMass)
@@ -38,54 +45,60 @@ void ChainSystem::CreateChain(GameObject* startObj, GameObject* endObj,
 
     m_StartObject = startObj;
     m_EndObject = endObj;
-    m_PhysicsLinkCount = physicsLinkCount;
+    m_MaxChainLength = maxLength;
     m_LinkRadius = linkRadius;
     m_LinkLength = linkLength;
     m_LinkMass = linkMass;
+    m_LinkSpacing = linkLength * 1.2f;  // リンク長さより少し長め
 
-    // 物理リンクを作成
-    CreatePhysicsLinks();
+    // 初期リンクを1つだけ作成
+    Vector3 start = m_StartObject->GetPosition();
+    Vector3 end = m_EndObject->GetPosition();
+    Vector3 midPoint = (start + end) * 0.5f;
 
-    // ジョイントで接続
-    CreateConstraints();
+    AddLink(midPoint);
+
+    // 初回のみ全Constraintを構築
+    RebuildConstraints();
 
     // 視覚的な補間ポイントを計算
     CalculateVisualPoints();
 }
 
-void ChainSystem::CreatePhysicsLinks()
+void ChainSystem::AddLink(const Vector3& position)
 {
-    if (!m_StartObject || !m_EndObject) return;
+    // チェーンリンクを作成
+    ChainLink* link = Manager::GetScene()->AddGameObject<ChainLink>(OBJECT);
+    link->Init();
+    link->InitializeLink(position, m_LinkRadius, m_LinkLength, m_LinkMass);
 
-    Vector3 start = m_StartObject->GetPosition();
-    Vector3 end = m_EndObject->GetPosition();
-
-    // リンク間の距離を計算
-    Vector3 direction = end - start;
-    float totalDistance = direction.Length();
-    direction.Normalize();
-
-    // 各リンクの配置
-    for (int i = 0; i < m_PhysicsLinkCount; i++)
-    {
-        float t = (float)(i + 1) / (float)(m_PhysicsLinkCount + 1);
-        Vector3 position = start + (direction * (totalDistance * t));
-
-        // チェーンリンクを作成
-        ChainLink* link = Manager::GetScene()->AddGameObject<ChainLink>(OBJECT);
-        link->Init();
-        link->InitializeLink(position, m_LinkRadius, m_LinkLength, m_LinkMass);
-
-        m_PhysicsLinks.push_back(link);
-    }
+    m_PhysicsLinks.push_back(link);
 }
 
-void ChainSystem::CreateConstraints()
+void ChainSystem::RemoveLink(int index)
 {
-    if (!m_StartObject || !m_EndObject || m_PhysicsLinks.empty()) return;
+    if (index < 0 || index >= (int)m_PhysicsLinks.size()) return;
 
+    // リンクを削除
+    ChainLink* link = m_PhysicsLinks[index];
+    if (link)
+    {
+        link->SetDestroy();
+    }
+
+    // 配列から削除
+    m_PhysicsLinks.erase(m_PhysicsLinks.begin() + index);
+}
+
+void ChainSystem::RebuildConstraints()
+{
     auto* world = PhysicsManager::GetWorld();
     if (!world) return;
+
+    // 既存のConstraintをクリア
+    m_Constraints.clear();
+
+    if (m_PhysicsLinks.empty()) return;
 
     // 開始オブジェクトと最初のリンクを接続
     PhysicsObject* startPhysics = dynamic_cast<PhysicsObject*>(m_StartObject);
@@ -139,8 +152,164 @@ void ChainSystem::CreateConstraints()
             m_Constraints.push_back(constraint);
         }
     }
+}
 
- 
+void ChainSystem::RemoveLastConstraint()
+{
+    if (m_Constraints.empty()) return;
+
+    auto* world = PhysicsManager::GetWorld();
+    if (!world) return;
+
+    // 末尾のConstraintを削除
+    btPoint2PointConstraint* lastConstraint = m_Constraints.back();
+    world->removeConstraint(lastConstraint);
+    delete lastConstraint;
+
+    m_Constraints.pop_back();
+}
+
+void ChainSystem::AddLastLinkConstraint()
+{
+    if (m_PhysicsLinks.empty()) return;
+
+    auto* world = PhysicsManager::GetWorld();
+    if (!world) return;
+
+    PhysicsObject* endPhysics = dynamic_cast<PhysicsObject*>(m_EndObject);
+    if (!endPhysics || !endPhysics->GetRigidBody()) return;
+
+    btRigidBody* bodyA = m_PhysicsLinks.back()->GetRigidBody();
+    btRigidBody* bodyB = endPhysics->GetRigidBody();
+
+    if (bodyA && bodyB)
+    {
+        btVector3 pivotA(0, -m_LinkLength * 0.5f, 0);  // リンクの下部
+        btVector3 pivotB(0, 0, 0);  // アンカーの中心
+
+        btPoint2PointConstraint* constraint = new btPoint2PointConstraint(*bodyA, *bodyB, pivotA, pivotB);
+        world->addConstraint(constraint, true);
+        m_Constraints.push_back(constraint);
+    }
+}
+
+void ChainSystem::AddLinkIfNeeded()
+{
+    if (!m_StartObject || !m_EndObject) return;
+
+    // 現在必要なリンク数を計算
+    int requiredLinks = (int)(m_CurrentDistance / m_LinkSpacing);
+
+    // 最小1個
+    if (requiredLinks < 1) requiredLinks = 1;
+
+    // リンクが足りない場合は1個だけ追加（毎フレーム最大1個）
+    if ((int)m_PhysicsLinks.size() < requiredLinks)
+    {
+        auto* world = PhysicsManager::GetWorld();
+        if (!world) return;
+
+        // 1. 末尾のConstraintを削除（Anchor接続を一時的に解除）
+        RemoveLastConstraint();
+
+        // 2. 新しいリンクの位置を計算（最後のリンクとアンカーの中間）
+        Vector3 lastLinkPos;
+        if (m_PhysicsLinks.empty())
+        {
+            lastLinkPos = m_StartObject->GetPosition();
+        }
+        else
+        {
+            lastLinkPos = m_PhysicsLinks.back()->GetPosition();
+        }
+
+        Vector3 endPos = m_EndObject->GetPosition();
+        Vector3 newLinkPos = (lastLinkPos + endPos) * 0.5f;
+
+        // 3. 新しいリンクを追加
+        AddLink(newLinkPos);
+
+        // 4. 新しいConstraintを追加（最後から2番目のリンク → 新しいリンク）
+        if (m_PhysicsLinks.size() >= 2)
+        {
+            btRigidBody* bodyA = m_PhysicsLinks[m_PhysicsLinks.size() - 2]->GetRigidBody();
+            btRigidBody* bodyB = m_PhysicsLinks.back()->GetRigidBody();
+
+            if (bodyA && bodyB)
+            {
+                btVector3 pivotA(0, -m_LinkLength * 0.5f, 0);
+                btVector3 pivotB(0, m_LinkLength * 0.5f, 0);
+
+                btPoint2PointConstraint* constraint = new btPoint2PointConstraint(*bodyA, *bodyB, pivotA, pivotB);
+                world->addConstraint(constraint, true);
+                m_Constraints.push_back(constraint);
+            }
+        }
+
+        // 5. 新しい末尾とAnchorを再接続
+        AddLastLinkConstraint();
+    }
+}
+
+void ChainSystem::RemoveLinkIfNeeded()
+{
+    if (m_PhysicsLinks.empty()) return;
+
+    // 現在必要なリンク数を計算
+    int requiredLinks = (int)(m_CurrentDistance / m_LinkSpacing);
+    if (requiredLinks < 1) requiredLinks = 1;
+
+    // リンクが多すぎる場合は1個だけ削除（毎フレーム最大1個）
+    if ((int)m_PhysicsLinks.size() > requiredLinks && m_PhysicsLinks.size() > 1)
+    {
+        // 1. 末尾のConstraintを削除（Anchor接続）
+        RemoveLastConstraint();
+
+        // 2. リンク間のConstraintも削除（最後から2番目 → 最後のリンク）
+        if (m_PhysicsLinks.size() >= 2)
+        {
+            RemoveLastConstraint();
+        }
+
+        // 3. 末尾のリンクを削除
+        RemoveLink((int)m_PhysicsLinks.size() - 1);
+
+        // 4. 新しい末尾とAnchorを再接続
+        AddLastLinkConstraint();
+    }
+}
+
+void ChainSystem::ProcessRetract()
+{
+    if (!m_IsRetracting || !m_EndObject || !m_StartObject) return;
+
+    // アンカーをプレイヤーに向かって引き寄せる
+    PhysicsObject* endPhysics = dynamic_cast<PhysicsObject*>(m_EndObject);
+    if (endPhysics && endPhysics->GetRigidBody())
+    {
+        Vector3 startPos = m_StartObject->GetPosition();
+        Vector3 endPos = m_EndObject->GetPosition();
+        Vector3 direction = startPos - endPos;
+
+        float distance = direction.Length();
+        if (distance > 1.0f)
+        {
+            direction.Normalize();
+            btVector3 retractForce(
+                direction.x * m_RetractSpeed,
+                direction.y * m_RetractSpeed,
+                direction.z * m_RetractSpeed
+            );
+
+            endPhysics->GetRigidBody()->applyCentralForce(retractForce);
+            endPhysics->GetRigidBody()->activate(true);
+        }
+        else
+        {
+            // 巻き戻し完了
+            m_IsRetracting = false;
+        }
+    }
 }
 
 void ChainSystem::CalculateVisualPoints()
@@ -161,54 +330,70 @@ void ChainSystem::CalculateVisualPoints()
     // 終了点
     m_VisualPoints.push_back(m_EndObject->GetPosition());
 
-    // 物理リンク間をカテナリー曲線で補間
+    // 物理リンク間を補間（軽量版：各セグメント間に1点のみ）
     std::vector<Vector3> interpolatedPoints;
-    interpolatedPoints.push_back(m_VisualPoints[0]);
+    interpolatedPoints.reserve(m_VisualPoints.size() * 2);  // メモリ予約
 
     for (size_t i = 0; i < m_VisualPoints.size() - 1; i++)
     {
+        interpolatedPoints.push_back(m_VisualPoints[i]);
+
         Vector3 start = m_VisualPoints[i];
         Vector3 end = m_VisualPoints[i + 1];
 
-        // 各セグメント間に複数の補間ポイントを追加
-        int subdivisions = m_VisualLinkCount / m_PhysicsLinkCount;
-        for (int j = 1; j <= subdivisions; j++)
-        {
-            float t = (float)j / (float)(subdivisions + 1);
+        // 中間点を追加（簡易的な重力効果）
+        Vector3 midpoint;
+        midpoint.x = (start.x + end.x) * 0.5f;
+        midpoint.y = (start.y + end.y) * 0.5f - 0.05f;  // 少し下げる
+        midpoint.z = (start.z + end.z) * 0.5f;
 
-            // シンプルな重力カーブ（カテナリー曲線の簡易版）
-            Vector3 midpoint = start + (end - start) * t;
-            float sag = 0.2f * std::sin(t * 3.14159f);  // 重力による垂れ下がり
-            midpoint.y -= sag;
-
-            interpolatedPoints.push_back(midpoint);
-        }
-
-        interpolatedPoints.push_back(end);
+        interpolatedPoints.push_back(midpoint);
     }
 
-    m_VisualPoints = interpolatedPoints;
+    interpolatedPoints.push_back(m_VisualPoints.back());
+
+    m_VisualPoints = std::move(interpolatedPoints);
 }
 
 void ChainSystem::UpdateChain()
 {
-    // 視覚的な補間ポイントを再計算
-    CalculateVisualPoints();
-}
+    if (!m_StartObject || !m_EndObject) return;
 
-void ChainSystem::Uninit()
-{
-    DestroyChain();
+    // 現在の距離を計算
+    Vector3 start = m_StartObject->GetPosition();
+    Vector3 end = m_EndObject->GetPosition();
+    m_CurrentDistance = (end - start).Length();
 
-    if (m_VertexBuffer)  m_VertexBuffer->Release();
-    if (m_VertexLayout)  m_VertexLayout->Release();
-    if (m_VertexShader)  m_VertexShader->Release();
-    if (m_PixelShader)   m_PixelShader->Release();
+    // 最大距離を超えたら巻き戻し開始
+    if (m_CurrentDistance >= m_MaxChainLength && !m_IsRetracting)
+    {
+        StartRetract();
+    }
+
+    // 巻き戻し処理
+    if (m_IsRetracting)
+    {
+        ProcessRetract();
+        RemoveLinkIfNeeded();  // 距離が縮まったらリンクを1個削除
+    }
+    else
+    {
+        // 距離に応じてリンクを1個追加
+        AddLinkIfNeeded();
+    }
+
+    // 視覚的な補間ポイントを更新（頻度制限あり）
+    m_VisualUpdateCounter++;
+    if (m_VisualUpdateCounter >= m_VisualUpdateInterval)
+    {
+        CalculateVisualPoints();
+        m_VisualUpdateCounter = 0;
+    }
 }
 
 void ChainSystem::DestroyChain()
 {
-    
+    // 物理リンクを削除
     for (ChainLink* link : m_PhysicsLinks)
     {
         if (link)
@@ -218,11 +403,28 @@ void ChainSystem::DestroyChain()
     }
     m_PhysicsLinks.clear();
 
-    // Constraintのポインタをクリアするだけ（deleteしない）
+    // Constraintのポインタをクリア
     m_Constraints.clear();
 
     m_StartObject = nullptr;
     m_EndObject = nullptr;
+    m_IsRetracting = false;
+}
+
+void ChainSystem::Uninit()
+{
+    DestroyChain();
+
+    if (m_ModelRenderer)
+    {
+        delete m_ModelRenderer;
+        m_ModelRenderer = nullptr;
+    }
+
+    if (m_VertexBuffer)  m_VertexBuffer->Release();
+    if (m_VertexLayout)  m_VertexLayout->Release();
+    if (m_VertexShader)  m_VertexShader->Release();
+    if (m_PixelShader)   m_PixelShader->Release();
 }
 
 void ChainSystem::Update()
@@ -235,8 +437,8 @@ void ChainSystem::Update()
         return;
     }
 
-    // 視覚的な補間ポイントを更新
-    CalculateVisualPoints();
+    // チェーンを更新
+    UpdateChain();
 }
 
 void ChainSystem::Draw()
@@ -244,29 +446,49 @@ void ChainSystem::Draw()
     if (m_VisualPoints.size() < 2) return;
 
     // ライン描画でチェーンを表現
-    // 各セグメント間に線を描画
     for (size_t i = 0; i < m_VisualPoints.size() - 1; i++)
     {
-        Vector3 start = m_VisualPoints[i];
-        Vector3 end = m_VisualPoints[i + 1];
-
-        // 線分を円柱で描画（実装に応じて変更）
-        // ここでは既存の描画システムを利用
+        const Vector3& start = m_VisualPoints[i];
+        const Vector3& end = m_VisualPoints[i + 1];
 
         // 中点を計算
-        Vector3 midpoint = (start + end) * 0.5f;
+        Vector3 midpoint;
+        midpoint.x = (start.x + end.x) * 0.5f;
+        midpoint.y = (start.y + end.y) * 0.5f;
+        midpoint.z = (start.z + end.z) * 0.5f;
+
         Vector3 direction = end - start;
         float length = direction.Length();
+
+        // 長さが極端に短い場合はスキップ
+        if (length < 0.01f) continue;
+
         direction.Normalize();
 
         // 回転を計算
         Vector3 up(0, 1, 0);
         Vector3 right = Vector3::Cross(up, direction);
-        right.Normalize();
-        Vector3 forward = Vector3::Cross(right,direction);
 
-        // ワールド行列を構築
-        XMMATRIX scale = XMMatrixScaling(m_LinkRadius, length * 0.5f, m_LinkRadius);
+        // rightがゼロベクトルの場合の対処
+        if (right.Length() < 0.001f)
+        {
+            right = Vector3(1, 0, 0);
+        }
+        else
+        {
+            right.Normalize();
+        }
+
+        // forwardを正しく計算（直交性を保証）
+        Vector3 forward = Vector3::Cross(direction, right);
+        forward.Normalize();
+
+        // 物理的な長さは direction/length から決める
+        float visualRadius = m_LinkRadius * m_VisualRadiusScale;
+        float visualHalfLen = length * 0.5f * m_VisualLengthScale;
+
+        // ワールド行列を構築（見た目だけ拡大縮小）
+        XMMATRIX scale = XMMatrixScaling(visualRadius, visualHalfLen, visualRadius);
 
         XMMATRIX rotation = XMMatrixIdentity();
         rotation.r[0] = XMVectorSet(right.x, right.y, right.z, 0);
@@ -286,21 +508,18 @@ void ChainSystem::Draw()
 
         ID3D11ShaderResourceView* nullSRV = nullptr;
         Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
-    
-        // モデルの描画
+
         m_ModelRenderer->Draw();
-        
     }
-
-
 }
 
 Vector3 ChainSystem::InterpolateCatenary(const Vector3& start, const Vector3& end, float t, float sag)
 {
-    // カテナリー曲線の簡易実装
-    Vector3 result = start + (end - start) * t;
+    Vector3 result;
+    result.x = start.x + (end.x - start.x) * t;
+    result.y = start.y + (end.y - start.y) * t;
+    result.z = start.z + (end.z - start.z) * t;
 
-    // 放物線的な垂れ下がりを追加
     float sagAmount = sag * std::sin(t * 3.14159f);
     result.y -= sagAmount;
 

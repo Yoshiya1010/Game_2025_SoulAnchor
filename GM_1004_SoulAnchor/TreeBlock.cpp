@@ -71,7 +71,7 @@ void TreeBlock::Draw()
 
     // ワールド行列を設定
     Renderer::SetWorldMatrix(
-        UpdatePhysicsWithModel(m_ModelScale)
+        UpdatePhysicsWithModel()
     );
 
     // モデルの描画

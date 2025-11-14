@@ -31,7 +31,7 @@ private:
 	GameObject* m_Owner = nullptr;
 
 	// ˆø‚«Šñ‚¹ƒpƒ‰ƒ[ƒ^
-	float m_PullForce = 200.0f;      // ˆø‚«Šñ‚¹‚é—Í
+	float m_PullForce = 1000.0f;      // ˆø‚«Šñ‚¹‚é—Í
 	float m_PullDistance = 10.0f;     // ‚±‚Ì‹——£ˆÈ‰º‚É‚È‚Á‚½‚çˆø‚«Šñ‚¹Š®—¹
 	bool m_IsPulling = false;        // ˆø‚«Šñ‚¹’†‚©‚Ç‚¤‚©
 

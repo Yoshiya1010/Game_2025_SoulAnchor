@@ -1,6 +1,7 @@
 #pragma once
 #include "PhysicsObject.h"
 #include <memory>
+#include"modelRenderer.h"
 
 // チェーンの1つのリンク（物理演算あり）
 class ChainLink : public PhysicsObject
@@ -16,6 +17,9 @@ private:
     ID3D11InputLayout* m_VertexLayout = nullptr;
 
     int m_VertexCount = 0;
+
+    // モデルレンダラー
+    ModelRenderer* m_ModelRenderer = nullptr;
 
 public:
     ChainLink() = default;

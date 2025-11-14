@@ -60,9 +60,13 @@ void Anchor::Start()
         m_ChainSystem = Manager::GetScene()->AddGameObject<ChainSystem>(OBJECT);
         m_ChainSystem->Init();
 
-        // プレイヤーとアンカーの間にチェーンを作成
-        // パラメータ: 物理リンク数6個、半径0.05、長さ0.3、質量0.1
-        m_ChainSystem->CreateChain(m_Owner, this, 20, 0.3f, 0.3f, 0.5f);
+        m_ChainSystem->CreateChain(
+            m_Owner, this,
+            10.0f,   // 最大距離（好きな値に変更）
+            0.1f,   // リンクの太さ
+            0.1f,    // リンクの長さ（これが重要！）
+            0.3f     // リンクの質量
+        );
     }
    
 }
@@ -184,7 +188,7 @@ void Anchor::Draw()
 
     Renderer::SetWorldMatrix(
         //モデルと物理の座標を同期させる
-        UpdatePhysicsWithModel(m_modelScale));
+        UpdatePhysicsWithModel());
     // モデルの描画
     m_ModelRenderer->Draw();
 
