@@ -5,6 +5,7 @@
 #include "scene.h"
 #include <cmath>
 
+
 void ChainSystem::Init()
 {
     // シェーダー読み込み
@@ -22,6 +23,9 @@ void ChainSystem::Init()
     m_LinkMass = 0.1f;
 
     SetName("ChainSystem");
+
+    m_ModelRenderer = new ModelRenderer();
+    m_ModelRenderer->Load("asset\\model\\bullet.obj");
 }
 
 void ChainSystem::CreateChain(GameObject* startObj, GameObject* endObj,
@@ -135,6 +139,8 @@ void ChainSystem::CreateConstraints()
             m_Constraints.push_back(constraint);
         }
     }
+
+ 
 }
 
 void ChainSystem::CalculateVisualPoints()
@@ -262,9 +268,9 @@ void ChainSystem::Draw()
 
         // 回転を計算
         Vector3 up(0, 1, 0);
-        Vector3 right = up.Cross(direction);
+        Vector3 right = Vector3::Cross(up, direction);
         right.Normalize();
-        Vector3 forward = right.Cross(direction);
+        Vector3 forward = Vector3::Cross(right,direction);
 
         // ワールド行列を構築
         XMMATRIX scale = XMMatrixScaling(m_LinkRadius, length * 0.5f, m_LinkRadius);
@@ -287,9 +293,13 @@ void ChainSystem::Draw()
 
         ID3D11ShaderResourceView* nullSRV = nullptr;
         Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
-
-        // 簡易的な描画（円柱モデルを使用することを推奨）
+    
+        // モデルの描画
+        m_ModelRenderer->Draw();
+        
     }
+
+
 }
 
 Vector3 ChainSystem::InterpolateCatenary(const Vector3& start, const Vector3& end, float t, float sag)

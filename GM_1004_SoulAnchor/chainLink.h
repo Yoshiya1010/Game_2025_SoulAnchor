@@ -30,5 +30,5 @@ public:
     void InitializeLink(Vector3 position, float radius, float length, float mass);
 
     // Ÿ‚ÌƒŠƒ“ƒN‚Æ‚ÌÚ‘±“_‚ğæ“¾
-    Vector3 GetConnectionPoint() const;
+    Vector3 GetConnectionPoint();
 };

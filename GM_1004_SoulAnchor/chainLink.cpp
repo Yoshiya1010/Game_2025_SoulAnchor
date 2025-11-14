@@ -102,9 +102,9 @@ void ChainLink::Draw()
     // ここでは既存の描画システムを使用
 }
 
-Vector3 ChainLink::GetConnectionPoint() const
+Vector3 ChainLink::GetConnectionPoint() 
 {
     // リンクの下端の位置を返す
-    Vector3 down = GetUp() * -1.0f;
+    Vector3 down =GetUp() * -1.0f;
     return m_Position + (down * (m_Length * 0.5f));
 }

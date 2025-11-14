@@ -26,7 +26,7 @@ void Anchor::Init()
         "shader\\unlitTexturePS.cso");
 
 
-
+    SetMass(30.f);
     m_Started = false;
 
     SetName("Anchor");
@@ -47,7 +47,7 @@ void Anchor::Start()
     if (!m_RigidBody && PhysicsManager::GetWorld()) {
         SetupCollisionLayer();
         m_ColliderOffset = Vector3(0, 0, 0);
-        CreateBoxCollider(Vector3(1.0f, 1.0f, 1.0f), 1.0f);
+        CreateBoxCollider(Vector3(1.0f, 1.0f, 3.0f), m_mass);
     }
 
     // PendingVelocityがあれば反映
@@ -62,7 +62,7 @@ void Anchor::Start()
 
         // プレイヤーとアンカーの間にチェーンを作成
         // パラメータ: 物理リンク数6個、半径0.05、長さ0.3、質量0.1
-        m_ChainSystem->CreateChain(m_Owner, this, 6, 0.05f, 0.3f, 0.1f);
+        m_ChainSystem->CreateChain(m_Owner, this, 20, 0.3f, 0.3f, 0.5f);
     }
    
 }
