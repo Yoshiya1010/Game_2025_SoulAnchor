@@ -38,10 +38,6 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
-
-
-  
-
     XMMATRIX S_p = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
     XMMATRIX R_p = XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z);
     XMMATRIX T_p = XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);

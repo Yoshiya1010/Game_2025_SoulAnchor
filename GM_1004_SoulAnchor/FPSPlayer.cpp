@@ -228,17 +228,9 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
     float yawDeg = cameraRotation.y * RAD2DEG;
     float rollDeg = cameraRotation.z * RAD2DEG;
 
-    // デバッグ用：変換前と変換後を確認
-    DebugImguiWindow::DebugFloat("camera.x (rad)", pitchDeg, false);
-    DebugImguiWindow::DebugFloat("camera.y (rad)", yawDeg, false);
-    DebugImguiWindow::DebugFloat("pitchDeg", pitchDeg, false);
-    DebugImguiWindow::DebugFloat("yawDeg", yawDeg, false);
-
-    // モデルの前方が-Y方向なので、X軸周りに90度回転を追加
-    // これによりモデルの-Y軸がカメラの前方向きに一致する
  
-
-    
+    //モデルの向きに合わせる
+    pitchDeg += 180.0f;
 
     // アンカーの回転を設定（度数法）
     anchor->SetRotation(Vector3(pitchDeg, yawDeg, rollDeg));

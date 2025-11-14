@@ -116,9 +116,9 @@ public:
 
         btQuaternion q;
         q.setEulerZYX(
-            m_Rotation.y * DEG2RAD, // yaw
-            m_Rotation.x * DEG2RAD, // pitch
-            m_Rotation.z * DEG2RAD  // roll
+            m_Rotation.z * DEG2RAD, // yaw
+            m_Rotation.y * DEG2RAD, // pitch
+            m_Rotation.x * DEG2RAD  // roll
         );
         transform.setRotation(q);
 
