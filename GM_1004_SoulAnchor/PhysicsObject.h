@@ -13,6 +13,7 @@ enum CollisionGroup {
     COL_ANCHOR  = 1 << 5,
     COL_ITEM    = 1 << 6,
     COL_DEFAULT = 1 << 7,
+    COL_CHAIN = 1 << 8,
 };
 class PhysicsObject : public GameObject {
 protected:
@@ -359,6 +360,11 @@ public:
         case GameObjectTag::Wall:
             m_CollisionGroup = COL_WALL;
             m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_BULLET;
+            break;
+
+        case GameObjectTag::Chain:
+            m_CollisionGroup = COL_CHAIN;
+            m_CollisionMask = COL_PLAYER | COL_ENEMY | COL_ANCHOR|COL_DEFAULT;
             break;
 
         default:

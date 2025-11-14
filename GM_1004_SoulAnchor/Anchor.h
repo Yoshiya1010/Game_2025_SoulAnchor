@@ -6,6 +6,7 @@
 #include"ModelFBX.h"
 #include<memory>
 #include"PhysicsObject.h"
+#include"chainSystem.h"
 
 class Anchor :public PhysicsObject {
 private:
@@ -35,6 +36,9 @@ private:
 	bool m_IsPulling = false;        // 引き寄せ中かどうか
 
 	bool m_PullingSelf = false;//静的オブジェクトにぶつかった
+
+	// チェーンシステム
+	ChainSystem* m_ChainSystem = nullptr;
 
 public:
 	void Init() override;

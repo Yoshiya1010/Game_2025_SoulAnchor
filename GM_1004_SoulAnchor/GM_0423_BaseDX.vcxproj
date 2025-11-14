@@ -145,6 +145,8 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bulletDebugDrawer.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="chainLink.cpp" />
+    <ClCompile Include="chainSystem.cpp" />
     <ClCompile Include="debugImguiWindow.cpp" />
     <ClCompile Include="drawImgui.cpp" />
     <ClCompile Include="editorObjectCreator.cpp" />
@@ -206,6 +208,8 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bulletDebugDrawer.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="chainLink.h" />
+    <ClInclude Include="chainSystem.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="debugImguiWindow.h" />
     <ClInclude Include="debugPrintf.h" />

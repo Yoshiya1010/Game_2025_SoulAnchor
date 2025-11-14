@@ -25,6 +25,8 @@ void TreeBlock::Init()
     // スケール設定
     SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
+   
+
     // 破壊設定
     SetDestructible(true);
     SetDestructionThreshold(15.0f);
@@ -54,14 +56,7 @@ void TreeBlock::Uninit()
 void TreeBlock::Update()
 {
     CheckAndCallStart();
-    if (m_Started)
-    {
-        // テスト用: Gキーで破壊
-        if (Input::GetKeyTrigger(KK_G))
-        {
-            DestroyObject(m_Position);
-        }
-    }
+  
 }
 
 void TreeBlock::Draw()

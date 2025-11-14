@@ -7,6 +7,8 @@
 #include "animationModel.h"
 #include"ModelFBX.h"
 #include"FPSPlayer.h"
+#include"scene.h"
+#include"manager.h"
 
 
 void Anchor::Init()
@@ -52,13 +54,30 @@ void Anchor::Start()
     SetVelocity(m_PendingVelocity);
     m_PendingVelocity = Vector3(0, 0, 0);
 
+    // チェーンシステムを作成
+    if (m_Owner && !m_ChainSystem)
+    {
+        m_ChainSystem = Manager::GetScene()->AddGameObject<ChainSystem>(OBJECT);
+        m_ChainSystem->Init();
 
+        // プレイヤーとアンカーの間にチェーンを作成
+        // パラメータ: 物理リンク数6個、半径0.05、長さ0.3、質量0.1
+        m_ChainSystem->CreateChain(m_Owner, this, 6, 0.05f, 0.3f, 0.1f);
+    }
    
 }
 
 
 void Anchor::Uninit()
 {
+    // チェーンシステムを削除
+    if (m_ChainSystem)
+    {
+        m_ChainSystem->DestroyChain();
+        m_ChainSystem->SetDestroy();
+        m_ChainSystem = nullptr;
+    }
+
     m_Joint = nullptr;
     m_IsPulling = false;
     m_Attached = false;
@@ -140,6 +159,12 @@ void Anchor::Update()
                         SetDestroy();
                     }
                 }
+            }
+
+            // チェーンシステムを更新（両端の位置が変わっている）
+            if (m_ChainSystem)
+            {
+                m_ChainSystem->UpdateChain();
             }
         }
     }

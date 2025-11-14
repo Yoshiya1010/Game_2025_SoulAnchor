@@ -88,6 +88,9 @@
     <Filter Include="ソース ファイル\プレイヤー\UI">
       <UniqueIdentifier>{19cc7c28-50c4-4173-b1ec-b001083031f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\アンカー">
+      <UniqueIdentifier>{487af759-651f-49ef-8e97-ae98c61a298e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -267,6 +270,12 @@
     <ClCompile Include="shaderManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="chainLink.cpp">
+      <Filter>ソース ファイル\アンカー</Filter>
+    </ClCompile>
+    <ClCompile Include="chainSystem.cpp">
+      <Filter>ソース ファイル\アンカー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -377,9 +386,6 @@
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
-    <ClInclude Include="Anchor.h">
-      <Filter>ヘッダー ファイル\プレイヤー</Filter>
-    </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>ヘッダー ファイル\プレイヤー</Filter>
     </ClInclude>
@@ -460,6 +466,15 @@
     </ClInclude>
     <ClInclude Include="shaderType.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="anchor.h">
+      <Filter>ヘッダー ファイル\アンカー</Filter>
+    </ClInclude>
+    <ClInclude Include="chainLink.h">
+      <Filter>ヘッダー ファイル\アンカー</Filter>
+    </ClInclude>
+    <ClInclude Include="chainSystem.h">
+      <Filter>ヘッダー ファイル\アンカー</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

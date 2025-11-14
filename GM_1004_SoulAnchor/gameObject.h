@@ -24,7 +24,8 @@ enum class GameObjectTag {
 	Wall,
 	Ground,
 	Item,
-	Anchor
+	Anchor,
+	Chain
 };
 
 
