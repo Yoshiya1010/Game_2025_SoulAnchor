@@ -14,8 +14,8 @@
 void Anchor::Init()
 {
     // モデルのロード
-    m_ModelRenderer = std::make_unique<StaticFBXModel>();
-    m_ModelRenderer->Load("asset\\model\\Anchor.fbx");
+    m_ModelRenderer = std::make_unique<ModelRenderer>();
+    m_ModelRenderer->Load("asset\\model\\Anchor.obj");
 
 
     // シェーダー読み込み
@@ -47,14 +47,14 @@ void Anchor::Start()
     if (!m_RigidBody && PhysicsManager::GetWorld()) {
         SetupCollisionLayer();
         m_ColliderOffset = Vector3(0, 0, 0);
-        CreateBoxCollider(Vector3(1.0f, 1.0f, 3.0f), m_mass);
+        CreateBoxCollider(Vector3(1, 0.3, 3), m_mass);
     }
 
     // PendingVelocityがあれば反映
     SetVelocity(m_PendingVelocity);
     m_PendingVelocity = Vector3(0, 0, 0);
 
-    // チェーンシステムを作成
+    //チェーンシステムを作成
     if (m_Owner && !m_ChainSystem)
     {
         m_ChainSystem = Manager::GetScene()->AddGameObject<ChainSystem>(OBJECT);
@@ -62,10 +62,10 @@ void Anchor::Start()
 
         m_ChainSystem->CreateChain(
             m_Owner, this,
-            10.0f,   // 最大距離（好きな値に変更）
-            0.1f,   // リンクの太さ
-            0.1f,    // リンクの長さ（これが重要！）
-            0.3f     // リンクの質量
+            10.0f,   //最大距離
+            0.1f,    //リンクの太さ
+            0.1f,    //リンクの長さ
+            0.5f     //リンクの質量
         );
     }
    
@@ -74,7 +74,7 @@ void Anchor::Start()
 
 void Anchor::Uninit()
 {
-    // チェーンシステムを削除
+    //チェーンシステムを削除
     if (m_ChainSystem)
     {
         m_ChainSystem->DestroyChain();
@@ -87,10 +87,10 @@ void Anchor::Uninit()
     m_Attached = false;
     m_AttachedTarget = nullptr;
 
-    // その後でRigidBodyを削除
+    //その後でRigidBodyを削除
     if (m_RigidBody)
     {
-        PhysicsObject::Uninit(); // RigidBody削除（ジョイントは既に削除済み）
+        PhysicsObject::Uninit(); //RigidBody削除
     }
 
     m_ModelRenderer.reset();
@@ -107,12 +107,12 @@ void Anchor::Update()
     {
         if (m_Started)
         {
-            // 引き寄せ処理
+            //引き寄せ処理
             if (m_IsPulling && m_Owner)
             {
                 Vector3 ownerPos = m_Owner->GetPosition();
 
-                // 自分自身を引き寄せる場合（静的オブジェクトに当たった）
+                //自分自身を引き寄せる場合（静的オブジェクトに当たった）
                 if (m_PullingSelf)
                 {
                     Vector3 anchorPos = this->GetPosition();
@@ -165,7 +165,7 @@ void Anchor::Update()
                 }
             }
 
-            // チェーンシステムを更新（両端の位置が変わっている）
+            // チェーンシステムを更新
             if (m_ChainSystem)
             {
                 m_ChainSystem->UpdateChain();
@@ -177,12 +177,12 @@ void Anchor::Update()
 void Anchor::Draw()
 {
 
-    // まずこのオブジェクト用のレイアウト＆シェーダを必ずセット
+    
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
     Renderer::GetDeviceContext()->VSSetShader(m_VertexShader, nullptr, 0);
     Renderer::GetDeviceContext()->PSSetShader(m_PixelShader, nullptr, 0);
 
-    // UnlitColor はテクスチャ使わないのでスロットをクリア
+
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 
@@ -206,11 +206,11 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
     auto* world = PhysicsManager::GetWorld();
     if (!world || !target) return;
 
-    // ターゲットがPhysicsObjectでない場合は接続できない
+    //ターゲットがPhysicsObjectでない場合は接続できない
     PhysicsObject* targetPhysics = dynamic_cast<PhysicsObject*>(target);
     if (!targetPhysics || !targetPhysics->GetRigidBody()) return;
 
-    // 質量が0（静的オブジェクト）の場合はジョイントせずに即座にpulling開始
+    //質量が0（静的オブジェクト）の場合はジョイントせずに即座にpulling開始
     float targetMass = targetPhysics->GetMass();
     if (targetMass == 0.0f) {;
         // ジョイントは作らず、自分自身をプレイヤーに引き寄せる
@@ -248,7 +248,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
     m_AttachedTarget = target;
     m_PullingSelf = false;  // 物体を引き寄せる
 
-    // 接続したら速度を0にする（刺さった状態）
+    //接続したら速度を0にする（刺さった状態）
     if (m_RigidBody) {
         m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
         m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));

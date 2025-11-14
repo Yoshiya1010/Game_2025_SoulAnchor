@@ -224,17 +224,19 @@ void FPSPlayer::ThrowAnchor(FPSCamera* camera)
     Vector3 cameraRotation = camera->GetRotation();
 
     // ラジアンから度数法に変換（SetRotationは度数法を期待）
-  
+
     float pitchDeg = cameraRotation.x * RAD2DEG;
     float yawDeg = cameraRotation.y * RAD2DEG;
     float rollDeg = cameraRotation.z * RAD2DEG;
 
- 
+
     //モデルの向きに合わせる
     pitchDeg += 180.0f;
 
     // アンカーの回転を設定（度数法）
     anchor->SetRotation(Vector3(pitchDeg, yawDeg, rollDeg));
+
+    anchor->SetScale({ 1.0f, 1.0f, 1.0f });
 
     // 飛ばす方向の速度設定（Start後に反映される仕組み）
     anchor->SetVelocity(camForward * 50.0f);

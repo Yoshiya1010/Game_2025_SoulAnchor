@@ -3,10 +3,10 @@
 #include"main.h"
 #include "renderer.h"
 #include "gameObject.h"
-#include"ModelFBX.h"
 #include<memory>
 #include"PhysicsObject.h"
 #include"chainSystem.h"
+#include"modelRenderer.h"
 
 class Anchor :public PhysicsObject {
 private:
@@ -16,8 +16,8 @@ private:
 
 
 	//ƒ‚ƒfƒ‹
-	unique_ptr<StaticFBXModel> m_ModelRenderer = nullptr;
-	const float m_modelScale = 1.0f;
+	unique_ptr<ModelRenderer> m_ModelRenderer = nullptr;
+
 
 	Vector3 m_PendingVelocity = { 0,0,0 }; // ‚Ü‚¾RigidBody‚ª‚È‚¢ê‡‚Ìˆê•Û‘¶
 	Vector3 m_PendingRotation = { 0,0,0 }; // ‚Ü‚¾RigidBody‚ª‚È‚¢ê‡‚Ì‰ñ“]ˆê•Û‘¶
