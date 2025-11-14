@@ -79,6 +79,19 @@ void Game::Update()
 	Scene::Update();
 
 	
+	
+	if (Input::GetKeyRelease(KK_F1)) {
+		Scene::SetDebugFlag(!Scene::GetDebugFlag());
+	}
+
+	if (Input::GetKeyRelease(KK_F2)) {
+		Scene::SetDrawHitBoxFlag(!Scene::GetDrawHitBoxFlag());
+	}
+
+
+	if (Input::GetKeyRelease(KK_F3)) {
+		Scene::SetCameraModeFlag(!Scene::GetCameraModeFlag());
+	}
 
 	if (Scene::IsPaused()==true) return;
 	// 物理世界の更新
@@ -86,6 +99,9 @@ void Game::Update()
 
 	//衝突検知を毎フレーム実行
 	PhysicsCollisionManager::GetInstance()->CheckCollisions();
+
+
+	
 }
 
 void Game::DrawImgui()

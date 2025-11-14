@@ -4,6 +4,7 @@
 #include	"input.h"
 #include	"scene.h"
 #include <algorithm> 
+#include"main.h"
 
 void	FPSCamera::Init()
 {
@@ -25,6 +26,7 @@ void	FPSCamera::Init()
 
 	SetName("FPSCamera");
 
+	g_hWnd = GetWindow();
 	
 }
 
@@ -35,55 +37,109 @@ void	FPSCamera::Uninit()
 
 void	FPSCamera::Update()
 {
-	// 右クリックでマウスロック切り替え
-	static bool mouseLocked = false;
 
-	FPSPlayer* player = Manager::GetScene()->GetGameObject<FPSPlayer>();
-	if (!player) return;
 
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
-		mouseLocked = !mouseLocked;
-		
-	}
+    FPSPlayer* player = Manager::GetScene()->GetGameObject<FPSPlayer>();
+    if (!player) return;
 
-	if (mouseLocked)  // 右クリック押下判定
-	{
-		//カメラ操作（マウスによる視点回転
-		POINT mousePos;
-		GetCursorPos(&mousePos);
-		static POINT prevMousePos = mousePos;
+    bool fpsMode = Scene::GetCameraModeFlag();
+    static bool prevFpsMode = false;  // 前フレームの状態を覚えておく
 
-		float dx = (float)(mousePos.x - prevMousePos.x);
-		float dy = (float)(mousePos.y - prevMousePos.y);
-		prevMousePos = mousePos;
+    //状態遷移の処理 
+    if (fpsMode && !prevFpsMode)
+    {
+       
 
-		const float mouseSensitivity = 0.003f;
-		m_Rotation.y += dx * mouseSensitivity;
-		m_Rotation.x -= dy * mouseSensitivity;
+        // カーソルを確実に非表示にする
+        while (ShowCursor(FALSE) >= 0) {}   // カウンタが -1 になるまで減らす
 
-		float minPitch = -XM_PIDIV2 + 0.1f;
-		float maxPitch = XM_PIDIV2 - 0.1f;
+        // ウィンドウ矩形 → スクリーン座標に変換
+        RECT rc;
+        GetClientRect(g_hWnd, &rc);
+        POINT lt{ rc.left, rc.top };
+        POINT rb{ rc.right, rc.bottom };
+        ClientToScreen(g_hWnd, &lt);
+        ClientToScreen(g_hWnd, &rb);
 
-		// 上下の回転制限
-		m_Rotation.x = std::max(minPitch, std::min(m_Rotation.x, maxPitch));
+        // このウィンドウ内にマウスを閉じ込める
+        RECT clip{ lt.x, lt.y, rb.x, rb.y };
+        ClipCursor(&clip);
 
-		// カメラの位置をプレイヤーの頭に合わせる
-		Vector3 playerPos = player->GetPosition();
-		m_Position = playerPos + Vector3(0.0f, 1.8f, 0.0f); // 頭の高さ
+        // マウスを中央へ
+        POINT center{
+            (lt.x + rb.x) / 2,
+            (lt.y + rb.y) / 2
+        };
+        SetCursorPos(center.x, center.y);
+    }
+    else if (!fpsMode && prevFpsMode)
+    {
+        //FPSモードを抜けた時
 
-		//カメラの注視点を向いている方向に設定
-		m_Forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
-		m_Forward.y = sinf(m_Rotation.x);
-		m_Forward.z = cosf(m_Rotation.y) * cosf(m_Rotation.x);
+        ClipCursor(nullptr);// 拘束解除
 
-		m_AtPosition = m_Position + m_Forward;
+        //カーソルを確実に表示にする
+        while (ShowCursor(TRUE) < 0) {}//カウンターを表示する
+    }
 
-		// View行列・Projection行列設定
-		m_ViewMatrix = XMMatrixLookAtLH(XMLoadFloat3((XMFLOAT3*)&m_Position),
-			XMLoadFloat3((XMFLOAT3*)&m_AtPosition),
-			XMLoadFloat3((XMFLOAT3*)&m_UpVector));
-		Renderer::SetViewMatrix(m_ViewMatrix);
-	}
+    //FPSモード
+    if (fpsMode)
+    {
+        // ウィンドウ矩形 → スクリーン座標に変換
+        RECT rc;
+        GetClientRect(g_hWnd, &rc);
+        POINT lt{ rc.left, rc.top };
+        POINT rb{ rc.right, rc.bottom };
+        ClientToScreen(g_hWnd, &lt);
+        ClientToScreen(g_hWnd, &rb);
+
+        POINT center{
+            (lt.x + rb.x) / 2,
+            (lt.y + rb.y) / 2
+        };
+
+        // 現在位置を取得
+        POINT mousePos;
+        GetCursorPos(&mousePos);
+
+        // 中央からの差分を移動量として使う
+        float dx = static_cast<float>(mousePos.x - center.x);
+        float dy = static_cast<float>(mousePos.y - center.y);
+
+        // 毎フレーム中央に戻す
+        SetCursorPos(center.x, center.y);
+
+        // カメラ回転
+        const float mouseSensitivity = 0.003f;
+        m_Rotation.y += dx * mouseSensitivity;  // yaw
+        m_Rotation.x -= dy * mouseSensitivity;  // pitch
+
+        float minPitch = -XM_PIDIV2 + 0.1f;
+        float maxPitch = XM_PIDIV2 - 0.1f;
+        m_Rotation.x = std::max(minPitch, std::min(m_Rotation.x, maxPitch));
+
+        // カメラ位置
+        Vector3 playerPos = player->GetPosition();
+        m_Position = playerPos + Vector3(0.0f, 1.8f, 0.0f); // 頭の高さ
+
+        // 向きベクトル
+        m_Forward.x = sinf(m_Rotation.y) * cosf(m_Rotation.x);
+        m_Forward.y = sinf(m_Rotation.x);
+        m_Forward.z = cosf(m_Rotation.y) * cosf(m_Rotation.x);
+        m_AtPosition = m_Position + m_Forward;
+
+        // ビュー行列設定
+        m_ViewMatrix = XMMatrixLookAtLH(
+            XMLoadFloat3((XMFLOAT3*)&m_Position),
+            XMLoadFloat3((XMFLOAT3*)&m_AtPosition),
+            XMLoadFloat3((XMFLOAT3*)&m_UpVector)
+        );
+        Renderer::SetViewMatrix(m_ViewMatrix);
+    }
+
+    // 最後に状態を保存
+    prevFpsMode = fpsMode;
+
 }
 
 void	FPSCamera::Draw()//3D使用時

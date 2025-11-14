@@ -91,6 +91,7 @@ void FPSPlayer::Update()
 
     if (m_Started)
     {
+
         FPSCamera* camera = Manager::GetScene()->GetGameObject<FPSCamera>();
         if (!camera) return;
 

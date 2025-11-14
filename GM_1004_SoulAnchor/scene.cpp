@@ -26,6 +26,8 @@ std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
 float Scene::m_deltaTime;
 
 bool Scene::debugFlag = false;
+bool Scene::drawHitBoxFlag = false;
+bool Scene::debugCameraModeFlag = false;
 
 bool Scene::m_isPaused = false;
 
@@ -96,10 +98,10 @@ void Scene::Update()
 
 void Scene::Draw()
 {
-
+	//太陽を取得
 	Sun* sun = GetGameObject<Sun>();
 
-	// ===== パス1: シャドウマップ =====
+
 	if (sun)
 	{
 		SHADOW_BUFFER shadowBuffer;
@@ -137,7 +139,6 @@ void Scene::Draw()
 	if (camera != nullptr) {
 		Vector3 CameraPosition = camera->GetPosition();
 
-		// &でキャプチャしてやらないとCameraPositionが使えない。ラムダ式も一応関数だから外部の変数を扱うときにキャプチャする必要がある。
 		m_GameObjects[OBJECT].sort([&](GameObject* a, GameObject* b) {
 			return a->GetDistance(CameraPosition) > b->GetDistance(CameraPosition);
 			});
@@ -159,16 +160,11 @@ void Scene::Draw()
 				ShaderManager::SetShader(type);
 			}
 			gameObject->Draw();
-
-
 		}
-	
 
-		
-		
 	}
 
-	if (debugFlag)
+	if (drawHitBoxFlag)
 	{
 		// 3Dカメラを取得（既にZソートで取得済み）
 		auto* camera = GetGameObject<FPSCamera>();

@@ -26,6 +26,8 @@ private:
 
 	Vector3		m_Forward;
 
+	HWND g_hWnd;
+
 public:
 	void	Init() override;
 	void	Uninit() override;

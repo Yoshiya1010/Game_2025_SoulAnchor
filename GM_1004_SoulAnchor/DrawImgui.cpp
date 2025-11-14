@@ -46,7 +46,9 @@ void CheckObjectSelect(GameObject* obj)
 void DrawImguiWindow()
 {
 
-	
+	if (Scene::GetDebugFlag())return;
+
+
 	//オブジェクトを追加するWindowの表示
 	static bool showAddGameObjectWindowFlag = true;
 
@@ -96,10 +98,10 @@ void DrawImguiWindow()
 			}
 
 			//Bullutのあたり判定の描画
-			bool DebugFlag = Scene::GetDebugFlag();
-			if (ImGui::Checkbox(U8("あたり判定描画"), &DebugFlag))
+			bool drawHitBoxFlag = Scene::GetDrawHitBoxFlag();
+			if (ImGui::Checkbox(U8("あたり判定描画"), &drawHitBoxFlag))
 			{
-				Scene::SetDebugFlag(DebugFlag);
+				Scene::SetDrawHitBoxFlag(drawHitBoxFlag);
 			};
 
 			ImGui::EndMainMenuBar();

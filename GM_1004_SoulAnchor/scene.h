@@ -26,6 +26,8 @@ private:
 
 
 	static bool debugFlag;
+	static bool drawHitBoxFlag;
+	static bool debugCameraModeFlag;
 	
 	static bool m_isPaused;   // ポーズ中フラグ
 
@@ -55,6 +57,12 @@ public:
 
 	static void SetDebugFlag(bool flag) { debugFlag = flag; }
 	static bool GetDebugFlag(void) { return debugFlag; }
+
+	static void SetDrawHitBoxFlag(bool flag) { drawHitBoxFlag = flag; }
+	static bool GetDrawHitBoxFlag(void) { return drawHitBoxFlag; }
+
+	static void SetCameraModeFlag(bool flag) { debugCameraModeFlag = flag; }
+	static bool GetCameraModeFlag(void) { return debugCameraModeFlag; }
 
 	const std::string& GetLoadSceneName()const { return m_LoadSceneName; }
 
