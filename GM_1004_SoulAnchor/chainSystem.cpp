@@ -208,25 +208,18 @@ void ChainSystem::Uninit()
 
 void ChainSystem::DestroyChain()
 {
-    auto* world = PhysicsManager::GetWorld();
-
-    // ジョイントを削除
-    if (world)
-    {
-        for (auto* constraint : m_Constraints)
-        {
-            world->removeConstraint(constraint);
-            delete constraint;
-        }
-    }
-    m_Constraints.clear();
-
-    // 物理リンクを削除
+    
     for (ChainLink* link : m_PhysicsLinks)
     {
-        link->SetDestroy();
+        if (link)
+        {
+            link->SetDestroy();
+        }
     }
     m_PhysicsLinks.clear();
+
+    // Constraintのポインタをクリアするだけ（deleteしない）
+    m_Constraints.clear();
 
     m_StartObject = nullptr;
     m_EndObject = nullptr;
