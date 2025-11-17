@@ -118,10 +118,9 @@ private:
    
 
     void HandleGenericCollision(GameObject* objA, GameObject* objB, const Vector3& hitPoint) {
-        printf("Generic collision between %s and %s\n",
-            objA->GetName().c_str(), objB->GetName().c_str());
+  
 
-        // 基本的なコールバック
+        //// 基本的なコールバック
         objA->OnCollisionEnter(objB, hitPoint);
         objB->OnCollisionEnter(objA, hitPoint);
     }

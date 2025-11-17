@@ -81,7 +81,7 @@ void FragmentObject::OnCollisionEnter(GameObject* other, const Vector3& hitPoint
 
         // è‡’l‚ð’´‚¦‚½‚ç”j‰ó
         if (impactSpeed > m_DestructionThreshold) {
-            DestroyObject(hitPoint);
+           /* DestroyObject(hitPoint);*/
         }
     }
 }
