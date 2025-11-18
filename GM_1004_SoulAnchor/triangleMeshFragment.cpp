@@ -4,14 +4,15 @@
 #include "TriangleMeshFragment.h"
 #include "manager.h"
 #include <vector>
+#include"shaderManager.h"
 
 void TriangleMeshFragment::Init()
 {
     // シェーダー読み込み
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
-        "shader\\unlitTextureVS.cso");
+        "shader\\toonShadowVS.cso");
     Renderer::CreatePixelShader(&m_PixelShader,
-        "shader\\unlitTexturePS.cso");
+        "shader\\toonShadowPS.cso");
 
     // デフォルトマテリアル設定
     ZeroMemory(&m_Material, sizeof(m_Material));
@@ -24,6 +25,7 @@ void TriangleMeshFragment::Init()
 
     SetName("TriangleMeshFragment");//仮で名前をいれる
     SetTag(GameObjectTag::Ground);
+    ShaderManager::SetShader(ShaderType::TOON_SHADOW);
 }
 
 void TriangleMeshFragment::Start()

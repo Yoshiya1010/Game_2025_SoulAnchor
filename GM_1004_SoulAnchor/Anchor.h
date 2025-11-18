@@ -22,10 +22,16 @@ private:
 	Vector3 m_PendingVelocity = { 0,0,0 }; // まだRigidBodyがない場合の一時保存
 	Vector3 m_PendingRotation = { 0,0,0 }; // まだRigidBodyがない場合の回転一時保存
 private:
+
+	const float m_AnchorMaxMass = 30.0f;
+	const float m_AnchorMinMass = 0.1f;
+	
+	const Vector3 m_AnchorColliderSize={ 1, 0.3, 2 };
+
 	// アンカーの状態
 	bool m_Attached = false;
 	GameObject* m_AttachedTarget = nullptr;
-	btPoint2PointConstraint* m_Joint = nullptr;
+	btFixedConstraint* m_Joint = nullptr;
 
 	// プレイヤーへの参照（引き寄せ用）
 	GameObject* m_Owner = nullptr;

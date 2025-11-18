@@ -30,36 +30,47 @@ public:
     }
 
     void CheckCollisions() {
-        if (!PhysicsManager::GetWorld()) return;
+        auto* world = PhysicsManager::GetWorld();
+        if (!world) return;
 
-        PhysicsManager::GetWorld()->performDiscreteCollisionDetection();
-        btDispatcher* dispatcher = PhysicsManager::GetWorld()->getDispatcher();
-        int numManifolds = dispatcher->getNumManifolds();
+        world->performDiscreteCollisionDetection();
+        btDispatcher* dispatcher = world->getDispatcher();
 
-        for (int i = 0; i < numManifolds; i++) {
-            btPersistentManifold* contactManifold = dispatcher->getManifoldByIndexInternal(i);
+        // 逆順ループ + 毎回数を取り直す
+        for (int i = dispatcher->getNumManifolds() - 1; i >= 0; --i)
+        {
+            int currentNum = dispatcher->getNumManifolds();
+            if (i >= currentNum) continue; // 範囲外になっていたらスキップ
+
+            btPersistentManifold* contactManifold =
+                dispatcher->getManifoldByIndexInternal(i);
 
             const btCollisionObject* objA = contactManifold->getBody0();
             const btCollisionObject* objB = contactManifold->getBody1();
 
-            GameObject* gameObjA = static_cast<GameObject*>(objA->getUserPointer());
-            GameObject* gameObjB = static_cast<GameObject*>(objB->getUserPointer());
+            GameObject* gameObjA =
+                static_cast<GameObject*>(objA->getUserPointer());
+            GameObject* gameObjB =
+                static_cast<GameObject*>(objB->getUserPointer());
 
-            if (gameObjA && gameObjB && gameObjA != gameObjB) {
-                int numContacts = contactManifold->getNumContacts();
-                for (int j = 0; j < numContacts; j++) {
-                    btManifoldPoint& pt = contactManifold->getContactPoint(j);
+            if (!gameObjA || !gameObjB || gameObjA == gameObjB)
+                continue;
 
-                    if (pt.getDistance() < 0.1f) {
-                        Vector3 hitPoint(
-                            pt.getPositionWorldOnA().getX(),
-                            pt.getPositionWorldOnA().getY(),
-                            pt.getPositionWorldOnA().getZ()
-                        );
+            int numContacts = contactManifold->getNumContacts();
+            for (int j = 0; j < numContacts; ++j)
+            {
+                btManifoldPoint& pt = contactManifold->getContactPoint(j);
 
-                        ProcessSpecificCollision(gameObjA, gameObjB, hitPoint);
-                        break;
-                    }
+                if (pt.getDistance() < 0.1f)  // ここは今の条件のままでOK
+                {
+                    Vector3 hitPoint(
+                        pt.getPositionWorldOnA().getX(),
+                        pt.getPositionWorldOnA().getY(),
+                        pt.getPositionWorldOnA().getZ()
+                    );
+
+                    ProcessSpecificCollision(gameObjA, gameObjB, hitPoint);
+                    break;
                 }
             }
         }

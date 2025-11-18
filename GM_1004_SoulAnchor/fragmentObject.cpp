@@ -225,11 +225,6 @@ PhysicsObject* FragmentObject::SetMass(float mass)
     if (m_UseTriangleMesh) {
         // トライアングルメッシュは動的オブジェクトにできない（Bulletの制限）
         if (mass > 0.0f) {
-            // 警告をコンソールに出力
-            printf("[WARNING] Triangle mesh objects cannot be dynamic (mass > 0).\n");
-            printf("          Keeping mass at 0 (static object).\n");
-            printf("          Object: %s\n", GetName().c_str());
-
             // 質量を0に固定
             mass = 0.0f;
         }

@@ -36,6 +36,7 @@ void TreeBlock::Init()
     m_Started = false;
     SetTag(GameObjectTag::Ground);
     SetName("TreeBlock");
+  
 }
 
 void TreeBlock::Start()
@@ -56,6 +57,11 @@ void TreeBlock::Uninit()
 void TreeBlock::Update()
 {
     CheckAndCallStart();
+
+    if (Input::GetKeyTrigger(KK_L))
+    {
+        DestroyObject(Vector3());
+    }
   
 }
 

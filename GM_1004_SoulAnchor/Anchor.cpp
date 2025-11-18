@@ -26,7 +26,7 @@ void Anchor::Init()
         "shader\\unlitTexturePS.cso");
 
 
-    SetMass(30.f);
+    SetMass(m_AnchorMaxMass);
     m_Started = false;
 
     SetName("Anchor");
@@ -47,7 +47,7 @@ void Anchor::Start()
     if (!m_RigidBody && PhysicsManager::GetWorld()) {
         SetupCollisionLayer();
         m_ColliderOffset = Vector3(0, 0, 0);
-        CreateBoxCollider(Vector3(1, 0.3, 3), m_mass);
+        CreateBoxCollider(m_AnchorColliderSize, m_mass);
     }
 
     // PendingVelocityがあれば反映
@@ -217,7 +217,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
         m_Attached = false;
         m_AttachedTarget = nullptr;
         m_IsPulling = true;
-        m_PullingSelf = true;  // 自分自身を引き寄せる
+        m_PullingSelf = true;// 自分自身を引き寄せる
 
         // 速度を0にして制御可能にする
         if (m_RigidBody) {
@@ -231,7 +231,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
     btRigidBody* bodyB = targetPhysics->GetRigidBody();
 
     // アンカーのローカル座標での接続点
-    btVector3 pivotInA(0, 0, 0);
+    btVector3 pivotInA(0, 0, -m_AnchorColliderSize.z/4);
 
     // ターゲットのローカル座標での接続点
     btVector3 pivotInB = btVector3(
@@ -240,8 +240,16 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
         hitPoint.z - target->GetPosition().z
     );
 
-    // Point2Pointジョイント作成
-    m_Joint = new btPoint2PointConstraint(*bodyA, *bodyB, pivotInA, pivotInB);
+    // ローカルフレームを作る
+    btTransform frameInA, frameInB;
+    frameInA.setIdentity();
+    frameInB.setIdentity();
+
+    frameInA.setOrigin(pivotInA); // Aローカルでの接続位置
+    frameInB.setOrigin(pivotInB); // Bローカルでの接続位置
+
+    // FixedConstraintジョイント作成
+    m_Joint = new btFixedConstraint(*bodyA, *bodyB, frameInA, frameInB);
     world->addConstraint(m_Joint, true);
 
     m_Attached = true;
@@ -252,6 +260,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
     if (m_RigidBody) {
         m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
         m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
+        SetMass(m_AnchorMinMass);//一度めちゃめちゃ軽くする
     }
 }
 

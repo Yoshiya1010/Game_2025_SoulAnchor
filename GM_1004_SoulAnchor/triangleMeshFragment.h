@@ -24,7 +24,7 @@ private:
     ID3D11ShaderResourceView* m_Texture = nullptr;
 
     // 破片の寿命管理
-    float m_Lifetime = 3.0f;
+    float m_Lifetime = 6.0f;
     float m_Timer = 0.0f;
 
     // 頂点数とインデックス数
