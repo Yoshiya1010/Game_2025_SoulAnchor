@@ -35,12 +35,42 @@ void TriangleMeshFragment::Start()
     if (PhysicsManager::GetWorld()) {
         SetupCollisionLayer();
 
-        // 計算されたバウンディングボックスサイズを使用
-        CreateBoxCollider(m_ColliderHalfSize, 1.0f);//質量1kg 固定
+        // 押し出し後の全頂点からConvexHullコライダーを作成
+        if (m_UseExtrusion && !m_ExtrudedVertexPositions.empty()) {
+            btConvexHullShape* convexShape = new btConvexHullShape();
 
-        // 空気抵抗を設定（すぐ止まるように） 強めに設定してる」
-        if (m_RigidBody) {
-            m_RigidBody->setDamping(0.5f, 0.7f);
+            // 頂点を間引いて軽量化（3頂点に1つだけ使用）
+            size_t step = 5; // この値を大きくするほど軽くなる（2-5推奨）
+            for (size_t i = 0; i < m_ExtrudedVertexPositions.size(); i += step) {
+                const XMFLOAT3& pos = m_ExtrudedVertexPositions[i];
+                btVector3 scaledPos(pos.x * 0.85f, pos.y * 0.85f, pos.z * 0.85f);
+                convexShape->addPoint(scaledPos, false);
+            }
+
+            // 最後の頂点は必ず追加してrecalc
+            if (!m_ExtrudedVertexPositions.empty()) {
+                const XMFLOAT3& lastPos = m_ExtrudedVertexPositions.back();
+                btVector3 scaledPos(lastPos.x * 0.85f, lastPos.y * 0.85f, lastPos.z * 0.85f);
+                convexShape->addPoint(scaledPos, true);
+            }
+
+            convexShape->setMargin(0.01f);
+            m_CollisionShape = std::unique_ptr<btCollisionShape>(convexShape);
+            CreateRigidBody(1.0f);
+
+            if (m_RigidBody) {
+                m_RigidBody->setDamping(0.5f, 0.7f);
+                m_RigidBody->setFriction(0.3f);
+                m_RigidBody->setRollingFriction(0.05f);
+            }
+        }
+        else {
+            // 押し出しなしの場合は従来のBox
+            CreateBoxCollider(m_ColliderHalfSize, 1.0f);
+
+            if (m_RigidBody) {
+                m_RigidBody->setDamping(0.5f, 0.7f);
+            }
         }
     }
 }
@@ -136,14 +166,16 @@ void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigne
         const VERTEX_3D& v1 = vertices[i + 1];
         const VERTEX_3D& v2 = vertices[i + 2];
 
-        // 三角形の法線を計算
+        // 三角形の法線（既にワールド回転が適用されたものを使用）
         XMVECTOR p0 = XMLoadFloat3(&v0.Position);
         XMVECTOR p1 = XMLoadFloat3(&v1.Position);
         XMVECTOR p2 = XMLoadFloat3(&v2.Position);
 
-        XMVECTOR edge1 = XMVectorSubtract(p1, p0);
-        XMVECTOR edge2 = XMVectorSubtract(p2, p0);
-        XMVECTOR normal = XMVector3Normalize(XMVector3Cross(edge1, edge2));
+        // 頂点に設定された法線の平均を使用（ワールド回転適用済み）
+        XMVECTOR n0 = XMLoadFloat3(&v0.Normal);
+        XMVECTOR n1 = XMLoadFloat3(&v1.Normal);
+        XMVECTOR n2 = XMLoadFloat3(&v2.Normal);
+        XMVECTOR normal = XMVector3Normalize(XMVectorAdd(XMVectorAdd(n0, n1), n2));
 
         // 押し出しベクトル
         XMVECTOR extrusion = XMVectorScale(normal, -m_ExtrusionDepth);
@@ -287,6 +319,12 @@ void TriangleMeshFragment::CreateExtrudedMesh(const VERTEX_3D* vertices, unsigne
     ibData.pSysMem = indices.data();
 
     Renderer::GetDevice()->CreateBuffer(&ibDesc, &ibData, &m_IndexBuffer);
+
+    // ConvexHull用に押し出し後の頂点位置を保存
+    m_ExtrudedVertexPositions.clear();
+    for (const auto& vertex : extrudedVertices) {
+        m_ExtrudedVertexPositions.push_back(vertex.Position);
+    }
 }
 
 void TriangleMeshFragment::CreateFlatMesh(const VERTEX_3D* vertices, unsigned int vertexCount)
@@ -350,20 +388,55 @@ Vector3 TriangleMeshFragment::CalculateBoundingBoxHalfSize(const VERTEX_3D* vert
         maxPos.z = fmax(maxPos.z, pos.z);
     }
 
-    //押し出しを考慮してサイズを変更
-    float extrusionMargin = m_UseExtrusion ? m_ExtrusionDepth : 0.0f;
+    // 押し出しを考慮する場合、法線方向の厚さを計算
+    if (m_UseExtrusion) {
+        // 3頂点ずつ処理して押し出し後の範囲も含める
+        for (unsigned int i = 0; i + 2 < vertexCount; i += 3) {
+            XMVECTOR p0 = XMLoadFloat3(&vertices[i + 0].Position);
+            XMVECTOR p1 = XMLoadFloat3(&vertices[i + 1].Position);
+            XMVECTOR p2 = XMLoadFloat3(&vertices[i + 2].Position);
 
-    //ハーフサイズを計算
+            // 法線計算
+            XMVECTOR edge1 = XMVectorSubtract(p1, p0);
+            XMVECTOR edge2 = XMVectorSubtract(p2, p0);
+            XMVECTOR normal = XMVector3Normalize(XMVector3Cross(edge1, edge2));
+            XMVECTOR extrusion = XMVectorScale(normal, -m_ExtrusionDepth);
+
+            // 押し出し後の3頂点もチェック
+            for (int j = 0; j < 3; j++) {
+                XMVECTOR pos = XMLoadFloat3(&vertices[i + j].Position);
+                XMVECTOR extrudedPos = XMVectorAdd(pos, extrusion);
+                XMFLOAT3 ep;
+                XMStoreFloat3(&ep, extrudedPos);
+
+                minPos.x = fmin(minPos.x, ep.x);
+                minPos.y = fmin(minPos.y, ep.y);
+                minPos.z = fmin(minPos.z, ep.z);
+
+                maxPos.x = fmax(maxPos.x, ep.x);
+                maxPos.y = fmax(maxPos.y, ep.y);
+                maxPos.z = fmax(maxPos.z, ep.z);
+            }
+        }
+    }
+
+    // ハーフサイズを計算
     Vector3 halfSize(
-        (maxPos.x - minPos.x) * 0.5f + extrusionMargin,
-        (maxPos.y - minPos.y) * 0.5f + extrusionMargin,
-        (maxPos.z - minPos.z) * 0.5f + extrusionMargin
+        (maxPos.x - minPos.x) * 0.5f,
+        (maxPos.y - minPos.y) * 0.5f,
+        (maxPos.z - minPos.z) * 0.5f
     );
 
-    // 最小サイズを保証　
+    // 最小サイズを保証
     halfSize.x = fmax(halfSize.x, 0.1f);
     halfSize.y = fmax(halfSize.y, 0.1f);
     halfSize.z = fmax(halfSize.z, 0.1f);
+
+
+    // 見た目よりも少し小さくする
+    halfSize.x *= 0.85f;
+    halfSize.y *= 0.85f;
+    halfSize.z *= 0.85f;
 
     return halfSize;
 }

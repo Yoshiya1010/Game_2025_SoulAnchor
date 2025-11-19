@@ -39,6 +39,8 @@ private:
     float m_ExtrusionDepth = 0.1f; // 押し出しの深さ（厚み）
     XMFLOAT4 m_FragmentColor = XMFLOAT4(0.8f, 0.6f, 0.4f, 1.0f);  // 破片の色　初期値だけ渡しておく
 
+    std::vector<XMFLOAT3> m_ExtrudedVertexPositions; // 押し出し後の全頂点位置
+
 public:
     void Init() override;
     void Start() override;

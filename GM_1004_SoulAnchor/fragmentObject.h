@@ -17,7 +17,7 @@ protected:
 
     // メッシュ破壊設定
     int m_GroupSize = 5;            // 三角形をグループ化する数（1=個々、5=5個まとめる）
-    float m_ExplosionForce = 15.0f; // 破片が飛ぶ力の大きさ
+    float m_ExplosionForce = 0.0f; // 破片が飛ぶ力の大きさ
 
     // コライダータイプの選択
     bool m_UseTriangleMesh = false;  // true=トライアングルメッシュ、　falseだとBoxになる
