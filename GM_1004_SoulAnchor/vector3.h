@@ -144,6 +144,7 @@ public:
 		return sqrtf(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
 	}
 
+	
 };
 
 
@@ -173,6 +174,9 @@ inline float Distance(const Vector3& a, const Vector3& b) {
 	float dz = a.z - b.z;
 	return sqrt(dx * dx + dy * dy + dz * dz);
 }
+
+
+
 
 // グローバルなゼロベクトル
 extern const Vector3 kZeroVector;

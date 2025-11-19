@@ -39,4 +39,6 @@ public:
 	XMMATRIX GetProjectionMatrix() const { return m_ProjectionMatrix; }
 
 	Vector3 GetForward() override { return m_Forward; }
+
+	bool CheckView(Vector3 position,float size);
 };

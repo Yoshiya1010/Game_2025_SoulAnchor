@@ -13,7 +13,8 @@
 #include"TreeBlock.h"
 #include"RockTallBlock_A.h"
 #include"sun.h"
-
+#include"grass.h"
+#include"explosion.h"
 
 
 
@@ -98,6 +99,46 @@ GameObject* EditorObjectCreator::CreateSun(Vector3 position, Vector3 size) {
     return sun;
 }
 
+
+void EditorObjectCreator::CreateGrass()
+{
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+
+    for (int i = 0; i < 2000; i++)
+    {
+
+        Vector3 position;
+        position.x = ((rand() % 1000) / 1000.f) * 100.0f - 50.f;
+        position.z=((rand() % 1000) / 1000.f) * 100.0f - 50.f;
+
+        // 新しいGameObjectを作成（適切なクラスに置き換える）
+        auto* grass = scene->AddGameObject<Grass>(OBJECT);
+        grass->SetPosition(Vector3{position.x,10.f,position.z});
+        grass->SetScale(Vector3{ 1.0f,1.0f,1.0f });
+        // シーンからユニークな名前をもらう
+        grass->SetName(scene->GenerateUniqueName("Grass"));
+    }
+
+}
+
+GameObject* EditorObjectCreator::CreateExplosion()
+{
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* explosion = scene->AddGameObject<Explosion>(OBJECT);
+    explosion->SetPosition(Vector3{ 0.f,10.f,0.f });
+    explosion->SetScale(Vector3{ 10.0f,10.0f,10.0f });
+
+
+    // シーンからユニークな名前をもらう
+    explosion->SetName(scene->GenerateUniqueName("Explosion"));
+
+
+    return explosion;
+}
 
 GameObject* EditorObjectCreator::CreateEnemy() {
 

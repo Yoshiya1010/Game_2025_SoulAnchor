@@ -159,6 +159,7 @@
     <ClCompile Include="fragmentObject.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameObject.cpp" />
+    <ClCompile Include="grass.cpp" />
     <ClCompile Include="groundBlock.cpp" />
     <ClCompile Include="healthUI.cpp" />
     <ClCompile Include="Imgui\imgui.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="fragmentObject.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gameObject.h" />
+    <ClInclude Include="grass.h" />
     <ClInclude Include="groundBlock.h" />
     <ClInclude Include="healthUI.h" />
     <ClInclude Include="Imgui\imgui.h" />

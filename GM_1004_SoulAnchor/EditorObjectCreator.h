@@ -15,6 +15,10 @@ public:
 
     static GameObject* CreateSun(Vector3 position, Vector3 scale);
 
+    static void CreateGrass();
+
+    static  GameObject* CreateExplosion();
+
     static GameObject* CreateEnemy();
 
     // ユーティリティメソッド

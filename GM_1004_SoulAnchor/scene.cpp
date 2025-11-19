@@ -134,13 +134,15 @@ void Scene::Draw()
 	}
 
 	// ZÉ\Å[Ég
-	Camera* camera = GetGameObject<Camera>();
+	FPSCamera* camera = GetGameObject<FPSCamera>();
 
 	if (camera != nullptr) {
 		Vector3 CameraPosition = camera->GetPosition();
+		Vector3 CameraForward = camera->GetForward();
 
-		m_GameObjects[OBJECT].sort([&](GameObject* a, GameObject* b) {
-			return a->GetDistance(CameraPosition) > b->GetDistance(CameraPosition);
+		m_GameObjects[OBJECT].sort([&](GameObject* object1, GameObject* object2) {
+			return object1->GetZ(CameraPosition,CameraForward)
+				 > object2->GetZ(CameraPosition,CameraForward);
 			});
 	}
 

@@ -202,4 +202,11 @@ public:
 			return direction.Length();
 		}
 
+		float GetZ(Vector3 Position, Vector3 Forward)
+		{
+			Vector3 direction = m_Position - Position;
+			return Vector3::Dot(direction, Forward);
+		}
+
+
 };

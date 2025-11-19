@@ -165,3 +165,109 @@ void	FPSCamera::Draw()//3D使用時
 	//カメラ行列をセット
 	Renderer::SetViewMatrix(m_ViewMatrix);
 }
+
+//視錐台カリング
+bool FPSCamera::CheckView(Vector3 position,float Size)
+{
+    XMMATRIX vp;
+    vp = m_ViewMatrix * m_ProjectionMatrix;
+
+    XMMATRIX invVp;
+    invVp = XMMatrixInverse(nullptr, vp);
+
+    XMFLOAT3 vpos[4];
+    vpos[0] = XMFLOAT3(-1.0f, 1.0f, 1.0f);
+    vpos[1] = XMFLOAT3(1.0f, 1.0f, 1.0f);
+    vpos[2] = XMFLOAT3(-1.0f, -1.0f, 1.0f);
+    vpos[3] = XMFLOAT3(1.0f, -1.0f, 1.0f);
+
+
+    XMVECTOR vposv[4];
+    vposv[0] = XMLoadFloat3(&vpos[0]);
+    vposv[1] = XMLoadFloat3(&vpos[1]);
+    vposv[2] = XMLoadFloat3(&vpos[2]);
+    vposv[3] = XMLoadFloat3(&vpos[3]);
+    XMVECTOR wposv[4];
+    wposv[0] = XMVector3TransformCoord(vposv[0], invVp);
+    wposv[1] = XMVector3TransformCoord(vposv[1], invVp);
+    wposv[2] = XMVector3TransformCoord(vposv[2], invVp);
+    wposv[3] = XMVector3TransformCoord(vposv[3], invVp);
+
+    XMFLOAT3 wpos[4];
+    XMStoreFloat3(&wpos[0], wposv[0]);
+    XMStoreFloat3(&wpos[1], wposv[1]);
+    XMStoreFloat3(&wpos[2], wposv[2]);
+    XMStoreFloat3(&wpos[3], wposv[3]);
+
+
+    Vector3 v;
+    v = position - m_Position;
+
+    Vector3 wp[4];
+
+    wp[0] = Vector3(wpos[0].x, wpos[0].y, wpos[0].z);
+    wp[1] = Vector3(wpos[1].x, wpos[1].y, wpos[1].z);
+    wp[2] = Vector3(wpos[2].x, wpos[2].y, wpos[2].z);
+    wp[3] = Vector3(wpos[3].x, wpos[3].y, wpos[3].z);
+
+
+    //左面
+    {
+        Vector3 v1, v2;
+        v1 = wp[0] - m_Position;
+        v2 = wp[2] - m_Position;
+
+
+        Vector3 n;
+        n = Vector3::Cross(v1, v2);
+
+        float d;
+        d = Vector3::Dot(n, v);//面からの距離
+
+        if (d < Size)
+            return false;
+
+    }
+
+
+    // 右面 
+    {
+        Vector3 v1 = wp[3] - m_Position; // 右下
+        Vector3 v2 = wp[1] - m_Position; // 右上
+        Vector3 n = Vector3::Cross(v1, v2);
+        float d;
+        d = Vector3::Dot(n, v);//面からの距離
+
+        if (d < Size)
+            return false;
+    }
+
+    // 上面 
+    {
+        Vector3 v1 = wp[1] - m_Position; // 右上
+        Vector3 v2 = wp[0] - m_Position; // 左上
+        Vector3 n = Vector3::Cross(v1, v2);
+        float d;
+        d = Vector3::Dot(n, v);//面からの距離
+
+        if (d < Size)
+            return false;
+    }
+
+    // 下面 
+    {
+        Vector3 v1 = wp[2] - m_Position; // 左下
+        Vector3 v2 = wp[3] - m_Position; // 右下
+        Vector3 n = Vector3::Cross(v1, v2);
+        float d;
+        d = Vector3::Dot(n, v);//面からの距離
+
+        if (d < Size)
+            return false;
+    }
+
+    return true;
+}
+
+
+
