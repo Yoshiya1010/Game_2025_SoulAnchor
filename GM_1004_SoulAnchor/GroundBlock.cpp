@@ -12,14 +12,12 @@ void GroundBlock::Init()
   
 
     // モデルのロード
-  
-      // モデルのロード
     LoadModel("asset\\model\\BullutObject\\cliff_block_stone.obj");
 
     SetShaderType(ShaderType::TOON_SHADOW);
 
 
-    // オプション1: Boxコライダー（動的可能、倒れる）
+    //Boxコライダー
     m_UseTriangleMesh = false;
     SetMass(0.0f);
 

@@ -151,7 +151,8 @@ void MeshDestroyer::DestroyModelGrouped(
     const Vector3& explosionCenter,
     float explosionForce,
     Scene* scene,
-    int groupSize
+    int groupSize,
+    const Vector3& objectRotation
 )
 {
     if (!model || !scene || groupSize < 1) return;
@@ -333,6 +334,7 @@ void MeshDestroyer::DestroyModelGrouped(
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(groupCenter);
+            fragment->SetRotation(objectRotation);
             fragment->SetScale(Vector3(1, 1, 1));
 
             // 3DóßëÃîjï–ÇÃê›íË

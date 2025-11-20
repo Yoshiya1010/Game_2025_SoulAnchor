@@ -58,7 +58,20 @@ void TriangleMeshFragment::Start()
             m_CollisionShape = std::unique_ptr<btCollisionShape>(convexShape);
             CreateRigidBody(1.0f);
 
+            // 回転を物理ボディに同期
             if (m_RigidBody) {
+                btTransform transform = m_RigidBody->getWorldTransform();
+                transform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+
+                btQuaternion quat;
+                quat.setEulerZYX(
+                    m_Rotation.z, 
+                    m_Rotation.y ,
+                    m_Rotation.x 
+                );
+                transform.setRotation(quat);
+                m_RigidBody->setWorldTransform(transform);
+
                 m_RigidBody->setDamping(0.5f, 0.7f);
                 m_RigidBody->setFriction(0.3f);
                 m_RigidBody->setRollingFriction(0.05f);
@@ -68,7 +81,20 @@ void TriangleMeshFragment::Start()
             // 押し出しなしの場合は従来のBox
             CreateBoxCollider(m_ColliderHalfSize, 1.0f);
 
+            // 回転を物理ボディに同期
             if (m_RigidBody) {
+                btTransform transform = m_RigidBody->getWorldTransform();
+                transform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+
+                btQuaternion quat;
+                quat.setEulerZYX(
+                    m_Rotation.z * DEG2RAD,
+                    m_Rotation.y * DEG2RAD,
+                    m_Rotation.x * DEG2RAD
+                );
+                transform.setRotation(quat);
+                m_RigidBody->setWorldTransform(transform);
+
                 m_RigidBody->setDamping(0.5f, 0.7f);
             }
         }

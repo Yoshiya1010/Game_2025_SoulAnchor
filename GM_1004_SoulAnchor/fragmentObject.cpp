@@ -112,9 +112,9 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
     XMMATRIX worldMatrix =
         XMMatrixScaling(m_Scale.x * m_ModelScale, m_Scale.y * m_ModelScale, m_Scale.z * m_ModelScale) *
         XMMatrixRotationRollPitchYaw(
-            m_Rotation.x * DEG2RAD,
-            m_Rotation.y * DEG2RAD,
-            m_Rotation.z * DEG2RAD
+            m_Rotation.x ,
+            m_Rotation.y ,
+            m_Rotation.z 
         ) *
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 
@@ -125,7 +125,8 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
         impactPoint,
         m_ExplosionForce,
         scene,
-        m_GroupSize
+        m_GroupSize,
+        m_Rotation
     );
 
     // é©ï™é©êgÇçÌèú
