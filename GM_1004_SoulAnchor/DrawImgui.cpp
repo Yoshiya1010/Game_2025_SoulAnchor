@@ -281,19 +281,24 @@ void CreateObjectTab()
 			selectedObject = EditorObjectCreator::CreateSun(pos, Vector3(1.0f, 1.0f, 1.0f));
 		}
 
-		if (ImGui::Button("Add Grass"))
+		if (ImGui::TreeNode("SameObject"))
 		{
-			EditorObjectCreator::CreateGrass();
-		}
+			if (ImGui::Button("Add Grass"))
+			{
+				EditorObjectCreator::CreateGrass();
+			}
 
-		if (ImGui::Button("Add Explosion"))
-		{
-			EditorObjectCreator::CreateExplosion();
-		}
+			if (ImGui::Button("Add Explosion"))
+			{
+				EditorObjectCreator::CreateExplosion();
+			}
 
-		if (ImGui::Button("Add Enemy")) {
+			if (ImGui::Button("Add Enemy")) {
 
-			selectedObject = EditorObjectCreator::CreateEnemy();
+				selectedObject = EditorObjectCreator::CreateEnemy();
+			}
+
+			ImGui::TreePop();
 		}
 
 
