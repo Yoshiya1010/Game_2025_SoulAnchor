@@ -9,6 +9,7 @@ void CreateUiTab();
 void CreateAddGameObjectWindow();
 void ShowSceneHierarchyTab();
 void DrawShaderManagerTab();
+void ShowPostProcessTab();
 void ShowSceneHierarchyWindow();
 
 

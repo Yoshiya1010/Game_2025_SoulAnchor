@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include <io.h>
 #include"modelRenderer.h"
+#include"postProcessManager.h"
 
 
 D3D_FEATURE_LEVEL       Renderer::m_FeatureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -307,6 +308,8 @@ void Renderer::Init()
 	m_Device->CreateBuffer(&bufferDesc, NULL, &m_ShadowBuffer);
 	m_DeviceContext->VSSetConstantBuffers(7, 1, &m_ShadowBuffer);
 	m_DeviceContext->PSSetConstantBuffers(7, 1, &m_ShadowBuffer);
+
+	PostProcessManager::Init();
 }
 
 
@@ -337,7 +340,7 @@ void Renderer::Uninit()
 	ModelRenderer::UnloadAll();
 	StaticFBXModel::UnloadAllCachedModels();
 	TextureManager::Release();
-
+	PostProcessManager::Uninit();
 
 }
 

@@ -20,6 +20,7 @@
 #include"skyBox.h"
 #include"healthUI.h"
 #include"soulGaugeUI.h"
+#include"postProcessManager.h"
 #include"sun.h"
 //GameObject* g_GameObjects[4]; //前半を3Dオブジェクト、後半を2Dオブジェクトにする。要するにしっかり分けること
 std::list<GameObject*> Scene::m_GameObjects[LAYER_NUM];
@@ -98,6 +99,14 @@ void Scene::Update()
 
 void Scene::Draw()
 {
+
+	// エフェクト設定
+	PostProcessManager::ClearEffects();
+	PostProcessManager::AddEffect(PostEffectType::VIGNETTE);
+
+	// キャプチャ開始
+	PostProcessManager::BeginCapture();
+
 	//太陽を取得
 	Sun* sun = GetGameObject<Sun>();
 
@@ -183,6 +192,10 @@ void Scene::Draw()
 		}
 		
 	}
+
+	// ポストプロセス適用
+	PostProcessManager::EndCapture();
+	PostProcessManager::ApplyEffects();
 
 	
 	

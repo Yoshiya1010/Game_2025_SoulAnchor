@@ -124,6 +124,10 @@ public:
 
 	static void SetCullNone(bool enable);
 
+
+
+	static ID3D11RenderTargetView* GetRenderTargetView() { return m_RenderTargetView; }
+	static ID3D11DepthStencilView* GetDepthStencilView() { return m_DepthStencilView; }
 	//Shadow—p
 	static void SetShadowBuffer(SHADOW_BUFFER ShadowBuffer);
 	static void BeginShadowMap();

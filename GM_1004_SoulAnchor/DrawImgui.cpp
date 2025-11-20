@@ -24,6 +24,7 @@
 #include"editorUICreator.h"
 #include"sun.h"
 #include"animationModel.h"
+#include "PostProcessManager.h"
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 // utf8ヘルパーマクロ
@@ -427,6 +428,30 @@ void ShowSceneHierarchyTab(void)
 	}
 }
 
+void ShowPostProcessTab()
+{
+
+	if (ImGui::BeginTabItem("Post Process"))
+	{
+
+		VignetteParams& params = PostProcessManager::GetVignetteParams();
+
+		ImGui::Text("Vignette");
+		ImGui::SliderFloat("Intensity", &params.intensity, 0.0f, 1.0f);
+		ImGui::SliderFloat("Smoothness", &params.smoothness, 0.0f, 1.0f);
+		ImGui::SliderFloat("Radius", &params.radius, 0.0f, 1.5f);
+
+		if (ImGui::Button("Reset Vignette"))
+		{
+			params.intensity = 1.0f;
+			params.smoothness = 0.5f;
+			params.radius = 0.8f;
+		}
+
+		ImGui::EndTabItem();
+	}
+
+}
 
 void DrawShaderManagerTab()
 {
@@ -434,7 +459,7 @@ void DrawShaderManagerTab()
 
 	if (!showShaderManager) return;
 
-	ImGui::SetNextWindowSize(ImVec2(500, 600), ImGuiCond_FirstUseEver);
+	
 
 	if (ImGui::BeginTabItem("Shader Manager", &showShaderManager))
 	{
@@ -593,6 +618,9 @@ void ShowSceneHierarchyWindow()
 		ShowSceneHierarchyTab();
 		//シェーダー
 		DrawShaderManagerTab();
+
+		//ポストプロセス
+		ShowPostProcessTab();
 		ImGui::EndTabBar();
 	}
 	ImGui::End();
