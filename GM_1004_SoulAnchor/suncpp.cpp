@@ -21,12 +21,12 @@ void Sun::Init()
         "shader\\unlitColorPS.cso");
 
     // 初期パラメータ設定
-    m_Position = Vector3(50.0f, 100.0f, 50.0f);      // 太陽の位置
-    m_TargetPosition = Vector3(0.0f, 0.0f, 0.0f);    // 見ている場所
-    m_LightDirection = Vector3(1.0f, -1.0f, 0.5f);   // ライトの方向
-    m_Intensity = 1.5f;                               // 光の強さ
-    m_AmbientStrength = 0.3f;                         // 環境光
-    m_OrthoSize = 100.0f;                             // シャドウマップの範囲
+    m_Position = Vector3(50.0f, 50.0f, 50.0f);      // 太陽の位置
+    m_TargetPosition = Vector3(-100.0f, -100.0f, -100.0f);    // 見ている場所
+    m_LightDirection = Vector3(-1.0f, -1.0f, -1.0f);   // ライトの方向
+    m_Intensity = 3.0f;                               // 光の強さ
+    m_AmbientStrength = 0.5f;                         // 環境光
+    m_OrthoSize = 300.0f;                             // シャドウマップの範囲
 
     // 初期設定を反映
     ApplyLight();
