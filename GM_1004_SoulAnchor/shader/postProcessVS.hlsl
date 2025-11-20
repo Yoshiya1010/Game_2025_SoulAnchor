@@ -14,7 +14,7 @@ PS_IN main(VS_IN input)
 {
     PS_IN output;
     
-    // フルスクリーンクアッド用なのでそのまま出力
+
     output.Position = float4(input.Position, 1.0);
     output.TexCoord = input.TexCoord;
     
