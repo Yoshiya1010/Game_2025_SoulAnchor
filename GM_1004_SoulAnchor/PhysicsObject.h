@@ -26,7 +26,8 @@ protected:
     CollisionGroup m_CollisionGroup = COL_DEFAULT;
     int m_CollisionMask = -1;
 
-    float m_mass=0;
+    float m_mass=0;//質量
+    float m_Friction = 0.5f;//摩擦係数
 
    
 public:
@@ -71,6 +72,7 @@ public:
 
     PhysicsObject* SetFriction(float friction)
     {
+        m_Friction = friction;
         if (m_RigidBody)
         {
             m_RigidBody->setFriction(friction);
@@ -133,9 +135,9 @@ public:
 
         btQuaternion q;
         q.setEulerZYX(
-            m_Rotation.z * DEG2RAD, // yaw
-            m_Rotation.y * DEG2RAD, // pitch
-            m_Rotation.x * DEG2RAD  // roll
+            m_Rotation.z * DEG2RAD,
+            m_Rotation.y * DEG2RAD,
+            m_Rotation.x * DEG2RAD
         );
         transform.setRotation(q);
 
@@ -147,6 +149,8 @@ public:
         btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, m_MotionState.get(), m_CollisionShape.get(), inertia);
         m_RigidBody = std::make_unique<btRigidBody>(rbInfo);
         m_RigidBody->setUserPointer(this);
+        m_RigidBody->setFriction(m_Friction); //摩擦係数を適用
+
 
         world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
     }
@@ -477,7 +481,8 @@ private:
                 { "ColliderOffset", { m_ColliderOffset.x, m_ColliderOffset.y, m_ColliderOffset.z } },
                 { "CollisionGroup", (int)m_CollisionGroup },
                 { "CollisionMask", m_CollisionMask },
-                { "OriginalColliderHalfSize", { m_OriginalColliderHalfSize.x,m_OriginalColliderHalfSize.y,m_OriginalColliderHalfSize.z }}
+                { "OriginalColliderHalfSize", { m_OriginalColliderHalfSize.x,m_OriginalColliderHalfSize.y,m_OriginalColliderHalfSize.z }},
+                { "Friction", m_Friction }
             };
         }
 
@@ -495,7 +500,7 @@ private:
 
         m_mass = rb.value("Mass", 0.0f);
         std::string colliderType = rb.value("ColliderType", "Box");
-
+        m_Friction = rb.value("Friction", 0.5f);
      
 
         if (rb.contains("ColliderOffset")) {
