@@ -177,14 +177,14 @@ void MeshDestroyer::DestroyModelGrouped(
         float sizeZ = (maxPos.z - minPos.z) * avgScale;
         modelSize = (sizeX + sizeY + sizeZ) / 3.0f;
     }
-    float dynamicDepth = modelSize * 0.18f;
+    float dynamicDepth = modelSize * 0.08f;
 
-    // 回転行列のみ抽出
+    //回転行列のみ抽出
     XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rotQuat);
     XMMATRIX scaleMatrix = XMMatrixScaling(XMVectorGetX(scaleVec), XMVectorGetY(scaleVec), XMVectorGetZ(scaleVec));
     XMMATRIX localToWorldRotScale = scaleMatrix * rotationMatrix;
 
-    // コライダーのローカル座標での中心を計算
+    //コライダーのローカル座標での中心を計算
     Vector3 colliderLocalCenter(0, 0, 0);
     if (!model->CollisionVertices.empty()) {
         for (const auto& v : model->CollisionVertices) {
@@ -195,12 +195,12 @@ void MeshDestroyer::DestroyModelGrouped(
         colliderLocalCenter = colliderLocalCenter * (1.0f / model->CollisionVertices.size());
     }
 
-    // コライダー中心にスケール・回転を適用
+    //コライダー中心にスケール・回転を適用
     XMVECTOR clcVec = XMVectorSet(colliderLocalCenter.x, colliderLocalCenter.y, colliderLocalCenter.z, 0.0f);
     clcVec = XMVector3Transform(clcVec, localToWorldRotScale);
     colliderLocalCenter = Vector3(XMVectorGetX(clcVec), XMVectorGetY(clcVec), XMVectorGetZ(clcVec));
 
-    // 三角形データ構造体
+    //三角形データ構造体
     struct TriangleData {
         VERTEX_3D localVertices[3];
         Vector3 localCenter;
@@ -226,7 +226,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 continue;
             }
 
-            // 法線計算
+            //法線計算
             XMVECTOR p0 = XMLoadFloat3(&model->CollisionVertices[idx0]);
             XMVECTOR p1 = XMLoadFloat3(&model->CollisionVertices[idx1]);
             XMVECTOR p2 = XMLoadFloat3(&model->CollisionVertices[idx2]);
@@ -239,7 +239,7 @@ void MeshDestroyer::DestroyModelGrouped(
             TriangleData triData;
             unsigned int indices[3] = { idx0, idx1, idx2 };
 
-            // ローカル座標のまま保存（スケール・回転のみ適用）
+            //ローカル座標のまま保存（スケール・回転のみ適用）
             for (int v = 0; v < 3; v++) {
                 XMVECTOR localPos = XMLoadFloat3(&model->CollisionVertices[indices[v]]);
                 localPos = XMVector3Transform(localPos, localToWorldRotScale);
@@ -250,7 +250,7 @@ void MeshDestroyer::DestroyModelGrouped(
                     XMVectorGetZ(localPos)
                 );
 
-                // 法線も回転適用
+                //法線も回転適用
                 XMVECTOR norm = XMLoadFloat3(&normalFloat);
                 norm = XMVector3TransformNormal(norm, rotationMatrix);
                 XMStoreFloat3(&triData.localVertices[v].Normal, norm);
@@ -259,7 +259,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 triData.localVertices[v].TexCoord = XMFLOAT2(v == 1 ? 1.0f : 0.0f, v == 2 ? 1.0f : 0.0f);
             }
 
-            // ローカル中心を計算
+            //ローカル中心を計算
             triData.localCenter = CalculateTriangleCenter(
                 triData.localVertices[0].Position,
                 triData.localVertices[1].Position,
@@ -273,7 +273,7 @@ void MeshDestroyer::DestroyModelGrouped(
             triangles.push_back(triData);
         }
 
-        // グループ化
+        //グループ化
         while (true) {
             int seedIndex = -1;
             for (size_t i = 0; i < triangles.size(); i++) {
@@ -315,7 +315,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 triangles[nearestIndex].processed = true;
             }
 
-            // グループの破片を生成
+            //グループの破片を生成
             std::vector<VERTEX_3D> groupVertices;
             Vector3 localGroupCenter(0, 0, 0);
 
@@ -324,10 +324,10 @@ void MeshDestroyer::DestroyModelGrouped(
             }
             localGroupCenter = localGroupCenter * (1.0f / group.size());
 
-            // ワールド座標での位置 = (ローカル中心 - コライダー中心) + オブジェクト位置
+            //ワールド座標での位置
             Vector3 worldPosition = (localGroupCenter - colliderLocalCenter) + objectPosition;
 
-            // 頂点をローカル座標に変換
+            //頂点をローカル座標に変換
             for (int idx : group) {
                 for (int v = 0; v < 3; v++) {
                     VERTEX_3D localVertex = triangles[idx].localVertices[v];
@@ -338,7 +338,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 }
             }
 
-            // 破片生成
+            //破片生成
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
             fragment->SetPosition(worldPosition);
@@ -352,7 +352,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 fragment->SetTexture(triangles[group[0]].texture);
             }
 
-            // 爆発力
+            //爆発力
             Vector3 direction = worldPosition - explosionCenter;
             float distance = direction.Length();
             if (distance > 0.001f) {
@@ -360,6 +360,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 float forceMagnitude = explosionForce / (1.0f + distance * 0.1f);
                 Vector3 force = direction * forceMagnitude;
 
+                //ある程度ランダムでわたす
                 force.x += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.y += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.z += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;

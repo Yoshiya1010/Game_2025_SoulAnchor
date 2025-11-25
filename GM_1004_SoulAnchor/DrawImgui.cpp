@@ -721,8 +721,27 @@ void ShowPropertiesTab(void)
 			}
 		}
 
+		// 物理オブジェクトなら摩擦係数も編集できる
+		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
+		{
+			float friction = physics->GetFriction();
+			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 100.0f))
+			{
+				physics->SetFriction(friction);
+				updated = true;
+			}
 
-		// 物理オブジェクトなら質量も編集できる
+			//位置やスケールを変更したらBulletにも反映！
+			if (updated)
+			{
+				physics->SyncToPhysics();
+			}
+		}
+
+
+
+
+		//太陽だった変更可能
 		if (auto sun = dynamic_cast<Sun*>(selectedObject))
 		{
 			// ターゲット位置の調整

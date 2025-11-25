@@ -68,6 +68,22 @@ public:
         return this;
     }
 
+
+    PhysicsObject* SetFriction(float friction)
+    {
+        if (m_RigidBody)
+        {
+            m_RigidBody->setFriction(friction);
+            m_RigidBody->activate(true);
+        }
+        return this;
+    }
+
+    float GetFriction()
+    {
+        return m_RigidBody->getFriction();
+    }
+
     // 終了処理（物理のみ）
     virtual void Uninit() override {
 
