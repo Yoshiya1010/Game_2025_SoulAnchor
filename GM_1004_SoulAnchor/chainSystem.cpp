@@ -144,8 +144,9 @@ void ChainSystem::RebuildConstraints()
 
         if (bodyA && bodyB)
         {
+            Vector3 anchorScale = endPhysics->GetScale();
             btVector3 pivotA(0, -m_LinkLength * 0.5f, 0);  //リンクの下部
-            btVector3 pivotB(0, 0, 0);                     //アンカーの中心
+            btVector3 pivotB(0, 0, anchorScale.z);                     //アンカーの中心
 
             btPoint2PointConstraint* constraint = new btPoint2PointConstraint(*bodyA, *bodyB, pivotA, pivotB);
             world->addConstraint(constraint, true);
@@ -185,8 +186,9 @@ void ChainSystem::AddLastLinkConstraint()
 
     if (bodyA && bodyB)
     {
+
         btVector3 pivotA(0, -m_LinkLength * 0.5f, 0);  //リンクの下部
-        btVector3 pivotB(0,0 , AnchorOffset.z *3);        //アンカーの中心
+        btVector3 pivotB(0,0 ,AnchorOffset.z);        //アンカーの中心
 
         btPoint2PointConstraint* constraint = new btPoint2PointConstraint(*bodyA, *bodyB, pivotA, pivotB);
         world->addConstraint(constraint, true);
@@ -322,6 +324,10 @@ void ChainSystem::CalculateVisualPoints()
 
     if (!m_StartObject || !m_EndObject) return;
 
+    m_VisualPoints.clear();
+
+    if (!m_StartObject || !m_EndObject) return;
+
     // 開始点
     m_VisualPoints.push_back(m_StartObject->GetPosition());
 
@@ -331,8 +337,37 @@ void ChainSystem::CalculateVisualPoints()
         m_VisualPoints.push_back(link->GetPosition());
     }
 
-    // 終了点
-    m_VisualPoints.push_back(m_EndObject->GetPosition());
+    // 終了点（アンカーの後ろ側）
+    PhysicsObject* endPhysics = dynamic_cast<PhysicsObject*>(m_EndObject);
+    if (endPhysics)
+    {
+        Vector3 anchorPos = m_EndObject->GetPosition();
+        Vector3 anchorRot = m_EndObject->GetRotation();
+        Vector3 anchorScale = endPhysics->GetScale();
+
+        // アンカーの向きに応じて後ろ側のオフセットを計算
+        XMMATRIX rotMatrix = XMMatrixRotationRollPitchYaw(
+            anchorRot.x,
+            anchorRot.y,
+            anchorRot.z
+        );
+
+        // ローカルZ軸方向（後ろ）にオフセット
+        XMVECTOR localOffset = XMVectorSet(0, 0, 2.0f * anchorScale.z, 0);
+        XMVECTOR worldOffset = XMVector3Transform(localOffset, rotMatrix);
+
+        Vector3 chainAttachPoint;
+        chainAttachPoint.x = anchorPos.x + XMVectorGetX(worldOffset);
+        chainAttachPoint.y = anchorPos.y + XMVectorGetY(worldOffset);
+        chainAttachPoint.z = anchorPos.z + XMVectorGetZ(worldOffset);
+
+        m_VisualPoints.push_back(chainAttachPoint);
+    }
+    else
+    {
+        // フォールバック：アンカーの中心
+        m_VisualPoints.push_back(m_EndObject->GetPosition());
+    }
 
     //物理リンク間を補間（各セグメントに中間点1つ＋ちょいタレ）
     std::vector<Vector3> polyline;
@@ -514,13 +549,22 @@ void ChainSystem::Update()
     // チェーンを更新
     UpdateChain();
 }
-
 void ChainSystem::Draw()
 {
     if (m_VisualPoints.size() < 2) return;
 
+    //描画スキップ設定
+    const int skipStart = 2;  //最初からスキップするセグメント数
+    const int skipEnd = 1;    //最後からスキップするセグメント数
+
+    int startIndex = skipStart;
+    int endIndex = (int)m_VisualPoints.size() - 1 - skipEnd;
+
+    //描画できるセグメントがない場合はスキップ
+    if (startIndex >= endIndex) return;
+
     //ライン描画でチェーンを表現
-    for (size_t i = 0; i < m_VisualPoints.size() - 1; i++)
+    for (int i = startIndex; i < endIndex; i++)
     {
         const Vector3& start = m_VisualPoints[i];
         const Vector3& end = m_VisualPoints[i + 1];
