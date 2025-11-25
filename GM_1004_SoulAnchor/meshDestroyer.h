@@ -27,7 +27,9 @@ public:
         float explosionForce,
         Scene* scene,
         int groupSize = 3,
-        const Vector3& objectRotation = Vector3(0, 0, 0)
+        const Vector3& objectRotation = Vector3(0, 0, 0),
+        const Vector3& objectPosition = Vector3(0, 0, 0)
+
 
     );
 

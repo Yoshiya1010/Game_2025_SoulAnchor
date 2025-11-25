@@ -1,6 +1,3 @@
-// TriangleMeshFragment.cpp
-// 3D—§‘Ì”j•Ð‚ÌŽÀ‘•
-
 #include "TriangleMeshFragment.h"
 #include "manager.h"
 #include <vector>
@@ -23,7 +20,7 @@ void TriangleMeshFragment::Init()
     m_Material.Shininess = 10.0f;
     m_Material.TextureEnable = false;
 
-    SetName("TriangleMeshFragment");//‰¼‚Å–¼‘O‚ð‚¢‚ê‚é
+    SetName("TriangleMeshFragment");
     SetTag(GameObjectTag::Ground);
     ShaderManager::SetShader(ShaderType::TOON_SHADOW);
 }
@@ -65,9 +62,9 @@ void TriangleMeshFragment::Start()
 
                 btQuaternion quat;
                 quat.setEulerZYX(
-                    m_Rotation.z, 
-                    m_Rotation.y ,
-                    m_Rotation.x 
+                    m_Rotation.z * DEG2RAD,
+                    m_Rotation.y * DEG2RAD,
+                    m_Rotation.x * DEG2RAD
                 );
                 transform.setRotation(quat);
                 m_RigidBody->setWorldTransform(transform);

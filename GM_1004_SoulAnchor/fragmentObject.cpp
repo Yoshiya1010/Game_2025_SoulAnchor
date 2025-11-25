@@ -126,7 +126,8 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
         m_ExplosionForce,
         scene,
         m_GroupSize,
-        m_Rotation
+        m_Rotation,
+        m_Position
     );
 
     // ©•ª©g‚ğíœ

@@ -230,9 +230,9 @@ public:
         //Bulletは ZYX（yaw, pitch, roll）の順で受け取る
         btQuaternion q;
         q.setEulerZYX(
-            m_Rotation.y * DEG2RAD, // yaw (Y)
-            m_Rotation.x * DEG2RAD, // pitch (X)
-            m_Rotation.z * DEG2RAD  // roll (Z)
+            m_Rotation.z * DEG2RAD, 
+            m_Rotation.y * DEG2RAD, 
+            m_Rotation.x * DEG2RAD  
         );
         t.setRotation(q);
 
@@ -247,32 +247,17 @@ public:
 
 
 
-
-    XMMATRIX UpdatePhysicsWithModel(Vector3 ModelScale={1.0f,1.0f,1.0f})
+    XMMATRIX UpdatePhysicsWithModel(Vector3 ModelScale = { 1.0f,1.0f,1.0f })
     {
         if (!m_RigidBody || !m_RigidBody->getMotionState()) return XMMatrixIdentity();
 
-        // 物理エンジンから位置を手動で取得
         btTransform trans = m_RigidBody->getCenterOfMassTransform();
         m_Position.x = trans.getOrigin().getX();
         m_Position.y = trans.getOrigin().getY();
         m_Position.z = trans.getOrigin().getZ();
 
-
-        if (m_RotationSyncCountdown > 0)
-        {
-            m_RotationSyncCountdown--; // UI優先中
-        }
-        else
-        {
-            btQuaternion rot = trans.getRotation();
-            btScalar yaw, pitch, roll;
-            rot.getEulerZYX(yaw, pitch, roll);
-            m_Rotation = Vector3((float)pitch, (float)yaw, (float)roll);
-        }
-
-        btQuaternion quaternion = m_RigidBody->getCenterOfMassTransform().getRotation();
-
+        // クォータニオンを直接使う（オイラー角変換を避ける）
+        btQuaternion quaternion = trans.getRotation();
         XMVECTOR rotationQuaternion = XMVectorSet(
             quaternion.x(),
             quaternion.y(),
@@ -280,18 +265,47 @@ public:
             quaternion.w()
         );
 
+        // オイラー角が必要な場合のみ変換
+        if (m_RotationSyncCountdown > 0) {
+            m_RotationSyncCountdown--;
+        }
+        else {
+            // DirectXのクォータニオンから直接オイラー角を取得
+            // これの方が確実
+            XMFLOAT4 quat;
+            XMStoreFloat4(&quat, rotationQuaternion);
 
+            // クォータニオン → オイラー角変換（Y-X-Z順）
+            float sinr_cosp = 2 * (quat.w * quat.x + quat.y * quat.z);
+            float cosr_cosp = 1 - 2 * (quat.x * quat.x + quat.y * quat.y);
+            m_Rotation.x = atan2(sinr_cosp, cosr_cosp); // Roll (X)
+
+            float sinp = 2 * (quat.w * quat.y - quat.z * quat.x);
+            if (abs(sinp) >= 1)
+                m_Rotation.y = copysign(XM_PIDIV2, sinp); // Pitch (Y)
+            else
+                m_Rotation.y = asin(sinp);
+
+            float siny_cosp = 2 * (quat.w * quat.z + quat.x * quat.y);
+            float cosy_cosp = 1 - 2 * (quat.y * quat.y + quat.z * quat.z);
+            m_Rotation.z = atan2(siny_cosp, cosy_cosp); // Yaw (Z)
+        }
+
+        // オフセット計算（これは問題ない）
         XMVECTOR offsetVec = {
-        m_ColliderOffset.x * m_Scale.x * ModelScale.x,
-        m_ColliderOffset.y * m_Scale.y * ModelScale.y,
-        m_ColliderOffset.z * m_Scale.z * ModelScale.z,
-        0.0f
+            m_ColliderOffset.x * m_Scale.x * ModelScale.x,
+            m_ColliderOffset.y * m_Scale.y * ModelScale.y,
+            m_ColliderOffset.z * m_Scale.z * ModelScale.z,
+            0.0f
         };
+        offsetVec = XMVector3Rotate(offsetVec, rotationQuaternion);
 
-        offsetVec = XMVector3Rotate(offsetVec, rotationQuaternion); 
-
-        // 回転を考慮した平行移動
-        XMMATRIX S_p = XMMatrixScaling(m_Scale.x * ModelScale.x, m_Scale.y * ModelScale.y, m_Scale.z * ModelScale.z);
+        // 行列構築
+        XMMATRIX S_p = XMMatrixScaling(
+            m_Scale.x * ModelScale.x,
+            m_Scale.y * ModelScale.y,
+            m_Scale.z * ModelScale.z
+        );
         XMMATRIX R_p = XMMatrixRotationQuaternion(rotationQuaternion);
         XMMATRIX T_p = XMMatrixTranslation(
             m_Position.x - XMVectorGetX(offsetVec),
@@ -299,12 +313,8 @@ public:
             m_Position.z - XMVectorGetZ(offsetVec)
         );
 
-
-        XMMATRIX parentWorld = S_p * R_p * T_p;
-
-        return parentWorld;
+        return S_p * R_p * T_p;
     }
-
 
     //------------------------------------------------------------------------
     //ベクトルを触る

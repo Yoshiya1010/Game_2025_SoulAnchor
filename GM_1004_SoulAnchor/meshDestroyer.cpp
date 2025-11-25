@@ -152,48 +152,65 @@ void MeshDestroyer::DestroyModelGrouped(
     float explosionForce,
     Scene* scene,
     int groupSize,
-    const Vector3& objectRotation
+    const Vector3& objectRotation,
+    const Vector3& objectPosition
 )
 {
     if (!model || !scene || groupSize < 1) return;
 
-    // ワールド行列からスケール成分を抽出
+    //スケール取得
     XMVECTOR scaleVec, rotQuat, transVec;
     XMMatrixDecompose(&scaleVec, &rotQuat, &transVec, worldMatrix);
     float avgScale = (XMVectorGetX(scaleVec) + XMVectorGetY(scaleVec) + XMVectorGetZ(scaleVec)) / 3.0f;
 
-    // モデルのバウンディングボックスサイズを元に厚さを決定（モデル全体の5%程度）
+    //厚さ計算
     float modelSize = 0.0f;
     if (!model->CollisionVertices.empty()) {
         XMFLOAT3 minPos = model->CollisionVertices[0];
         XMFLOAT3 maxPos = model->CollisionVertices[0];
         for (const auto& v : model->CollisionVertices) {
             minPos.x = std::min(minPos.x, v.x); minPos.y = std::min(minPos.y, v.y); minPos.z = std::min(minPos.z, v.z);
-            maxPos.x = std:: max(maxPos.x, v.x); maxPos.y = std::max(maxPos.y, v.y); maxPos.z = std::max(maxPos.z, v.z);
+            maxPos.x = std::max(maxPos.x, v.x); maxPos.y = std::max(maxPos.y, v.y); maxPos.z = std::max(maxPos.z, v.z);
         }
         float sizeX = (maxPos.x - minPos.x) * avgScale;
         float sizeY = (maxPos.y - minPos.y) * avgScale;
         float sizeZ = (maxPos.z - minPos.z) * avgScale;
         modelSize = (sizeX + sizeY + sizeZ) / 3.0f;
     }
+    float dynamicDepth = modelSize * 0.18f;
 
-    // モデルサイズの5-10%を厚さにする（調整可能）
-    float dynamicDepth = modelSize * 0.08f;
+    // 回転行列のみ抽出
+    XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(rotQuat);
+    XMMATRIX scaleMatrix = XMMatrixScaling(XMVectorGetX(scaleVec), XMVectorGetY(scaleVec), XMVectorGetZ(scaleVec));
+    XMMATRIX localToWorldRotScale = scaleMatrix * rotationMatrix;
 
-    // 三角形データを格納する構造体
+    // コライダーのローカル座標での中心を計算
+    Vector3 colliderLocalCenter(0, 0, 0);
+    if (!model->CollisionVertices.empty()) {
+        for (const auto& v : model->CollisionVertices) {
+            colliderLocalCenter.x += v.x;
+            colliderLocalCenter.y += v.y;
+            colliderLocalCenter.z += v.z;
+        }
+        colliderLocalCenter = colliderLocalCenter * (1.0f / model->CollisionVertices.size());
+    }
+
+    // コライダー中心にスケール・回転を適用
+    XMVECTOR clcVec = XMVectorSet(colliderLocalCenter.x, colliderLocalCenter.y, colliderLocalCenter.z, 0.0f);
+    clcVec = XMVector3Transform(clcVec, localToWorldRotScale);
+    colliderLocalCenter = Vector3(XMVectorGetX(clcVec), XMVectorGetY(clcVec), XMVectorGetZ(clcVec));
+
+    // 三角形データ構造体
     struct TriangleData {
-        VERTEX_3D worldVertices[3];  // ワールド座標の頂点
-        Vector3 center;               // 三角形の中心
+        VERTEX_3D localVertices[3];
+        Vector3 localCenter;
         MATERIAL material;
         ID3D11ShaderResourceView* texture;
-        bool processed;               // 処理済みフラグ
+        bool processed;
     };
 
-    // モデルの各サブセットを処理
     for (unsigned int subsetIdx = 0; subsetIdx < model->SubsetNum; subsetIdx++) {
         SUBSET& subset = model->SubsetArray[subsetIdx];
-
-        // このサブセットの全三角形を収集
         std::vector<TriangleData> triangles;
 
         for (unsigned int i = subset.StartIndex; i < subset.StartIndex + subset.IndexNum; i += 3) {
@@ -209,7 +226,7 @@ void MeshDestroyer::DestroyModelGrouped(
                 continue;
             }
 
-            // 三角形の法線をローカル空間で計算
+            // 法線計算
             XMVECTOR p0 = XMLoadFloat3(&model->CollisionVertices[idx0]);
             XMVECTOR p1 = XMLoadFloat3(&model->CollisionVertices[idx1]);
             XMVECTOR p2 = XMLoadFloat3(&model->CollisionVertices[idx2]);
@@ -219,34 +236,34 @@ void MeshDestroyer::DestroyModelGrouped(
             XMFLOAT3 normalFloat;
             XMStoreFloat3(&normalFloat, localNormal);
 
-            // 頂点データを作成
-            VERTEX_3D vertices[3];
-            vertices[0].Position = model->CollisionVertices[idx0];
-            vertices[0].Normal = normalFloat;
-            vertices[0].Diffuse = XMFLOAT4(1, 1, 1, 1);
-            vertices[0].TexCoord = XMFLOAT2(0, 0);
-
-            vertices[1].Position = model->CollisionVertices[idx1];
-            vertices[1].Normal = normalFloat;
-            vertices[1].Diffuse = XMFLOAT4(1, 1, 1, 1);
-            vertices[1].TexCoord = XMFLOAT2(1, 0);
-
-            vertices[2].Position = model->CollisionVertices[idx2];
-            vertices[2].Normal = normalFloat;
-            vertices[2].Diffuse = XMFLOAT4(1, 1, 1, 1);
-            vertices[2].TexCoord = XMFLOAT2(0, 1);
-
-            // ワールド空間での頂点を計算
             TriangleData triData;
+            unsigned int indices[3] = { idx0, idx1, idx2 };
+
+            // ローカル座標のまま保存（スケール・回転のみ適用）
             for (int v = 0; v < 3; v++) {
-                triData.worldVertices[v] = TransformVertex(vertices[v], worldMatrix);
+                XMVECTOR localPos = XMLoadFloat3(&model->CollisionVertices[indices[v]]);
+                localPos = XMVector3Transform(localPos, localToWorldRotScale);
+
+                triData.localVertices[v].Position = XMFLOAT3(
+                    XMVectorGetX(localPos),
+                    XMVectorGetY(localPos),
+                    XMVectorGetZ(localPos)
+                );
+
+                // 法線も回転適用
+                XMVECTOR norm = XMLoadFloat3(&normalFloat);
+                norm = XMVector3TransformNormal(norm, rotationMatrix);
+                XMStoreFloat3(&triData.localVertices[v].Normal, norm);
+
+                triData.localVertices[v].Diffuse = XMFLOAT4(1, 1, 1, 1);
+                triData.localVertices[v].TexCoord = XMFLOAT2(v == 1 ? 1.0f : 0.0f, v == 2 ? 1.0f : 0.0f);
             }
 
-            // 三角形の中心を計算
-            triData.center = CalculateTriangleCenter(
-                triData.worldVertices[0].Position,
-                triData.worldVertices[1].Position,
-                triData.worldVertices[2].Position
+            // ローカル中心を計算
+            triData.localCenter = CalculateTriangleCenter(
+                triData.localVertices[0].Position,
+                triData.localVertices[1].Position,
+                triData.localVertices[2].Position
             );
 
             triData.material = subset.Material.Material;
@@ -256,9 +273,8 @@ void MeshDestroyer::DestroyModelGrouped(
             triangles.push_back(triData);
         }
 
-        // 距離ベースでグループ化して破片を生成
+        // グループ化
         while (true) {
-            // 未処理の三角形を探す
             int seedIndex = -1;
             for (size_t i = 0; i < triangles.size(); i++) {
                 if (!triangles[i].processed) {
@@ -266,34 +282,26 @@ void MeshDestroyer::DestroyModelGrouped(
                     break;
                 }
             }
-
-            // 全て処理済みなら終了
             if (seedIndex == -1) break;
 
-            // シード三角形を中心にグループを構築
             std::vector<int> group;
             group.push_back(seedIndex);
             triangles[seedIndex].processed = true;
 
-            Vector3 seedCenter = triangles[seedIndex].center;
-
-            // 最も近い三角形を順次追加（groupSize個まで）
             while (group.size() < (size_t)groupSize) {
                 int nearestIndex = -1;
                 float nearestDist = FLT_MAX;
 
-                // 未処理の三角形の中から最も近いものを探す
                 for (size_t i = 0; i < triangles.size(); i++) {
                     if (triangles[i].processed) continue;
 
-                    // グループの重心との距離を計算
                     Vector3 groupCenter(0, 0, 0);
                     for (int gIdx : group) {
-                        groupCenter = groupCenter + triangles[gIdx].center;
+                        groupCenter = groupCenter + triangles[gIdx].localCenter;
                     }
                     groupCenter = groupCenter * (1.0f / group.size());
 
-                    Vector3 diff = triangles[i].center - groupCenter;
+                    Vector3 diff = triangles[i].localCenter - groupCenter;
                     float dist = diff.Length();
 
                     if (dist < nearestDist) {
@@ -302,62 +310,56 @@ void MeshDestroyer::DestroyModelGrouped(
                     }
                 }
 
-                // 追加できる三角形がなければ終了
                 if (nearestIndex == -1) break;
-
                 group.push_back(nearestIndex);
                 triangles[nearestIndex].processed = true;
             }
 
-            // グループから破片を生成
+            // グループの破片を生成
             std::vector<VERTEX_3D> groupVertices;
-            Vector3 groupCenter(0, 0, 0);
+            Vector3 localGroupCenter(0, 0, 0);
 
-            // グループの中心を計算
             for (int idx : group) {
-                groupCenter = groupCenter + triangles[idx].center;
+                localGroupCenter = localGroupCenter + triangles[idx].localCenter;
             }
-            groupCenter = groupCenter * (1.0f / group.size());
+            localGroupCenter = localGroupCenter * (1.0f / group.size());
 
-            // 頂点をローカル座標に変換してまとめる
+            // ワールド座標での位置 = (ローカル中心 - コライダー中心) + オブジェクト位置
+            Vector3 worldPosition = (localGroupCenter - colliderLocalCenter) + objectPosition;
+
+            // 頂点をローカル座標に変換
             for (int idx : group) {
                 for (int v = 0; v < 3; v++) {
-                    VERTEX_3D localVertex = triangles[idx].worldVertices[v];
-                    localVertex.Position.x -= groupCenter.x;
-                    localVertex.Position.y -= groupCenter.y;
-                    localVertex.Position.z -= groupCenter.z;
+                    VERTEX_3D localVertex = triangles[idx].localVertices[v];
+                    localVertex.Position.x -= localGroupCenter.x;
+                    localVertex.Position.y -= localGroupCenter.y;
+                    localVertex.Position.z -= localGroupCenter.z;
                     groupVertices.push_back(localVertex);
                 }
             }
 
-            // 破片を生成
+            // 破片生成
             TriangleMeshFragment* fragment = scene->AddGameObject<TriangleMeshFragment>(OBJECT);
             fragment->Init();
-            fragment->SetPosition(groupCenter);
+            fragment->SetPosition(worldPosition);
             fragment->SetRotation(objectRotation);
             fragment->SetScale(Vector3(1, 1, 1));
-
-            // 3D立体破片の設定
             fragment->SetUseExtrusion(true);
             fragment->SetExtrusionDepth(dynamicDepth);
-
             fragment->SetTriangleMesh(groupVertices.data(), (unsigned int)groupVertices.size());
-
-            // マテリアル設定（グループの最初の三角形のものを使用）
             fragment->SetMaterial(triangles[group[0]].material);
             if (triangles[group[0]].texture) {
                 fragment->SetTexture(triangles[group[0]].texture);
             }
 
-            // 爆発の力を適用
-            Vector3 direction = groupCenter - explosionCenter;
+            // 爆発力
+            Vector3 direction = worldPosition - explosionCenter;
             float distance = direction.Length();
             if (distance > 0.001f) {
                 direction.Normalize();
                 float forceMagnitude = explosionForce / (1.0f + distance * 0.1f);
                 Vector3 force = direction * forceMagnitude;
 
-                // ランダム性を追加
                 force.x += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.y += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
                 force.z += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
@@ -365,8 +367,6 @@ void MeshDestroyer::DestroyModelGrouped(
                 fragment->Start();
                 if (fragment->GetRigidBody()) {
                     fragment->SetVelocity(force);
-
-                    // 回転も追加
                     btVector3 angularVel(
                         (rand() % 200 - 100) / 50.0f,
                         (rand() % 200 - 100) / 50.0f,
