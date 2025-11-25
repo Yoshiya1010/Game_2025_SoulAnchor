@@ -1,6 +1,6 @@
 #include "toonShadowCommon.hlsl"
 
-// シンプルな出力構造体
+
 struct VS_OUT_SHADOW
 {
     float4 Position : SV_POSITION;

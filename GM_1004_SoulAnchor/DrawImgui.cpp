@@ -448,6 +448,21 @@ void ShowPostProcessTab()
 			params.radius = 0.8f;
 		}
 
+		// Bloom parameters
+		ImGui::Separator();
+		ImGui::Text("Bloom Settings");
+
+		auto& bloomParams = PostProcessManager::GetBrightExtractParams();
+		bool bloomChanged = false;
+
+		bloomChanged |= ImGui::SliderFloat("Threshold##bloom", &bloomParams.threshold, 0.0f, 2.0f);
+		bloomChanged |= ImGui::SliderFloat("Intensity##bloom", &bloomParams.intensity, 0.0f, 5.0f);
+
+		if (bloomChanged)
+		{
+			PostProcessManager::SetBrightExtractParams(bloomParams);
+		}
+
 		ImGui::EndTabItem();
 	}
 

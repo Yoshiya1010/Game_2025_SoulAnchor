@@ -102,7 +102,11 @@ void Scene::Draw()
 
 	// エフェクト設定
 	PostProcessManager::ClearEffects();
+	PostProcessManager::AddEffect(PostEffectType::BLOOM);
+	PostProcessManager::AddEffect(PostEffectType::BLUR);
+	PostProcessManager::AddEffect(PostEffectType::BLUR);
 	PostProcessManager::AddEffect(PostEffectType::VIGNETTE);
+	
 
 	// キャプチャ開始
 	PostProcessManager::BeginCapture();
@@ -124,10 +128,10 @@ void Scene::Draw()
 		Renderer::SetViewMatrix(sun->GetLightViewMatrix());
 		Renderer::SetProjectionMatrix(sun->GetLightProjectionMatrix());
 
-		// シャドウシェーダーをセット
+		//シャドウシェーダーをセット
 		ShaderManager::SetShadowShader();
 
-		// Toonシェーダーを使うオブジェクトのみ影を生成
+		//Toonシェーダーを使うオブジェクトのみ影を生成
 		for (auto& list : m_GameObjects)
 		{
 			for (auto& obj : list)
@@ -142,7 +146,7 @@ void Scene::Draw()
 		Renderer::EndShadowMap();
 	}
 
-	// Zソート
+	//Zソート
 	FPSCamera* camera = GetGameObject<FPSCamera>();
 
 	if (camera != nullptr) {
@@ -159,13 +163,13 @@ void Scene::Draw()
 
 
 
-	/// カメラを最初に描画すること。
+	//カメラを最初に描画すること。
 	for (auto& list : m_GameObjects) {
 		for (auto& gameObject : list)
 		{
 			ShaderType type = gameObject->GetShaderType();
 
-			// シェーダーをセット
+			//シェーダーをセット
 			if (type != ShaderType::CUSTOM)
 			{
 				ShaderManager::SetShader(type);
@@ -177,7 +181,7 @@ void Scene::Draw()
 
 	if (drawHitBoxFlag)
 	{
-		// 3Dカメラを取得（既にZソートで取得済み）
+		//3Dカメラを取得（既にZソートで取得済み）
 		auto* camera = GetGameObject<FPSCamera>();
 	
 		if (camera)
@@ -193,12 +197,9 @@ void Scene::Draw()
 		
 	}
 
-	// ポストプロセス適用
+	//ポストプロセス適用
 	PostProcessManager::EndCapture();
 	PostProcessManager::ApplyEffects();
-
-	
-	
 
 }
 
@@ -222,7 +223,7 @@ void Scene::SaveSceneAs(const std::string& fileName)
 {
 	json root;
 
-	// LAYER_NUMすべてを走査
+	//LAYER_NUMすべてを走査
 	for (auto& list : m_GameObjects)
 	{
 		for (auto& obj : list)
@@ -231,7 +232,7 @@ void Scene::SaveSceneAs(const std::string& fileName)
 		}
 	}
 
-	// パス正規化
+	//パス正規化
 	namespace fs = std::filesystem;
 	fs::path p = fileName;// 受け取った名前
 	std::string ext = p.has_extension() ? p.extension().string() : "";

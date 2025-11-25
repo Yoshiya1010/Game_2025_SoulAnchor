@@ -21,6 +21,13 @@ struct VignetteParams
     float padding;    // 16バイトアライメント用
 };
 
+struct BrightExtractParams
+{
+    float threshold;    // 輝度閾値
+    float intensity;    // ブルーム強度
+    float padding[2];
+};
+
 class PostProcessManager
 {
 private:
@@ -51,6 +58,11 @@ private:
 
     static ID3D11Buffer* m_VignetteParamBuffer;
     static VignetteParams m_VignetteParams;
+
+    static BrightExtractParams m_BrightExtractParams;
+    static ID3D11Buffer* m_BrightExtractParamBuffer;
+    static ID3D11PixelShader* m_BrightExtractPS;
+    
 public:
     static void Init();
     static void Uninit();
@@ -62,6 +74,12 @@ public:
     static void AddEffect(PostEffectType type);
     static void ClearEffects();
 
+    
+    
     static VignetteParams& GetVignetteParams() { return m_VignetteParams; }
     static void UpdateVignetteParams();
+
+    static void UpdateBrightExtractParams();
+    static BrightExtractParams& GetBrightExtractParams() { return m_BrightExtractParams; }
+    static void SetBrightExtractParams(const BrightExtractParams& params) { m_BrightExtractParams = params; }
 };
