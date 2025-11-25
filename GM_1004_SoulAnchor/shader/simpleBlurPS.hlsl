@@ -1,4 +1,4 @@
-// simpleBlurPS.hlsl
+// simpleBlurPS.hlsl - 修正版
 
 Texture2D g_Texture : register(t0);
 SamplerState g_SamplerState : register(s0);
@@ -11,19 +11,22 @@ struct PS_IN
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float2 texelSize = float2(1.0 / 1920.0, 1.0 / 1080.0); // SCREEN_WIDTHとHEIGHTに合わせて調整
+    // テクスチャサイズを動的に取得
+    uint width, height;
+    g_Texture.GetDimensions(width, height);
+    float2 texelSize = float2(1.0 / float(width), 1.0 / float(height));
     
     float4 color = float4(0, 0, 0, 0);
     
-    // 5x5カーネルでブラー
-    for (int x = -2; x <= 2; x++)
+    // 3x3カーネルでブラー（5x5より軽量）
+    for (int x = -1; x <= 1; x++)
     {
-        for (int y = -2; y <= 2; y++)
+        for (int y = -1; y <= 1; y++)
         {
-            float2 offset = float2(x, y) * texelSize;
+            float2 offset = float2(x, y) * texelSize * 2.0;
             color += g_Texture.Sample(g_SamplerState, input.texcoord + offset);
         }
     }
     
-    return color / 25.0; // 25サンプルの平均
+    return color / 9.0;
 }

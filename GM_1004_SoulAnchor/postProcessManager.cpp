@@ -11,10 +11,14 @@ ID3D11InputLayout* PostProcessManager::m_VertexLayout = nullptr;
 ID3D11PixelShader* PostProcessManager::m_VignettePS = nullptr;
 ID3D11PixelShader* PostProcessManager::m_BloomPS = nullptr;
 ID3D11PixelShader* PostProcessManager::m_BlurPS = nullptr;
+ID3D11PixelShader* PostProcessManager::m_CompositePS = nullptr;
 ID3D11SamplerState* PostProcessManager::m_SamplerState = nullptr;
 ID3D11Buffer* PostProcessManager::m_VignetteParamBuffer = nullptr;
 VignetteParams PostProcessManager::m_VignetteParams = { 1.0f, 0.5f, 0.8f, 0.0f };
 
+
+ID3D11Texture2D* PostProcessManager::m_OriginalTexture = nullptr;
+ID3D11ShaderResourceView* PostProcessManager::m_OriginalSRV = nullptr;
 
 ID3D11PixelShader* PostProcessManager::m_BrightExtractPS = nullptr;
 ID3D11Buffer* PostProcessManager::m_BrightExtractParamBuffer = nullptr;
@@ -44,6 +48,18 @@ void PostProcessManager::Init()
         device->CreateRenderTargetView(m_RenderTexture[i], nullptr, &m_RenderTargetView[i]);
         device->CreateShaderResourceView(m_RenderTexture[i], nullptr, &m_ShaderResourceView[i]);
     }
+
+    D3D11_TEXTURE2D_DESC originalTexDesc{};
+    originalTexDesc.Width = SCREEN_WIDTH;
+    originalTexDesc.Height = SCREEN_HEIGHT;
+    originalTexDesc.MipLevels = 1;
+    originalTexDesc.ArraySize = 1;
+    originalTexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    originalTexDesc.SampleDesc.Count = 1;
+    originalTexDesc.Usage = D3D11_USAGE_DEFAULT;
+    originalTexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    device->CreateTexture2D(&originalTexDesc, nullptr, &m_OriginalTexture);
+    device->CreateShaderResourceView(m_OriginalTexture, nullptr, &m_OriginalSRV);
 
     //フルスクリーンクアッド用頂点バッファ
     struct Vertex
@@ -108,7 +124,7 @@ void PostProcessManager::Init()
 
     //初期値
     m_BrightExtractParams.threshold = 0.8f;
-    m_BrightExtractParams.intensity = 1.5f;
+    m_BrightExtractParams.intensity = 5.5f;
 
     m_CurrentBuffer = 0;
 }
@@ -166,15 +182,29 @@ void PostProcessManager::ApplyEffects()
         SwapBuffers();
     }
 
-    //最終結果をバックバッファへ
+    // 最終結果をバックバッファへ
     ID3D11RenderTargetView* backBuffer = Renderer::GetRenderTargetView();
     context->OMSetRenderTargets(1, &backBuffer, nullptr);
 
-    //最後のバッファから描画
-    context->PSSetShaderResources(0, 1, &m_ShaderResourceView[m_CurrentBuffer]);
-    DrawFullscreenQuad();
+    // ここでシェーダーを明示的に設定（VIGNETTEのままだと定数バッファが必要）
+    context->VSSetShader(m_FullscreenVS, nullptr, 0);
+    context->IASetInputLayout(m_VertexLayout);
+    context->PSSetShader(m_VignettePS, nullptr, 0);  // とりあえずVignetteを使う
+    context->PSSetSamplers(0, 1, &m_SamplerState);
 
-    //クリーンアップ
+    // 最後のバッファから描画
+    context->PSSetShaderResources(0, 1, &m_ShaderResourceView[m_CurrentBuffer]);
+
+    // 頂点バッファ設定
+    UINT stride = sizeof(float) * 5;
+    UINT offset = 0;
+    context->IASetVertexBuffers(0, 1, &m_VertexBuffer, &stride, &offset);
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+    // 描画
+    context->Draw(4, 0);
+
+    // クリーンアップ
     ID3D11ShaderResourceView* nullSRV = nullptr;
     context->PSSetShaderResources(0, 1, &nullSRV);
 

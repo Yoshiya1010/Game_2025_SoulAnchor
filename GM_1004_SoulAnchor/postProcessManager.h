@@ -36,6 +36,10 @@ private:
     static ID3D11RenderTargetView* m_RenderTargetView[2];
     static ID3D11ShaderResourceView* m_ShaderResourceView[2];
 
+    // 元画像保存用
+    static ID3D11Texture2D* m_OriginalTexture;
+    static ID3D11ShaderResourceView* m_OriginalSRV;
+
     // フルスクリーンクアッド用
     static ID3D11Buffer* m_VertexBuffer;
     static ID3D11VertexShader* m_FullscreenVS;
@@ -45,6 +49,7 @@ private:
     static ID3D11PixelShader* m_VignettePS;
     static ID3D11PixelShader* m_BloomPS;
     static ID3D11PixelShader* m_BlurPS;
+    static ID3D11PixelShader* m_CompositePS;
 
     static ID3D11SamplerState* m_SamplerState;
 
