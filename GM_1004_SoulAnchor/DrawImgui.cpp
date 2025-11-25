@@ -299,6 +299,11 @@ void CreateObjectTab()
 				selectedObject = EditorObjectCreator::CreateEnemy();
 			}
 
+			if (ImGui::Button("Add Soul")) {
+
+				selectedObject = EditorObjectCreator::CreateSoul();
+			}
+
 			ImGui::TreePop();
 		}
 

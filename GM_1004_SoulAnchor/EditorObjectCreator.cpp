@@ -15,6 +15,7 @@
 #include"sun.h"
 #include"grass.h"
 #include"explosion.h"
+#include"soulObject.h"
 
 
 
@@ -157,6 +158,27 @@ GameObject* EditorObjectCreator::CreateEnemy() {
 
     return enemy;
 }
+
+
+
+GameObject* EditorObjectCreator::CreateSoul() {
+
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
+    auto* soul = scene->AddGameObject<SoulObject>(OBJECT);
+    soul->SetPosition(Vector3{ 0.f,0.f,0.f });
+    soul->SetScale(Vector3{ 1.0f,1.0f,1.0f });
+
+
+    // シーンからユニークな名前をもらう
+    soul->SetName(scene->GenerateUniqueName("Soul"));
+
+
+    return soul;
+}
+
 
 
 Vector3 EditorObjectCreator::GetSafeSpawnPosition() {

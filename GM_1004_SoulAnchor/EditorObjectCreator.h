@@ -21,6 +21,8 @@ public:
 
     static GameObject* CreateEnemy();
 
+    static GameObject* CreateSoul();
+
     // ユーティリティメソッド
     static Vector3 GetSafeSpawnPosition();
  

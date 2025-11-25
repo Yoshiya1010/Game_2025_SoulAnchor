@@ -454,6 +454,22 @@ public:
         }
 	}
 
+    // トリガー設定（物理反応なし、重なり検出のみ）
+    void SetTrigger(bool isTrigger) {
+        if (!m_RigidBody) return;
+
+        if (isTrigger) {
+            m_RigidBody->setCollisionFlags(
+                m_RigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE
+            );
+        }
+        else {
+            m_RigidBody->setCollisionFlags(
+                m_RigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE
+            );
+        }
+    }
+
 	//  カスタムレイヤー設定（必要な時だけ呼ぶ）
 	void SetCollisionLayer(CollisionGroup group, int mask) {
 		m_CollisionGroup = group;

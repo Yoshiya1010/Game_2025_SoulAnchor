@@ -156,12 +156,15 @@ void PostProcessManager::BeginCapture()
 
     m_CurrentBuffer = 0;
 
-    //深度バッファも一緒に設定（通常シーン描画用）
+    // 深度バッファも一緒に設定（通常シーン描画用）
     ID3D11DepthStencilView* dsv = Renderer::GetDepthStencilView();
     context->OMSetRenderTargets(1, &m_RenderTargetView[0], dsv);
 
     float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
     context->ClearRenderTargetView(m_RenderTargetView[0], clearColor);
+
+    // 深度バッファもクリア
+    context->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 void PostProcessManager::EndCapture()
 {

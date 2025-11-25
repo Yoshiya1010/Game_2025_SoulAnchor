@@ -191,6 +191,7 @@
     <ClCompile Include="shaderManager.cpp" />
     <ClCompile Include="skyBox.cpp" />
     <ClCompile Include="soulGaugeUI.cpp" />
+    <ClCompile Include="soulObject.cpp" />
     <ClCompile Include="sprite2D.cpp" />
     <ClCompile Include="spriteAnimator2Dcpp.cpp" />
     <ClCompile Include="spriteSoulGauge.cpp" />
@@ -260,6 +261,7 @@
     <ClInclude Include="shaderType.h" />
     <ClInclude Include="skyBox.h" />
     <ClInclude Include="soulGaugeUI.h" />
+    <ClInclude Include="soulObject.h" />
     <ClInclude Include="sprite2D.h" />
     <ClInclude Include="spriteAnimator2D.h" />
     <ClInclude Include="spriteSoulGauge.h" />
