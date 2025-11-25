@@ -44,6 +44,18 @@ public:
             },
             deleteFlag);
     }
+
+
+    static void DebugBool(const std::string& label, bool* flag, bool deleteFlag = true)
+    {
+        DebugImguiWindow::Add(
+            label,
+            [flag]() {
+                ImGui::Text("%s", (*flag ? "true" : "false"));
+            },
+            deleteFlag
+        );
+    }
 private:
     static std::vector<Entry> entries;
 };

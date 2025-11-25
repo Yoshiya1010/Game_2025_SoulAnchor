@@ -18,7 +18,7 @@ void ChainSystem::Init()
     m_VisualLinkCount = 10;
     m_LinkRadius = 0.05f;           //リンクの太さ
     m_LinkLength = 0.5f;            //リンクの長さ
-    m_LinkMass = 0.1f;              // リンクの質量
+    m_LinkMass = 0.1f;              //リンクの質量
     m_MaxChainLength = 10.0f;       //最大チェーン長さ
     m_CurrentDistance = 0.0f;       //現在の距離
     m_LinkSpacing = 20.0f;          //リンク間の距離
@@ -197,6 +197,9 @@ void ChainSystem::AddLastLinkConstraint()
 void ChainSystem::AddLinkIfNeeded()
 {
     if (!m_StartObject || !m_EndObject) return;
+
+    // 最大距離を超えたらリンク追加しない
+    if (m_CurrentDistance >= m_MaxChainLength) return;
 
     //現在必要なリンク数を計算
     int requiredLinks = (int)(m_CurrentDistance / m_LinkSpacing);
@@ -449,23 +452,9 @@ void ChainSystem::UpdateChain()
     Vector3 end = m_EndObject->GetPosition();
     m_CurrentDistance = (end - start).Length();
 
-    // 最大距離を超えたら巻き戻し開始
-    if (m_CurrentDistance >= m_MaxChainLength && !m_IsRetracting)
-    {
-        StartRetract();
-    }
-
-    //巻き戻し処理
-    if (m_IsRetracting)
-    {
-        ProcessRetract();
-        RemoveLinkIfNeeded();  // 距離が縮まったらリンクを1個削除
-    }
-    else
-    {
-        //距離に応じてリンクを1個追加
-        AddLinkIfNeeded();
-    }
+    //距離に応じてリンクを動的に増減
+    AddLinkIfNeeded();      // 距離が伸びたらリンク追加
+    RemoveLinkIfNeeded();   // 距離が縮んだらリンク削除
 
     //視覚的な補間ポイントを更新（頻度制限あり）
     m_VisualUpdateCounter++;

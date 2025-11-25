@@ -9,6 +9,7 @@
 #include"FPSPlayer.h"
 #include"scene.h"
 #include"manager.h"
+#include"DebugImguiWindow.h"
 
 
 void Anchor::Init()
@@ -102,74 +103,76 @@ void Anchor::Uninit()
 void Anchor::Update()
 {
     CheckAndCallStart();
- 
+
     if (m_Started)
     {
-        if (m_Started)
+        // 引き寄せ処理（m_IsPullingがtrueの時だけ）
+        if (m_IsPulling && m_Owner)
         {
-            //引き寄せ処理
-            if (m_IsPulling && m_Owner)
+            
+         
+
+            Vector3 ownerPos = m_Owner->GetPosition();
+
+            //自分自身を引き寄せる場合（静的オブジェクトに当たった）
+            if (m_PullingSelf)
             {
-                Vector3 ownerPos = m_Owner->GetPosition();
+                Vector3 anchorPos = this->GetPosition();
+                Vector3 direction = ownerPos - anchorPos;
+                float distance = direction.Length();
 
-                //自分自身を引き寄せる場合（静的オブジェクトに当たった）
-                if (m_PullingSelf)
+                if (distance > m_PullDistance)
                 {
-                    Vector3 anchorPos = this->GetPosition();
-                    Vector3 direction = ownerPos - anchorPos;
-                    float distance = direction.Length();
+                    direction.Normalize();
+                    btVector3 pullForce(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
 
-                    if (distance > m_PullDistance)
-                    {
-                        direction.Normalize();
-                        btVector3 pullForce(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
-
-                        if (m_RigidBody) {
-                            m_RigidBody->applyCentralForce(pullForce);
-                            m_RigidBody->activate(true);
-                        }
-                    }
-                    else
-                    {
-                        NotifyOwnerAnchorRemoved();
-                        StopPulling();
-                        SetDestroy();
+                    if (m_RigidBody) {
+                        m_RigidBody->applyCentralForce(pullForce);
+                        m_RigidBody->activate(true);
                     }
                 }
-                // 物体を引き寄せる場合
-                else if (m_Attached && m_AttachedTarget)
+                else
                 {
-                    Vector3 targetPos = m_AttachedTarget->GetPosition();
-                    Vector3 direction = ownerPos - targetPos;
-                    float distance = direction.Length();
-
-                    if (distance > m_PullDistance)
-                    {
-                        direction.Normalize();
-                        btVector3 pullForce(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
-
-                        PhysicsObject* targetPhysics = dynamic_cast<PhysicsObject*>(m_AttachedTarget);
-                        if (targetPhysics && targetPhysics->GetRigidBody())
-                        {
-                            targetPhysics->GetRigidBody()->applyCentralForce(pullForce);
-                            targetPhysics->GetRigidBody()->activate(true);
-                        }
-                    }
-                    else
-                    {
-                        NotifyOwnerAnchorRemoved();
-                        StopPulling();
-                        Detach();
-                        SetDestroy();
-                    }
+                    NotifyOwnerAnchorRemoved();
+                    StopPulling();
+                    SetDestroy();
                 }
             }
-
-            // チェーンシステムを更新
-            if (m_ChainSystem)
+            // 物体を引き寄せる場合
+            else if (m_Attached && m_AttachedTarget)
             {
-                m_ChainSystem->UpdateChain();
+                Vector3 targetPos = m_AttachedTarget->GetPosition();
+                Vector3 direction = ownerPos - targetPos;
+                float distance = direction.Length();
+
+                if (distance > m_PullDistance)
+                {
+                    direction.Normalize();
+                    // m_PullForceを速度として使用
+                    btVector3 velocity(direction.x * m_PullForce, direction.y * m_PullForce, direction.z * m_PullForce);
+
+                 
+
+                    if (m_RigidBody) {
+                        m_RigidBody->setLinearVelocity(velocity);
+                        m_RigidBody->activate(true);
+                    }
+                }
+
+                else
+                {
+                    NotifyOwnerAnchorRemoved();
+                    StopPulling();
+                    Detach();
+                    SetDestroy();
+                }
             }
+        }
+
+        // チェーンシステムを更新
+        if (m_ChainSystem)
+        {
+            m_ChainSystem->UpdateChain();
         }
     }
 }
@@ -223,6 +226,7 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
         if (m_RigidBody) {
             m_RigidBody->setLinearVelocity(btVector3(0, 0, 0));
             m_RigidBody->setAngularVelocity(btVector3(0, 0, 0));
+            SetMass(m_AnchorMinMass);//一度めちゃめちゃ軽くする
         }
         return; // ここで終了、ジョイントは作らない
     }
@@ -254,7 +258,8 @@ void Anchor::AttachTo(GameObject* target, const Vector3& hitPoint)
 
     m_Attached = true;
     m_AttachedTarget = target;
-    m_PullingSelf = false;  // 物体を引き寄せる
+    m_IsPulling = true;
+    m_TargetMass = targetMass; // 相手の質量を保存
 
     //接続したら速度を0にする（刺さった状態）
     if (m_RigidBody) {

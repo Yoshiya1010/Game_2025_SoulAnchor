@@ -4,13 +4,13 @@
             "Layer": 0,
             "Name": "FPSCamera",
             "Position": [
-                -0.8539230227470398,
-                13.300000190734863,
-                12.73095417022705
+                9.699295043945313,
+                14.29999828338623,
+                15.441840171813965
             ],
             "Rotation": [
-                0.09899905323982239,
-                -3.429018974304199,
+                -0.027000732719898224,
+                -2.403017282485962,
                 0.0
             ],
             "Scale": [
@@ -29,6 +29,7 @@
                 -8.5
             ],
             "RigidBody": {
+                "AngularDamping": 0.0,
                 "ColliderOffset": [
                     0.0,
                     0.0,
@@ -38,12 +39,15 @@
                 "CollisionGroup": 8,
                 "CollisionMask": 187,
                 "Friction": 0.5,
+                "LinearDamping": 0.0,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
                     1.0,
                     1.0,
                     1.0
-                ]
+                ],
+                "Restitution": 0.0,
+                "RollingFriction": 0.0
             },
             "Rotation": [
                 0.0,
@@ -59,50 +63,14 @@
         },
         {
             "Layer": 2,
-            "Name": "TreeBlock_035",
-            "Position": [
-                3.099804401397705,
-                16.271385192871094,
-                -1.8902610540390015
-            ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.7648029923439026,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Friction": 10.199999809265137,
-                "Mass": 1.0,
-                "OriginalColliderHalfSize": [
-                    0.19313645362854004,
-                    0.7648029923439026,
-                    0.19597500562667847
-                ]
-            },
-            "Rotation": [
-                -4.00856652049697e-06,
-                5.033891284256242e-06,
-                -1.975785153263132e-06
-            ],
-            "Scale": [
-                8.199999809265137,
-                8.199999809265137,
-                8.199999809265137
-            ],
-            "Type": "TreeBlock"
-        },
-        {
-            "Layer": 2,
             "Name": "GroundBlock_003",
             "Position": [
                 0.0,
-                -15.0,
+                -14.0,
                 0.0
             ],
             "RigidBody": {
+                "AngularDamping": 0.0,
                 "ColliderOffset": [
                     0.0,
                     0.5,
@@ -112,12 +80,15 @@
                 "CollisionGroup": 128,
                 "CollisionMask": -1,
                 "Friction": 0.5,
+                "LinearDamping": 0.0,
                 "Mass": 0.0,
                 "OriginalColliderHalfSize": [
                     0.5,
                     0.5,
                     0.5
-                ]
+                ],
+                "Restitution": 0.0,
+                "RollingFriction": 0.0
             },
             "Rotation": [
                 0.0,
@@ -125,41 +96,104 @@
                 0.0
             ],
             "Scale": [
+                100.0,
                 50.0,
-                50.0,
-                50.0
+                100.0
             ],
             "Type": "GroundBlock"
         },
         {
             "Layer": 2,
-            "Name": "SkyBox",
+            "Name": "TreeBlock_036",
             "Position": [
-                -0.8539230227470398,
-                13.300000190734863,
-                12.73095417022705
+                0.7449344992637634,
+                16.20066261291504,
+                8.637988090515137
             ],
+            "RigidBody": {
+                "AngularDamping": 0.10000000149011612,
+                "ColliderOffset": [
+                    0.0,
+                    0.7648029923439026,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
+                "Friction": 0.5,
+                "LinearDamping": 0.10000000149011612,
+                "Mass": 150.0,
+                "OriginalColliderHalfSize": [
+                    0.19313645362854004,
+                    0.7648029923439026,
+                    0.19597500562667847
+                ],
+                "Restitution": 0.30000001192092896,
+                "RollingFriction": 0.20000000298023224
+            },
             "Rotation": [
-                0.0,
-                0.0,
-                0.0
+                2.697341187740676e-06,
+                0.03863447159528732,
+                5.223020252742572e-06
             ],
             "Scale": [
-                100.0,
-                100.0,
-                100.0
+                6.800000190734863,
+                6.800000190734863,
+                6.800000190734863
             ],
-            "Type": "SkyBox"
+            "Type": "TreeBlock"
+        },
+        {
+            "Layer": 2,
+            "Name": "GroundBlock_004",
+            "Position": [
+                -3.64707612991333,
+                12.149999618530273,
+                15.618549346923828
+            ],
+            "RigidBody": {
+                "AngularDamping": 0.0,
+                "ColliderOffset": [
+                    0.0,
+                    0.5,
+                    0.0
+                ],
+                "ColliderType": "Box",
+                "CollisionGroup": 128,
+                "CollisionMask": -1,
+                "Friction": 0.5,
+                "LinearDamping": 0.0,
+                "Mass": 1.0,
+                "OriginalColliderHalfSize": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "Restitution": 0.0,
+                "RollingFriction": 0.0
+            },
+            "Rotation": [
+                8.293339419651602e-07,
+                -6.216991437213437e-07,
+                8.422060204793524e-07
+            ],
+            "Scale": [
+                2.299999952316284,
+                2.299999952316284,
+                2.299999952316284
+            ],
+            "Type": "GroundBlock"
         },
         {
             "Layer": 2,
             "Name": "FPSPlayer",
             "Position": [
-                -0.8539230227470398,
-                11.5,
-                12.73095417022705
+                9.699295043945313,
+                12.499998092651367,
+                15.441840171813965
             ],
             "RigidBody": {
+                "AngularDamping": 0.0,
                 "ColliderOffset": [
                     0.0,
                     1.0,
@@ -169,12 +203,15 @@
                 "CollisionGroup": 128,
                 "CollisionMask": -1,
                 "Friction": 0.5,
+                "LinearDamping": 0.0,
                 "Mass": 70.0,
                 "OriginalColliderHalfSize": [
                     1.0,
                     1.0,
                     1.0
-                ]
+                ],
+                "Restitution": 0.0,
+                "RollingFriction": 0.0
             },
             "Rotation": [
                 0.0,
@@ -190,40 +227,23 @@
         },
         {
             "Layer": 2,
-            "Name": "GroundBlock_004",
+            "Name": "SkyBox",
             "Position": [
-                -3.6470751762390137,
-                11.149999618530273,
-                15.618549346923828
+                9.699295043945313,
+                14.29999828338623,
+                15.441840171813965
             ],
-            "RigidBody": {
-                "ColliderOffset": [
-                    0.0,
-                    0.5,
-                    0.0
-                ],
-                "ColliderType": "Box",
-                "CollisionGroup": 128,
-                "CollisionMask": -1,
-                "Friction": 0.5,
-                "Mass": 1.0,
-                "OriginalColliderHalfSize": [
-                    0.5,
-                    0.5,
-                    0.5
-                ]
-            },
             "Rotation": [
-                6.571108883690613e-07,
-                -5.375887326408701e-07,
-                7.681255738134496e-07
+                0.0,
+                0.0,
+                0.0
             ],
             "Scale": [
-                2.299999952316284,
-                2.299999952316284,
-                2.299999952316284
+                100.0,
+                100.0,
+                100.0
             ],
-            "Type": "GroundBlock"
+            "Type": "SkyBox"
         },
         {
             "Layer": 2,
@@ -264,6 +284,286 @@
                 1.0
             ],
             "Type": "Score"
+        },
+        {
+            "Layer": 4,
+            "Name": "playerIcon",
+            "Position": [
+                180.0,
+                100.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "playerIcon",
+            "Position": [
+                180.0,
+                100.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP0",
+            "Position": [
+                170.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP1",
+            "Position": [
+                230.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "HpBg2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "PinchHP2",
+            "Position": [
+                290.0,
+                105.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                120.0,
+                80.0,
+                1.0
+            ],
+            "Type": "GameObject"
         },
         {
             "Layer": 4,
@@ -2384,6 +2684,526 @@
                 100.0
             ],
             "Type": "HealthUI"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeBorder",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeYellow",
+            "Position": [
+                140.0,
+                475.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeDivision",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelBg",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel1Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeSlot",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "blueJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "redJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "yellowJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeBorder",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeYellow",
+            "Position": [
+                140.0,
+                475.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeDivision",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelBg",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevelOutLine",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel1Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeLevel2Mark",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "GaugeSlot",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "blueJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "redJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
+        },
+        {
+            "Layer": 4,
+            "Name": "yellowJewel",
+            "Position": [
+                180.0,
+                500.0,
+                0.0
+            ],
+            "Rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Type": "GameObject"
         },
         {
             "Layer": 4,
