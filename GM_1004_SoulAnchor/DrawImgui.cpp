@@ -704,35 +704,60 @@ void ShowPropertiesTab(void)
 			updated = true;
 		}
 
-		// 物理オブジェクトなら質量も編集できる
+		// 物理オブジェクトなら物理パラメータを編集できる
 		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
 		{
+			bool physicsUpdated = false;
+
 			float mass = physics->GetMass();
-			if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.0f, 100.0f))
+			if (ImGui::DragFloat(U8("質量"), &mass, 0.1f, 0.0f, 100.0f))
 			{
 				physics->SetMass(mass);
-				updated = true;
+				physicsUpdated = true;
 			}
 
-			//位置やスケールを変更したらBulletにも反映！
-			if (updated)
-			{
-				physics->SyncToPhysics();
-			}
-		}
-
-		// 物理オブジェクトなら摩擦係数も編集できる
-		if (auto physics = dynamic_cast<PhysicsObject*>(selectedObject))
-		{
 			float friction = physics->GetFriction();
-			if (ImGui::DragFloat("Friction", &friction, 0.1f, 0.0f, 100.0f))
+			if (ImGui::DragFloat(U8("摩擦係数"), &friction, 0.01f, 0.0f, 2.0f))
 			{
 				physics->SetFriction(friction);
-				updated = true;
+				physicsUpdated = true;
 			}
 
-			//位置やスケールを変更したらBulletにも反映！
-			if (updated)
+			if (ImGui::TreeNode(U8("詳しい物理設定")))
+			{
+				float restitution = physics->GetRestitution();
+				if (ImGui::DragFloat(U8("反発係数"), &restitution, 0.01f, 0.0f, 1.0f))
+				{
+					physics->SetRestitution(restitution);
+					physicsUpdated = true;
+				}
+
+				float linearDamping = physics->GetLinearDamping();
+				float angularDamping = physics->GetAngularDamping();
+				if (ImGui::DragFloat(U8("移動速度減衰"), &linearDamping, 0.01f, 0.0f, 1.0f))
+				{
+					physics->SetDamping(linearDamping, angularDamping);
+					physicsUpdated = true;
+				}
+	
+				if (ImGui::DragFloat(U8("回転速度減衰"), &angularDamping, 0.01f, 0.0f, 1.0f))
+				{
+					physics->SetDamping(linearDamping, angularDamping);
+					physicsUpdated = true;
+				}
+
+				float rollingFriction = physics->GetRollingFriction();
+				if (ImGui::DragFloat(U8("転がり摩擦係数"), &rollingFriction, 0.01f, 0.0f, 1.0f))
+				{
+					physics->SetRollingFriction(rollingFriction);
+					physicsUpdated = true;
+				}
+
+				ImGui::TreePop();
+			}
+
+			// 物理パラメータが変更されたら同期
+			if (physicsUpdated || updated)
 			{
 				physics->SyncToPhysics();
 			}

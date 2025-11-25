@@ -28,6 +28,10 @@ protected:
 
     float m_mass=0;//質量
     float m_Friction = 0.5f;//摩擦係数
+    float m_Restitution = 0.3f;      //反発係数
+    float m_LinearDamping = 0.1f;    //移動速度減衰
+    float m_AngularDamping = 0.1f;   //回転速度減衰
+    float m_RollingFriction = 0.2f;  //転がり摩擦
 
    
 public:
@@ -83,8 +87,51 @@ public:
 
     float GetFriction()
     {
-        return m_RigidBody->getFriction();
+        return m_Friction;
     }
+
+    PhysicsObject* SetRestitution(float restitution)
+    {
+        m_Restitution = restitution;
+        if (m_RigidBody)
+        {
+            m_RigidBody->setRestitution(restitution);
+            m_RigidBody->activate(true);
+        }
+        return this;
+    }
+
+    float GetRestitution()
+    {
+        return m_RigidBody ? m_RigidBody->getRestitution() : m_Restitution;
+    }
+
+    PhysicsObject* SetDamping(float linear, float angular)
+    {
+        m_LinearDamping = linear;
+        m_AngularDamping = angular;
+        if (m_RigidBody)
+        {
+            m_RigidBody->setDamping(linear, angular);
+            m_RigidBody->activate(true);
+        }
+        return this;
+    }
+
+    PhysicsObject* SetRollingFriction(float rollingFriction)
+    {
+        m_RollingFriction = rollingFriction;
+        if (m_RigidBody)
+        {
+            m_RigidBody->setRollingFriction(rollingFriction);
+            m_RigidBody->activate(true);
+        }
+        return this;
+    }
+
+    float GetLinearDamping() const { return m_LinearDamping; }
+    float GetAngularDamping() const { return m_AngularDamping; }
+    float GetRollingFriction() const { return m_RollingFriction; }
 
     // 終了処理（物理のみ）
     virtual void Uninit() override {
@@ -150,6 +197,9 @@ public:
         m_RigidBody = std::make_unique<btRigidBody>(rbInfo);
         m_RigidBody->setUserPointer(this);
         m_RigidBody->setFriction(m_Friction); //摩擦係数を適用
+        m_RigidBody->setRestitution(m_Restitution);
+        m_RigidBody->setDamping(m_LinearDamping, m_AngularDamping);
+        m_RigidBody->setRollingFriction(m_RollingFriction);
 
 
         world->addRigidBody(m_RigidBody.get(), m_CollisionGroup, m_CollisionMask);
@@ -482,7 +532,11 @@ private:
                 { "CollisionGroup", (int)m_CollisionGroup },
                 { "CollisionMask", m_CollisionMask },
                 { "OriginalColliderHalfSize", { m_OriginalColliderHalfSize.x,m_OriginalColliderHalfSize.y,m_OriginalColliderHalfSize.z }},
-                { "Friction", m_Friction }
+                { "Friction", m_Friction },
+                { "Restitution", m_Restitution },
+                { "LinearDamping", m_LinearDamping },
+                { "AngularDamping", m_AngularDamping },
+                { "RollingFriction", m_RollingFriction }
             };
         }
 
@@ -501,6 +555,10 @@ private:
         m_mass = rb.value("Mass", 0.0f);
         std::string colliderType = rb.value("ColliderType", "Box");
         m_Friction = rb.value("Friction", 0.5f);
+        m_Restitution = rb.value("Restitution", 0.0f);
+        m_LinearDamping = rb.value("LinearDamping", 0.0f);
+        m_AngularDamping = rb.value("AngularDamping", 0.0f);
+        m_RollingFriction = rb.value("RollingFriction", 0.0f);
      
 
         if (rb.contains("ColliderOffset")) {
