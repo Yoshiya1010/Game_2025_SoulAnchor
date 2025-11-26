@@ -9,6 +9,7 @@
 #include"FPSPlayer.h"
 #include"scene.h"
 #include"manager.h"
+#include"soulGaugeUI.h"
 #include"DebugImguiWindow.h"
 
 
@@ -68,6 +69,14 @@ void Anchor::Start()
             0.1f,    //リンクの長さ
             0.5f     //リンクの質量
         );
+    }
+
+    //UIに反映させる アンカーを投げると消費
+    SoulGaugeUI* ui = Manager::GetScene()->GetGameObject<SoulGaugeUI>();
+    if (ui)
+    {
+        SpriteSoulGauge* gauge = ui->GetGauge();
+        gauge->SetTargetValue(gauge->GetTargetValue() -5.f);
     }
    
 }

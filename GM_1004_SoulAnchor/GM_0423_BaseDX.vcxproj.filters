@@ -261,9 +261,6 @@
     <ClCompile Include="soulGaugeUI.cpp">
       <Filter>ソース ファイル\プレイヤー\UI</Filter>
     </ClCompile>
-    <ClCompile Include="spriteSoulGauge.cpp">
-      <Filter>ソース ファイル\2D描画</Filter>
-    </ClCompile>
     <ClCompile Include="suncpp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -284,6 +281,9 @@
     </ClCompile>
     <ClCompile Include="soulObject.cpp">
       <Filter>ソース ファイル\BulletObject</Filter>
+    </ClCompile>
+    <ClCompile Include="spriteSoulGauge.cpp">
+      <Filter>ソース ファイル\プレイヤー\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -464,9 +464,6 @@
     <ClInclude Include="soulGaugeUI.h">
       <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
     </ClInclude>
-    <ClInclude Include="spriteSoulGauge.h">
-      <Filter>ヘッダー ファイル\2D描画</Filter>
-    </ClInclude>
     <ClInclude Include="sun.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -493,6 +490,9 @@
     </ClInclude>
     <ClInclude Include="soulObject.h">
       <Filter>ヘッダー ファイル\BulletObject</Filter>
+    </ClInclude>
+    <ClInclude Include="spriteSoulGauge.h">
+      <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
