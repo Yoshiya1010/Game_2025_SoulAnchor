@@ -3,686 +3,928 @@
 #include "animationModel.h"
 #include <set>
 
+//指定時間に対応する回転キーを検索
+static void FindRotationKeys(aiNodeAnim* nodeAnim, float animationTime,
+    unsigned int& outIndex, unsigned int& outNextIndex, float& outFraction)
+{
+    if (nodeAnim->mNumRotationKeys == 1) {
+        outIndex = 0;
+        outNextIndex = 0;
+        outFraction = 0.0f;
+        return;
+    }
+
+    outIndex = 0;
+    for (unsigned int i = 0; i < nodeAnim->mNumRotationKeys - 1; i++) {
+        if (animationTime < nodeAnim->mRotationKeys[i + 1].mTime) {
+            outIndex = i;
+            break;
+        }
+    }
+
+    outNextIndex = (outIndex + 1) % nodeAnim->mNumRotationKeys;
+
+    if (outNextIndex == 0) {
+        outFraction = 0.0f;
+    }
+    else {
+        float deltaTime = nodeAnim->mRotationKeys[outNextIndex].mTime -
+            nodeAnim->mRotationKeys[outIndex].mTime;
+        float currentTime = animationTime - nodeAnim->mRotationKeys[outIndex].mTime;
+        outFraction = (deltaTime > 0.0f) ? (currentTime / deltaTime) : 0.0f;
+    }
+}
+
+//指定時間に対応する位置キーを検索
+static void FindPositionKeys(aiNodeAnim* nodeAnim, float animationTime,
+    unsigned int& outIndex, unsigned int& outNextIndex, float& outFraction)
+{
+    if (nodeAnim->mNumPositionKeys == 1) {
+        outIndex = 0;
+        outNextIndex = 0;
+        outFraction = 0.0f;
+        return;
+    }
+
+    outIndex = 0;
+    for (unsigned int i = 0; i < nodeAnim->mNumPositionKeys - 1; i++) {
+        if (animationTime < nodeAnim->mPositionKeys[i + 1].mTime) {
+            outIndex = i;
+            break;
+        }
+    }
+
+    outNextIndex = (outIndex + 1) % nodeAnim->mNumPositionKeys;
+
+    if (outNextIndex == 0) {
+        outFraction = 0.0f;
+    }
+    else {
+        float deltaTime = nodeAnim->mPositionKeys[outNextIndex].mTime -
+            nodeAnim->mPositionKeys[outIndex].mTime;
+        float currentTime = animationTime - nodeAnim->mPositionKeys[outIndex].mTime;
+        outFraction = (deltaTime > 0.0f) ? (currentTime / deltaTime) : 0.0f;
+    }
+}
+
 void AnimationModel::Draw()
 {
-	//プリミティブトポロジ設定
-	Renderer::GetDeviceContext()->IASetPrimitiveTopology(
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //プリミティブトポロジ設定
+    Renderer::GetDeviceContext()->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//マテリアル設定
-	MATERIAL material;
-	ZeroMemory(&material, sizeof(material));
-	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.TextureEnable = true;
-	Renderer::SetMaterial(material);
+    //マテリアル設定
+    MATERIAL material;
+    ZeroMemory(&material, sizeof(material));
+    material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    material.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+    material.TextureEnable = true;
+    Renderer::SetMaterial(material);
 
-	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
-	{
-		aiMesh* mesh = m_AiScene->mMeshes[m];
+    //各ノードメッシュを描画
+    for (const auto& nodeMesh : m_NodeMeshes)
+    {
+        aiMesh* mesh = m_AiScene->mMeshes[nodeMesh.meshIndex];
 
-		//マテリアル設定
-		aiString texture;
-		aiColor3D diffuse;
-		float opacity;
+        //マテリアル設定
+        aiString texture;
+        aiColor3D diffuse;
+        float opacity;
 
-		aiMaterial* aimaterial = m_AiScene->mMaterials[mesh->mMaterialIndex];
-		aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texture);
-		aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-		aimaterial->Get(AI_MATKEY_OPACITY, opacity);
+        aiMaterial* aimaterial = m_AiScene->mMaterials[mesh->mMaterialIndex];
+        aimaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texture);
+        aimaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+        aimaterial->Get(AI_MATKEY_OPACITY, opacity);
 
-		if (texture == aiString(""))
-		{
-			material.TextureEnable = false;
-		}
-		else
-		{
-			Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &m_Texture[texture.data]);
-			material.TextureEnable = true;
-		}
+        if (texture == aiString("") || m_Texture.count(texture.data) == 0)
+        {
+            material.TextureEnable = false;
+        }
+        else
+        {
+            Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &m_Texture[texture.data]);
+            material.TextureEnable = true;
+        }
 
-		material.Diffuse = XMFLOAT4(diffuse.r, diffuse.g, diffuse.b, opacity);
-		material.Ambient = material.Diffuse;
-		Renderer::SetMaterial(material);
+        material.Diffuse = XMFLOAT4(diffuse.r, diffuse.g, diffuse.b, opacity);
+        material.Ambient = material.Diffuse;
+        Renderer::SetMaterial(material);
 
-		//頂点バッファ設定
-		UINT stride = sizeof(VERTEX_3D);
-		UINT offset = 0;
-		Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, &m_VertexBuffer[m], &stride, &offset);
+        //頂点バッファ設定
+        UINT stride = sizeof(VERTEX_3D);
+        UINT offset = 0;
+        Renderer::GetDeviceContext()->IASetVertexBuffers(0, 1, &nodeMesh.vertexBuffer, &stride, &offset);
 
-		//インデックスバッファ設定
-		Renderer::GetDeviceContext()->IASetIndexBuffer(m_IndexBuffer[m], DXGI_FORMAT_R32_UINT, 0);
+        //インデックスバッファ設定
+        Renderer::GetDeviceContext()->IASetIndexBuffer(m_IndexBuffer[nodeMesh.meshIndex], DXGI_FORMAT_R32_UINT, 0);
 
-		//ポリゴン描画
-		Renderer::GetDeviceContext()->DrawIndexed(mesh->mNumFaces * 3, 0, 0);
-	}
+        //ポリゴン描画
+        Renderer::GetDeviceContext()->DrawIndexed(mesh->mNumFaces * 3, 0, 0);
+    }
 }
 
 void AnimationModel::Load(const char* FileName)
 {
-	const std::string modelPath(FileName);
+    const std::string modelPath(FileName);
 
-	m_AiScene = aiImportFile(FileName,
-		aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
-	assert(m_AiScene);
+    m_AiScene = aiImportFile(FileName,
+        aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+    assert(m_AiScene);
 
-	m_VertexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
-	m_IndexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
+    m_IndexBuffer = new ID3D11Buffer * [m_AiScene->mNumMeshes];
 
-	//頂点配列生成
-	m_DeformVertex = new std::vector<DEFORM_VERTEX>[m_AiScene->mNumMeshes];
+    //ボーン生成
+    CreateBone(m_AiScene->mRootNode);
 
-	//ボーン生成
-	CreateBone(m_AiScene->mRootNode);
+    //ノードメッシュ情報を収集
+    CollectNodeMeshes(m_AiScene->mRootNode);
 
-	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
-	{
-		aiMesh* mesh = m_AiScene->mMeshes[m];
+    //インデックスバッファ生成
+    for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
+    {
+        aiMesh* mesh = m_AiScene->mMeshes[m];
 
-		//頂点バッファ生成
-		{
-			VERTEX_3D* vertex = new VERTEX_3D[mesh->mNumVertices];
+        unsigned int* index = new unsigned int[mesh->mNumFaces * 3];
 
-			for (unsigned int v = 0; v < mesh->mNumVertices; v++)
-			{
-				vertex[v].Position = XMFLOAT3(mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z);
-				vertex[v].Normal = XMFLOAT3(mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z);
-				vertex[v].TexCoord = XMFLOAT2(mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y);
-				vertex[v].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			}
+        for (unsigned int f = 0; f < mesh->mNumFaces; f++)
+        {
+            const aiFace* face = &mesh->mFaces[f];
+            assert(face->mNumIndices == 3);
 
-			D3D11_BUFFER_DESC bd;
-			ZeroMemory(&bd, sizeof(bd));
-			bd.Usage = D3D11_USAGE_DYNAMIC;
-			bd.ByteWidth = sizeof(VERTEX_3D) * mesh->mNumVertices;
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+            index[f * 3 + 0] = face->mIndices[0];
+            index[f * 3 + 1] = face->mIndices[1];
+            index[f * 3 + 2] = face->mIndices[2];
+        }
 
-			D3D11_SUBRESOURCE_DATA sd;
-			ZeroMemory(&sd, sizeof(sd));
-			sd.pSysMem = vertex;
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(unsigned int) * mesh->mNumFaces * 3;
+        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bd.CPUAccessFlags = 0;
 
-			Renderer::GetDevice()->CreateBuffer(&bd, &sd, &m_VertexBuffer[m]);
+        D3D11_SUBRESOURCE_DATA sd;
+        ZeroMemory(&sd, sizeof(sd));
+        sd.pSysMem = index;
 
-			delete[] vertex;
-		}
+        Renderer::GetDevice()->CreateBuffer(&bd, &sd, &m_IndexBuffer[m]);
 
-		//インデックスバッファ生成
-		{
-			unsigned int* index = new unsigned int[mesh->mNumFaces * 3];
+        delete[] index;
+    }
 
-			for (unsigned int f = 0; f < mesh->mNumFaces; f++)
-			{
-				const aiFace* face = &mesh->mFaces[f];
+    //外部テクスチャファイルの読み込み
+    std::string directory = modelPath.substr(0, modelPath.find_last_of("/\\") + 1);
 
-				assert(face->mNumIndices == 3);
+    for (unsigned int m = 0; m < m_AiScene->mNumMaterials; m++)
+    {
+        aiMaterial* material = m_AiScene->mMaterials[m];
+        aiString texturePath;
 
-				index[f * 3 + 0] = face->mIndices[0];
-				index[f * 3 + 1] = face->mIndices[1];
-				index[f * 3 + 2] = face->mIndices[2];
-			}
+        if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
+        {
+            if (m_Texture.count(texturePath.data) == 0)
+            {
+                std::string texName = texturePath.data;
+                size_t lastSlash = texName.find_last_of("/\\");
+                if (lastSlash != std::string::npos)
+                {
+                    texName = texName.substr(lastSlash + 1);
+                }
 
-			D3D11_BUFFER_DESC bd;
-			ZeroMemory(&bd, sizeof(bd));
-			bd.Usage = D3D11_USAGE_DEFAULT;
-			bd.ByteWidth = sizeof(unsigned int) * mesh->mNumFaces * 3;
-			bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			bd.CPUAccessFlags = 0;
+                std::string pathsToTry[] = {
+                    directory + texturePath.data,
+                    directory + texName,
+                    directory + "Textures\\" + texName,
+                    directory + "textures\\" + texName
+                };
 
-			D3D11_SUBRESOURCE_DATA sd;
-			ZeroMemory(&sd, sizeof(sd));
-			sd.pSysMem = index;
+                ID3D11ShaderResourceView* texture = nullptr;
 
-			Renderer::GetDevice()->CreateBuffer(&bd, &sd, &m_IndexBuffer[m]);
+                for (const auto& fullPath : pathsToTry)
+                {
+                    TexMetadata metadata;
+                    ScratchImage image;
+                    wchar_t wPath[256];
+                    size_t converted;
+                    mbstowcs_s(&converted, wPath, 256, fullPath.c_str(), _TRUNCATE);
 
-			delete[] index;
-		}
+                    HRESULT hr = LoadFromWICFile(wPath, WIC_FLAGS_NONE, &metadata, image);
 
-		//頂点データ初期化
-		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
-		{
-			DEFORM_VERTEX deformVertex;
-			deformVertex.Position = mesh->mVertices[v];
-			deformVertex.Normal = mesh->mNormals[v];
-			deformVertex.BoneNum = 0;
+                    if (SUCCEEDED(hr))
+                    {
+                        CreateShaderResourceView(Renderer::GetDevice(),
+                            image.GetImages(), image.GetImageCount(), metadata, &texture);
+                        break;
+                    }
+                }
 
-			for (unsigned int b = 0; b < 4; b++)
-			{
-				deformVertex.BoneName[b] = "";
-				deformVertex.BoneWeight[b] = 0.0f;
-			}
+                if (texture)
+                {
+                    m_Texture[texturePath.data] = texture;
+                }
+            }
+        }
+    }
 
-			m_DeformVertex[m].push_back(deformVertex);
-		}
+    //埋め込みテクスチャ読み込み
+    for (int i = 0; i < m_AiScene->mNumTextures; i++)
+    {
+        aiTexture* aitexture = m_AiScene->mTextures[i];
 
-		//ボーンデータ初期化
-		for (unsigned int b = 0; b < mesh->mNumBones; b++)
-		{
-			aiBone* bone = mesh->mBones[b];
-			m_Bone[bone->mName.C_Str()].OffsetMatrix = bone->mOffsetMatrix;
+        ID3D11ShaderResourceView* texture;
 
-			//頂点にボーンデータ格納
-			for (unsigned int w = 0; w < bone->mNumWeights; w++)
-			{
-				aiVertexWeight weight = bone->mWeights[w];
-				int num = m_DeformVertex[m][weight.mVertexId].BoneNum;
-				m_DeformVertex[m][weight.mVertexId].BoneWeight[num] = weight.mWeight;
-				m_DeformVertex[m][weight.mVertexId].BoneName[num] = bone->mName.C_Str();
-				m_DeformVertex[m][weight.mVertexId].BoneNum++;
-				assert(m_DeformVertex[m][weight.mVertexId].BoneNum <= 4);
-			}
-		}
-		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
-		{
-			DEFORM_VERTEX* deformVertex = &m_DeformVertex[m][v];
+        TexMetadata metadata;
+        ScratchImage image;
+        LoadFromWICMemory(aitexture->pcData, aitexture->mWidth, WIC_FLAGS_NONE, &metadata, image);
+        CreateShaderResourceView(Renderer::GetDevice(), image.GetImages(), image.GetImageCount(), metadata, &texture);
+        assert(texture);
 
-			// ウェイトの合計を計算
-			float totalWeight = 0.0f;
-			for (int i = 0; i < 4; i++)
-			{
-				totalWeight += deformVertex->BoneWeight[i];
-			}
+        m_Texture[aitexture->mFilename.data] = texture;
+    }
 
-			// ウェイトを正規化（合計が1.0になるように）
-			if (totalWeight > 0.0f)
-			{
-				for (int i = 0; i < 4; i++)
-				{
-					deformVertex->BoneWeight[i] /= totalWeight;
-				}
-			}
-		}
-	}
-
-	//テクスチャ読み込み
-	for (int i = 0; i < m_AiScene->mNumTextures; i++)
-	{
-		aiTexture* aitexture = m_AiScene->mTextures[i];
-
-		ID3D11ShaderResourceView* texture;
-
-		// テクスチャ読み込み
-		TexMetadata metadata;
-		ScratchImage image;
-		LoadFromWICMemory(aitexture->pcData, aitexture->mWidth, WIC_FLAGS_NONE, &metadata, image);
-		CreateShaderResourceView(Renderer::GetDevice(), image.GetImages(), image.GetImageCount(), metadata, &texture);
-		assert(texture);
-
-		m_Texture[aitexture->mFilename.data] = texture;
-	}
-
-	//アニメーション設定の初期化
-	m_CurrentFrame = 0.0f;
-	m_PlaySpeed = 1.0f;
-	m_BlendRate = 0.0f;
-	m_IsLooping = true;
-	m_State = AnimationState::STOPPED;
-	m_MaxFrame = 0;
+    //アニメーション設定の初期化
+    m_CurrentFrame = 0.0f;
+    m_PlaySpeed = 1.0f;
+    m_BlendRate = 0.0f;
+    m_IsLooping = true;
+    m_State = AnimationState::STOPPED;
+    m_MaxFrame = 0;
 }
 
-//全てのアニメーションを自動でロードする機能
+void AnimationModel::CollectNodeMeshes(aiNode* node)
+{
+    //このノードが持つメッシュを処理
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        unsigned int meshIndex = node->mMeshes[i];
+        aiMesh* mesh = m_AiScene->mMeshes[meshIndex];
+
+        NodeMeshInfo nodeMesh;
+        nodeMesh.node = node;
+        nodeMesh.meshIndex = meshIndex;
+
+        //頂点バッファ生成
+        VERTEX_3D* vertex = new VERTEX_3D[mesh->mNumVertices];
+
+        for (unsigned int v = 0; v < mesh->mNumVertices; v++)
+        {
+            vertex[v].Position = XMFLOAT3(mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z);
+            vertex[v].Normal = XMFLOAT3(mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z);
+
+            if (mesh->mTextureCoords[0])
+            {
+                vertex[v].TexCoord = XMFLOAT2(mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y);
+            }
+            else
+            {
+                vertex[v].TexCoord = XMFLOAT2(0.0f, 0.0f);
+            }
+
+            vertex[v].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DYNAMIC;
+        bd.ByteWidth = sizeof(VERTEX_3D) * mesh->mNumVertices;
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+        D3D11_SUBRESOURCE_DATA sd;
+        ZeroMemory(&sd, sizeof(sd));
+        sd.pSysMem = vertex;
+
+        Renderer::GetDevice()->CreateBuffer(&bd, &sd, &nodeMesh.vertexBuffer);
+
+        delete[] vertex;
+
+        //DEFORM_VERTEX初期化
+        for (unsigned int v = 0; v < mesh->mNumVertices; v++)
+        {
+            DEFORM_VERTEX deformVertex;
+            deformVertex.Position = mesh->mVertices[v];
+            deformVertex.Normal = mesh->mNormals[v];
+            deformVertex.BoneNum = 0;
+
+            for (unsigned int b = 0; b < 4; b++)
+            {
+                deformVertex.BoneName[b] = "";
+                deformVertex.BoneWeight[b] = 0.0f;
+            }
+
+            nodeMesh.deformVertices.push_back(deformVertex);
+        }
+
+        //ボーンデータ初期化
+        for (unsigned int b = 0; b < mesh->mNumBones; b++)
+        {
+            aiBone* bone = mesh->mBones[b];
+            m_Bone[bone->mName.C_Str()].OffsetMatrix = bone->mOffsetMatrix;
+
+            for (unsigned int w = 0; w < bone->mNumWeights; w++)
+            {
+                aiVertexWeight weight = bone->mWeights[w];
+                int num = nodeMesh.deformVertices[weight.mVertexId].BoneNum;
+                nodeMesh.deformVertices[weight.mVertexId].BoneWeight[num] = weight.mWeight;
+                nodeMesh.deformVertices[weight.mVertexId].BoneName[num] = bone->mName.C_Str();
+                nodeMesh.deformVertices[weight.mVertexId].BoneNum++;
+                assert(nodeMesh.deformVertices[weight.mVertexId].BoneNum <= 4);
+            }
+        }
+
+        //ウェイト正規化
+        for (unsigned int v = 0; v < mesh->mNumVertices; v++)
+        {
+            DEFORM_VERTEX* deformVertex = &nodeMesh.deformVertices[v];
+
+            float totalWeight = 0.0f;
+            for (int i = 0; i < 4; i++)
+            {
+                totalWeight += deformVertex->BoneWeight[i];
+            }
+
+            if (totalWeight > 0.0f)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    deformVertex->BoneWeight[i] /= totalWeight;
+                }
+            }
+        }
+
+        m_NodeMeshes.push_back(nodeMesh);
+    }
+
+    //子ノードを再帰的に処理
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        CollectNodeMeshes(node->mChildren[i]);
+    }
+}
+
 void AnimationModel::LoadAllAnimations(const char* FileName)
 {
-	//FBXファイルをロード
-	const aiScene* scene = aiImportFile(FileName,
-		aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
-	if (!scene)
-	{
-		return;
-	}
+    const aiScene* scene = aiImportFile(FileName,
+        aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+    if (!scene)
+    {
+        return;
+    }
 
-	if (!scene->HasAnimations())
-	{
-		aiReleaseImport(scene);
-		return;
-	}
+    if (!scene->HasAnimations())
+    {
+        aiReleaseImport(scene);
+        return;
+    }
 
-	//全てのアニメーションをロード
-	for (unsigned int i = 0; i < scene->mNumAnimations; i++)
-	{
-		aiAnimation* anim = scene->mAnimations[i];
-		std::string originalName = anim->mName.C_Str();
+    for (unsigned int i = 0; i < scene->mNumAnimations; i++)
+    {
+        aiAnimation* anim = scene->mAnimations[i];
+        std::string originalName = anim->mName.C_Str();
 
-		// 表示用の名前を決定
-		std::string displayName;
-		if (originalName.empty())
-		{
-			// 名前がない場合は番号で命名
-			displayName = "Animation_" + std::to_string(i);
-		}
-		else
-		{
-			// FBX内の名前をそのまま使用
-			displayName = originalName;
-		}
+        std::string displayName;
+        if (originalName.empty())
+        {
+            displayName = "Animation_" + std::to_string(i);
+        }
+        else
+        {
+            displayName = originalName;
+        }
 
-		// アニメーション情報を保存
-		AnimationInfo info;
-		info.scene = scene;
-		info.animationIndex = i;
-		info.originalName = originalName;
-		m_Animation[displayName] = info;
-	}
+        AnimationInfo info;
+        info.scene = scene;
+        info.animationIndex = i;
+        info.originalName = originalName;
+        m_Animation[displayName] = info;
+    }
 }
 
-//アニメーションをFBXファイルから名前で検索してロード
 void AnimationModel::LoadAnimation(const char* FileName, const char* Name)
 {
-	// FBXファイルをロード
-	const aiScene* scene = aiImportFile(FileName, aiProcess_ConvertToLeftHanded);
-	assert(scene);
+    const aiScene* scene = aiImportFile(FileName, aiProcess_ConvertToLeftHanded);
+    assert(scene);
 
-	if (!scene->HasAnimations())
-	{
-		aiReleaseImport(scene);
-		return;
-	}
+    if (!scene->HasAnimations())
+    {
+        aiReleaseImport(scene);
+        return;
+    }
 
-	// 指定された名前のアニメーションを検索
-	int foundIndex = -1;
-	for (unsigned int i = 0; i < scene->mNumAnimations; i++)
-	{
-		std::string animName = scene->mAnimations[i]->mName.C_Str();
+    int foundIndex = -1;
+    for (unsigned int i = 0; i < scene->mNumAnimations; i++)
+    {
+        std::string animName = scene->mAnimations[i]->mName.C_Str();
 
-		// FBXのアニメーション名と指定された名前が一致するか確認
-		if (animName == Name || animName.find(Name) != std::string::npos)
-		{
-			foundIndex = i;
-			break;
-		}
-	}
+        if (animName == Name || animName.find(Name) != std::string::npos)
+        {
+            foundIndex = i;
+            break;
+        }
+    }
 
-	//見つからなかった場合は最初のアニメーションを使用
-	if (foundIndex == -1)
-	{
-		foundIndex = 0;
-	}
+    if (foundIndex == -1)
+    {
+        foundIndex = 0;
+    }
 
-	// アニメーション情報を保存
-	AnimationInfo info;
-	info.scene = scene;
-	info.animationIndex = foundIndex;
-	info.originalName = scene->mAnimations[foundIndex]->mName.C_Str();
-	m_Animation[Name] = info;
+    AnimationInfo info;
+    info.scene = scene;
+    info.animationIndex = foundIndex;
+    info.originalName = scene->mAnimations[foundIndex]->mName.C_Str();
+    m_Animation[Name] = info;
 }
 
-//FBXファイルからインデックスでアニメーションをロード
 void AnimationModel::LoadAnimationByIndex(const char* FileName, int index, const char* Name)
 {
-	// FBXファイルをロード
-	const aiScene* scene = aiImportFile(FileName, aiProcess_ConvertToLeftHanded);
-	assert(scene);
+    const aiScene* scene = aiImportFile(FileName, aiProcess_ConvertToLeftHanded);
+    assert(scene);
 
-	if (!scene->HasAnimations())
-	{
-		aiReleaseImport(scene);
-		return;
-	}
+    if (!scene->HasAnimations())
+    {
+        aiReleaseImport(scene);
+        return;
+    }
 
-	//インデックスが範囲内かチェック
-	if (index < 0 || index >= (int)scene->mNumAnimations)
-	{
-		index = 0;
-	}
+    if (index < 0 || index >= (int)scene->mNumAnimations)
+    {
+        index = 0;
+    }
 
-	// アニメーション情報を保存
-	AnimationInfo info;
-	info.scene = scene;
-	info.animationIndex = index;
-	info.originalName = scene->mAnimations[index]->mName.C_Str();
-	m_Animation[Name] = info;
+    AnimationInfo info;
+    info.scene = scene;
+    info.animationIndex = index;
+    info.originalName = scene->mAnimations[index]->mName.C_Str();
+    m_Animation[Name] = info;
 }
 
 void AnimationModel::CreateBone(aiNode* node)
 {
-	BONE bone;
-	bone.AnimationMatrix = node->mTransformation;
-	bone.OffsetMatrix = aiMatrix4x4();
+    BONE bone;
+    bone.AnimationMatrix = node->mTransformation;
+    bone.OffsetMatrix = aiMatrix4x4();
 
-	m_Bone[node->mName.C_Str()] = bone;
+    m_Bone[node->mName.C_Str()] = bone;
 
-	for (unsigned int n = 0; n < node->mNumChildren; n++)
-	{
-		CreateBone(node->mChildren[n]);
-	}
+    for (unsigned int n = 0; n < node->mNumChildren; n++)
+    {
+        CreateBone(node->mChildren[n]);
+    }
 }
 
 void AnimationModel::Uninit()
 {
-	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
-	{
-		m_VertexBuffer[m]->Release();
-		m_IndexBuffer[m]->Release();
-	}
+    //ノードメッシュの頂点バッファを解放
+    for (auto& nodeMesh : m_NodeMeshes)
+    {
+        nodeMesh.vertexBuffer->Release();
+    }
+    m_NodeMeshes.clear();
 
-	delete[] m_VertexBuffer;
-	delete[] m_IndexBuffer;
-	delete[] m_DeformVertex;
+    //インデックスバッファを解放
+    for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
+    {
+        m_IndexBuffer[m]->Release();
+    }
+    delete[] m_IndexBuffer;
 
-	for (std::pair<const std::string, ID3D11ShaderResourceView*> pair : m_Texture)
-	{
-		if (pair.second) {
-			pair.second->Release();
-		}
-	}
+    //テクスチャを解放
+    for (std::pair<const std::string, ID3D11ShaderResourceView*> pair : m_Texture)
+    {
+        if (pair.second) {
+            pair.second->Release();
+        }
+    }
 
-	aiReleaseImport(m_AiScene);
+    aiReleaseImport(m_AiScene);
 
-	// 重複してロードされたシーンを解放しないようにチェック
-	std::set<const aiScene*> releasedScenes;
-	for (std::pair<const std::string, AnimationInfo> pair : m_Animation)
-	{
-		if (releasedScenes.find(pair.second.scene) == releasedScenes.end())
-		{
-			aiReleaseImport(pair.second.scene);
-			releasedScenes.insert(pair.second.scene);
-		}
-	}
+    //アニメーションシーンを解放
+    std::set<const aiScene*> releasedScenes;
+    for (std::pair<const std::string, AnimationInfo> pair : m_Animation)
+    {
+        if (releasedScenes.find(pair.second.scene) == releasedScenes.end())
+        {
+            aiReleaseImport(pair.second.scene);
+            releasedScenes.insert(pair.second.scene);
+        }
+    }
 }
 
-//授業で作ったUpdate、アニメーションのFBXがモデルに含まれてない場合はこっちを使う
 void AnimationModel::Update(const char* AnimationName1, int Frame1,
-	const char* AnimationName2, int Frame2, float BlendRate)
+    const char* AnimationName2, int Frame2, float BlendRate)
 {
-	if (m_Animation.count(AnimationName1) == 0)
-		return;
+    if (m_Animation.count(AnimationName1) == 0)
+        return;
 
-	AnimationInfo& animInfo1 = m_Animation[AnimationName1];
-	if (!animInfo1.scene->HasAnimations())
-		return;
+    AnimationInfo& animInfo1 = m_Animation[AnimationName1];
+    if (!animInfo1.scene->HasAnimations())
+        return;
 
-	if (m_Animation.count(AnimationName2) == 0)
-		return;
+    if (m_Animation.count(AnimationName2) == 0)
+        return;
 
-	AnimationInfo& animInfo2 = m_Animation[AnimationName2];
-	if (!animInfo2.scene->HasAnimations())
-		return;
+    AnimationInfo& animInfo2 = m_Animation[AnimationName2];
+    if (!animInfo2.scene->HasAnimations())
+        return;
 
-	//指定されたインデックスのアニメーションを取得
-	aiAnimation* animation1 = animInfo1.scene->mAnimations[animInfo1.animationIndex];
-	aiAnimation* animation2 = animInfo2.scene->mAnimations[animInfo2.animationIndex];
+    aiAnimation* animation1 = animInfo1.scene->mAnimations[animInfo1.animationIndex];
+    aiAnimation* animation2 = animInfo2.scene->mAnimations[animInfo2.animationIndex];
 
-	for (auto pair : m_Bone) {
-		BONE* bone = &m_Bone[pair.first];
+    //Frame1とFrame2は実際にはアニメーション時間（ticks）
+    float animationTime1 = (float)Frame1;
+    float animationTime2 = (float)Frame2;
 
-		// 1つめのアニメーションの処理
-		aiNodeAnim* nodeAnim1 = nullptr;
-		for (unsigned int c = 0; c < animation1->mNumChannels; c++) {
-			if (animation1->mChannels[c]->mNodeName == aiString(pair.first)) {
-				nodeAnim1 = animation1->mChannels[c];
-				break;
-			}
-		}
+    for (auto pair : m_Bone) {
+        BONE* bone = &m_Bone[pair.first];
 
-		// 2つめのアニメーションの処理
-		aiNodeAnim* nodeAnim2 = nullptr;
-		for (unsigned int c = 0; c < animation2->mNumChannels; c++) {
-			if (animation2->mChannels[c]->mNodeName == aiString(pair.first)) {
-				nodeAnim2 = animation2->mChannels[c];
-				break;
-			}
-		}
+        aiNodeAnim* nodeAnim1 = nullptr;
+        for (unsigned int c = 0; c < animation1->mNumChannels; c++) {
+            if (animation1->mChannels[c]->mNodeName == aiString(pair.first)) {
+                nodeAnim1 = animation1->mChannels[c];
+                break;
+            }
+        }
 
-	
-		if (!nodeAnim1 && !nodeAnim2) {
-			// このボーンはアニメーションに含まれていないので、
-			continue;
-		}
+        aiNodeAnim* nodeAnim2 = nullptr;
+        for (unsigned int c = 0; c < animation2->mNumChannels; c++) {
+            if (animation2->mChannels[c]->mNodeName == aiString(pair.first)) {
+                nodeAnim2 = animation2->mChannels[c];
+                break;
+            }
+        }
 
-		aiQuaternion rot1(1.0f, 0.0f, 0.0f, 0.0f);
-		aiVector3D pos1(0.0f, 0.0f, 0.0f);
-		int f;
+        if (!nodeAnim1 && !nodeAnim2) {
+            continue;
+        }
 
-		if (nodeAnim1) {
-			f = Frame1 % nodeAnim1->mNumRotationKeys;
-			rot1 = nodeAnim1->mRotationKeys[f].mValue;
+        aiQuaternion rot1(1.0f, 0.0f, 0.0f, 0.0f);
+        aiVector3D pos1(0.0f, 0.0f, 0.0f);
 
-			f = Frame1 % nodeAnim1->mNumPositionKeys;
-			pos1 = nodeAnim1->mPositionKeys[f].mValue;
-		}
+        if (nodeAnim1) {
+            unsigned int rotIndex, rotNextIndex;
+            float rotFraction;
+            FindRotationKeys(nodeAnim1, animationTime1, rotIndex, rotNextIndex, rotFraction);
 
-		aiQuaternion rot2(1.0f, 0.0f, 0.0f, 0.0f);
-		aiVector3D pos2(0.0f, 0.0f, 0.0f);
+            if (rotIndex == rotNextIndex) {
+                //キーが1つだけ
+                rot1 = nodeAnim1->mRotationKeys[rotIndex].mValue;
+            }
+            else {
+                aiQuaternion rot1Key = nodeAnim1->mRotationKeys[rotIndex].mValue;
+                aiQuaternion rot1NextKey = nodeAnim1->mRotationKeys[rotNextIndex].mValue;
 
-		if (nodeAnim2) {
-			f = Frame2 % nodeAnim2->mNumRotationKeys;
-			rot2 = nodeAnim2->mRotationKeys[f].mValue;
+                rot1Key.Normalize();
+                rot1NextKey.Normalize();
 
-			f = Frame2 % nodeAnim2->mNumPositionKeys;
-			pos2 = nodeAnim2->mPositionKeys[f].mValue;
-		}
+                float dot = rot1Key.w * rot1NextKey.w + rot1Key.x * rot1NextKey.x +
+                    rot1Key.y * rot1NextKey.y + rot1Key.z * rot1NextKey.z;
 
-		aiVector3D pos;
-		pos = pos1 * (1.0f - BlendRate) + pos2 * BlendRate;
+                if (dot < 0.0f) {
+                    dot = -dot;
+                    rot1NextKey.w = -rot1NextKey.w;
+                    rot1NextKey.x = -rot1NextKey.x;
+                    rot1NextKey.y = -rot1NextKey.y;
+                    rot1NextKey.z = -rot1NextKey.z;
+                }
 
-		aiQuaternion rot;
-		aiQuaternion::Interpolate(rot, rot1, rot2, BlendRate);
+                if (dot > 0.9995f) {
+                    rot1.w = rot1Key.w * (1.0f - rotFraction) + rot1NextKey.w * rotFraction;
+                    rot1.x = rot1Key.x * (1.0f - rotFraction) + rot1NextKey.x * rotFraction;
+                    rot1.y = rot1Key.y * (1.0f - rotFraction) + rot1NextKey.y * rotFraction;
+                    rot1.z = rot1Key.z * (1.0f - rotFraction) + rot1NextKey.z * rotFraction;
+                }
+                else {
+                    float theta = acosf(dot);
+                    float sinTheta = sinf(theta);
+                    float weight1 = sinf((1.0f - rotFraction) * theta) / sinTheta;
+                    float weight2 = sinf(rotFraction * theta) / sinTheta;
+                    rot1.w = rot1Key.w * weight1 + rot1NextKey.w * weight2;
+                    rot1.x = rot1Key.x * weight1 + rot1NextKey.x * weight2;
+                    rot1.y = rot1Key.y * weight1 + rot1NextKey.y * weight2;
+                    rot1.z = rot1Key.z * weight1 + rot1NextKey.z * weight2;
+                }
+                rot1.Normalize();
+            }
 
-		bone->AnimationMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f), rot, pos);
-	}
+            //位置キー補間
+            unsigned int posIndex, posNextIndex;
+            float posFraction;
+            FindPositionKeys(nodeAnim1, animationTime1, posIndex, posNextIndex, posFraction);
 
-	//再帰的にボーンマトリクスを更新
-	aiMatrix4x4 rootMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f),
-		aiQuaternion((float)AI_MATH_PI, 0.0f, 0.0f), aiVector3D(0.0f, 0.0f, 0.0f));
+            if (posIndex == posNextIndex) {
+                pos1 = nodeAnim1->mPositionKeys[posIndex].mValue;
+            }
+            else {
+                aiVector3D pos1Key = nodeAnim1->mPositionKeys[posIndex].mValue;
+                aiVector3D pos1NextKey = nodeAnim1->mPositionKeys[posNextIndex].mValue;
+                pos1 = pos1Key * (1.0f - posFraction) + pos1NextKey * posFraction;
+            }
+        }
 
-	UpdateBoneMatrix(m_AiScene->mRootNode, rootMatrix);
+        aiQuaternion rot2(1.0f, 0.0f, 0.0f, 0.0f);
+        aiVector3D pos2(0.0f, 0.0f, 0.0f);
 
-	//頂点変換(CPUスキニング)
-	for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++) {
-		aiMesh* mesh = m_AiScene->mMeshes[m];
+        if (nodeAnim2) {
+            unsigned int rotIndex, rotNextIndex;
+            float rotFraction;
+            FindRotationKeys(nodeAnim2, animationTime2, rotIndex, rotNextIndex, rotFraction);
 
-		D3D11_MAPPED_SUBRESOURCE ms;
-		Renderer::GetDeviceContext()->Map(m_VertexBuffer[m], 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+            if (rotIndex == rotNextIndex) {
+                rot2 = nodeAnim2->mRotationKeys[rotIndex].mValue;
+            }
+            else {
+                aiQuaternion rot2Key = nodeAnim2->mRotationKeys[rotIndex].mValue;
+                aiQuaternion rot2NextKey = nodeAnim2->mRotationKeys[rotNextIndex].mValue;
 
-		VERTEX_3D* vertex = (VERTEX_3D*)ms.pData;
+                rot2Key.Normalize();
+                rot2NextKey.Normalize();
 
-		for (unsigned int v = 0; v < mesh->mNumVertices; v++) {
-			DEFORM_VERTEX* deformVertex = &m_DeformVertex[m][v];
+                float dot = rot2Key.w * rot2NextKey.w + rot2Key.x * rot2NextKey.x +
+                    rot2Key.y * rot2NextKey.y + rot2Key.z * rot2NextKey.z;
 
-			aiMatrix4x4 matrix[4];
+                if (dot < 0.0f) {
+                    dot = -dot;
+                    rot2NextKey.w = -rot2NextKey.w;
+                    rot2NextKey.x = -rot2NextKey.x;
+                    rot2NextKey.y = -rot2NextKey.y;
+                    rot2NextKey.z = -rot2NextKey.z;
+                }
 
-		
-			for (int i = 0; i < 4; i++) {
-				if (deformVertex->BoneName[i].empty() || deformVertex->BoneName[i] == "") {
-					matrix[i] = aiMatrix4x4();  // 単位行列
-				}
-				else {
-					matrix[i] = m_Bone[deformVertex->BoneName[i]].Matrix;
-				}
-			}
+                if (dot > 0.9995f) {
+                    rot2.w = rot2Key.w * (1.0f - rotFraction) + rot2NextKey.w * rotFraction;
+                    rot2.x = rot2Key.x * (1.0f - rotFraction) + rot2NextKey.x * rotFraction;
+                    rot2.y = rot2Key.y * (1.0f - rotFraction) + rot2NextKey.y * rotFraction;
+                    rot2.z = rot2Key.z * (1.0f - rotFraction) + rot2NextKey.z * rotFraction;
+                }
+                else {
+                    float theta = acosf(dot);
+                    float sinTheta = sinf(theta);
+                    float weight1 = sinf((1.0f - rotFraction) * theta) / sinTheta;
+                    float weight2 = sinf(rotFraction * theta) / sinTheta;
+                    rot2.w = rot2Key.w * weight1 + rot2NextKey.w * weight2;
+                    rot2.x = rot2Key.x * weight1 + rot2NextKey.x * weight2;
+                    rot2.y = rot2Key.y * weight1 + rot2NextKey.y * weight2;
+                    rot2.z = rot2Key.z * weight1 + rot2NextKey.z * weight2;
+                }
+                rot2.Normalize();
+            }
 
-			aiMatrix4x4 outMatrix;
-			outMatrix = matrix[0] * deformVertex->BoneWeight[0]
-				+ matrix[1] * deformVertex->BoneWeight[1]
-				+ matrix[2] * deformVertex->BoneWeight[2]
-				+ matrix[3] * deformVertex->BoneWeight[3];
+            //位置キー補間
+            unsigned int posIndex, posNextIndex;
+            float posFraction;
+            FindPositionKeys(nodeAnim2, animationTime2, posIndex, posNextIndex, posFraction);
 
-			deformVertex->Position = mesh->mVertices[v];
-			deformVertex->Position *= outMatrix;
+            if (posIndex == posNextIndex) {
+                pos2 = nodeAnim2->mPositionKeys[posIndex].mValue;
+            }
+            else {
+                aiVector3D pos2Key = nodeAnim2->mPositionKeys[posIndex].mValue;
+                aiVector3D pos2NextKey = nodeAnim2->mPositionKeys[posNextIndex].mValue;
+                pos2 = pos2Key * (1.0f - posFraction) + pos2NextKey * posFraction;
+            }
+        }
 
-			//法線変換用に移動成分を削除
-			outMatrix.a4 = 0.0f;
-			outMatrix.b4 = 0.0f;
-			outMatrix.c4 = 0.0f;
+        aiVector3D pos;
+        pos = pos1 * (1.0f - BlendRate) + pos2 * BlendRate;
 
-			deformVertex->Normal = mesh->mNormals[v];
-			deformVertex->Normal *= outMatrix;
+        aiQuaternion rot;
+        aiQuaternion::Interpolate(rot, rot1, rot2, BlendRate);
 
-			//頂点バッファへ書き込み
-			vertex[v].Position.x = deformVertex->Position.x;
-			vertex[v].Position.y = deformVertex->Position.y;
-			vertex[v].Position.z = deformVertex->Position.z;
+        bone->AnimationMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f), rot, pos);
+    }
 
-			vertex[v].Normal.x = deformVertex->Normal.x;
-			vertex[v].Normal.y = deformVertex->Normal.y;
-			vertex[v].Normal.z = deformVertex->Normal.z;
+    //元がでかいモデルが多いので調整
+    aiMatrix4x4 rootMatrix = aiMatrix4x4(aiVector3D(0.1f, 0.1f, 0.1f),
+        aiQuaternion((float)AI_MATH_PI, 0.0f, 0.0f), aiVector3D(0.0f, 0.0f, 0.0f));
 
-			vertex[v].TexCoord.x = mesh->mTextureCoords[0][v].x;
-			vertex[v].TexCoord.y = mesh->mTextureCoords[0][v].y;
+    UpdateBoneMatrix(m_AiScene->mRootNode, rootMatrix);
 
-			vertex[v].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		}
+    //各ノードメッシュの頂点を更新
+    for (auto& nodeMesh : m_NodeMeshes)
+    {
+        aiMesh* mesh = m_AiScene->mMeshes[nodeMesh.meshIndex];
 
-		Renderer::GetDeviceContext()->Unmap(m_VertexBuffer[m], 0);
-	}
+        D3D11_MAPPED_SUBRESOURCE ms;
+        Renderer::GetDeviceContext()->Map(nodeMesh.vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+
+        VERTEX_3D* vertex = (VERTEX_3D*)ms.pData;
+
+        for (unsigned int v = 0; v < mesh->mNumVertices; v++) {
+            DEFORM_VERTEX* deformVertex = &nodeMesh.deformVertices[v];
+
+            //ボーンがない場合はノード変形を適用
+            if (mesh->mNumBones == 0)
+            {
+                BONE* bone = &m_Bone[nodeMesh.node->mName.C_Str()];
+                aiMatrix4x4 transformMatrix = bone->Matrix;
+
+                aiVector3D pos = mesh->mVertices[v];
+                pos *= transformMatrix;
+
+                vertex[v].Position.x = pos.x;
+                vertex[v].Position.y = pos.y;
+                vertex[v].Position.z = pos.z;
+
+                transformMatrix.a4 = 0.0f;
+                transformMatrix.b4 = 0.0f;
+                transformMatrix.c4 = 0.0f;
+
+                aiVector3D normal = mesh->mNormals[v];
+                normal *= transformMatrix;
+
+                vertex[v].Normal.x = normal.x;
+                vertex[v].Normal.y = normal.y;
+                vertex[v].Normal.z = normal.z;
+            }
+            else
+            {
+                //ボーンスキニング処理
+                aiMatrix4x4 matrix[4];
+
+                for (int i = 0; i < 4; i++) {
+                    if (deformVertex->BoneName[i].empty() || deformVertex->BoneName[i] == "") {
+                        matrix[i] = aiMatrix4x4();
+                    }
+                    else {
+                        matrix[i] = m_Bone[deformVertex->BoneName[i]].Matrix;
+                    }
+                }
+
+                aiMatrix4x4 outMatrix;
+                outMatrix = matrix[0] * deformVertex->BoneWeight[0]
+                    + matrix[1] * deformVertex->BoneWeight[1]
+                    + matrix[2] * deformVertex->BoneWeight[2]
+                    + matrix[3] * deformVertex->BoneWeight[3];
+
+                deformVertex->Position = mesh->mVertices[v];
+                deformVertex->Position *= outMatrix;
+
+                outMatrix.a4 = 0.0f;
+                outMatrix.b4 = 0.0f;
+                outMatrix.c4 = 0.0f;
+
+                deformVertex->Normal = mesh->mNormals[v];
+                deformVertex->Normal *= outMatrix;
+
+                vertex[v].Position.x = deformVertex->Position.x;
+                vertex[v].Position.y = deformVertex->Position.y;
+                vertex[v].Position.z = deformVertex->Position.z;
+
+                vertex[v].Normal.x = deformVertex->Normal.x;
+                vertex[v].Normal.y = deformVertex->Normal.y;
+                vertex[v].Normal.z = deformVertex->Normal.z;
+            }
+
+            if (mesh->mTextureCoords[0])
+            {
+                vertex[v].TexCoord.x = mesh->mTextureCoords[0][v].x;
+                vertex[v].TexCoord.y = mesh->mTextureCoords[0][v].y;
+            }
+            else
+            {
+                vertex[v].TexCoord.x = 0.0f;
+                vertex[v].TexCoord.y = 0.0f;
+            }
+
+            vertex[v].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+
+        Renderer::GetDeviceContext()->Unmap(nodeMesh.vertexBuffer, 0);
+    }
 }
 
-
-//アニメーションモデルの更新処理
 void AnimationModel::Update()
 {
-	//停止中または再生するアニメーションがない場合は返す
-	if (m_State == AnimationState::STOPPED || m_CurrentAnimationName.empty())
-		return;
+    if (m_State == AnimationState::STOPPED || m_CurrentAnimationName.empty())
+        return;
 
-	//一時停止中は返す
-	if (m_State == AnimationState::PAUSED)
-		return;
+    if (m_State == AnimationState::PAUSED)
+        return;
 
-	//アニメーションが存在しない場合は何もしない
-	if (!HasAnimation(m_CurrentAnimationName.c_str()))
-		return;
+    if (!HasAnimation(m_CurrentAnimationName.c_str()))
+        return;
 
-	//アニメーション情報を取得
-	AnimationInfo& animInfo = m_Animation[m_CurrentAnimationName];
-	if (!animInfo.scene->HasAnimations())
-		return;
+    AnimationInfo& animInfo = m_Animation[m_CurrentAnimationName];
+    if (!animInfo.scene->HasAnimations())
+        return;
 
-	//正しいインデックスのアニメーションを取得
-	aiAnimation* animation = animInfo.scene->mAnimations[animInfo.animationIndex];
+    aiAnimation* animation = animInfo.scene->mAnimations[animInfo.animationIndex];
 
-	//最大フレーム数を更新
-	m_MaxFrame = 0;
-	for (unsigned int c = 0; c < animation->mNumChannels; c++) {
-		if (animation->mChannels[c]->mNumRotationKeys > m_MaxFrame) {
-			m_MaxFrame = animation->mChannels[c]->mNumRotationKeys;
-		}
-	}
+    //アニメーション時間を計算
+    float ticksPerSecond = (animation->mTicksPerSecond != 0.0f) ? animation->mTicksPerSecond : 25.0f;
+    float timeInTicks = m_CurrentFrame * ticksPerSecond / 60.0f;
+    float animationTime = fmodf(timeInTicks, animation->mDuration);
 
-	//フレームを進める(再生スピードを考慮)
-	m_CurrentFrame += m_PlaySpeed;
+    m_MaxFrame = (int)(animation->mDuration * 60.0f / ticksPerSecond);
 
-	//ループ処理
-	if (m_CurrentFrame >= m_MaxFrame) {
-		if (m_IsLooping) {
-			m_CurrentFrame = 0.0f;
-		}
-		else {
-			m_CurrentFrame = (float)(m_MaxFrame - 1);
-			m_State = AnimationState::STOPPED;
-		}
-	}
+    m_CurrentFrame += m_PlaySpeed;
 
-	//現在のフレームが負の値にならないようにする
-	if (m_CurrentFrame < 0.0f) {
-		m_CurrentFrame = 0.0f;
-	}
+    if (m_CurrentFrame >= m_MaxFrame) {
+        if (m_IsLooping) {
+            m_CurrentFrame = 0.0f;
+        }
+        else {
+            m_CurrentFrame = (float)(m_MaxFrame - 1);
+            m_State = AnimationState::STOPPED;
+        }
+    }
 
-	
-	int frame = (int)m_CurrentFrame;
-	Update(m_CurrentAnimationName.c_str(), frame, m_CurrentAnimationName.c_str(), frame, 0.0f);
+    if (m_CurrentFrame < 0.0f) {
+        m_CurrentFrame = 0.0f;
+    }
+
+    //時間ベースでアニメーション更新
+    Update(m_CurrentAnimationName.c_str(), (int)animationTime, m_CurrentAnimationName.c_str(), (int)animationTime, 0.0f);
 }
 
 void AnimationModel::UpdateBoneMatrix(aiNode* node, aiMatrix4x4 matrix)
 {
-	BONE* bone = &m_Bone[node->mName.C_Str()];
+    BONE* bone = &m_Bone[node->mName.C_Str()];
 
-	aiMatrix4x4 worldMatrix;
-	worldMatrix = matrix * bone->AnimationMatrix; //assimpの場合は親のマトリクスは前からかける
+    aiMatrix4x4 worldMatrix;
+    worldMatrix = matrix * bone->AnimationMatrix;
 
-	bone->Matrix = worldMatrix * bone->OffsetMatrix;
+    bone->Matrix = worldMatrix * bone->OffsetMatrix;
 
-	for (unsigned int n = 0; n < node->mNumChildren; n++) {
-		UpdateBoneMatrix(node->mChildren[n], worldMatrix);
-	}
+    for (unsigned int n = 0; n < node->mNumChildren; n++) {
+        UpdateBoneMatrix(node->mChildren[n], worldMatrix);
+    }
 }
 
-//アニメーション再生開始
 void AnimationModel::Play(const char* AnimationName, bool loop)
 {
-	if (!HasAnimation(AnimationName))
-		return;
+    if (!HasAnimation(AnimationName))
+        return;
 
-	m_CurrentAnimationName = AnimationName;
-	m_CurrentFrame = 0.0f;
-	m_IsLooping = loop;
-	m_State = AnimationState::PLAYING;
+    m_CurrentAnimationName = AnimationName;
+    m_CurrentFrame = 0.0f;
+    m_IsLooping = loop;
+    m_State = AnimationState::PLAYING;
 }
 
-//アニメーション停止
 void AnimationModel::Stop()
 {
-	m_State = AnimationState::STOPPED;
-	m_CurrentFrame = 0.0f;
+    m_State = AnimationState::STOPPED;
+    m_CurrentFrame = 0.0f;
 }
 
-//アニメーション一時停止
 void AnimationModel::Pause()
 {
-	if (m_State == AnimationState::PLAYING) {
-		m_State = AnimationState::PAUSED;
-	}
+    if (m_State == AnimationState::PLAYING) {
+        m_State = AnimationState::PAUSED;
+    }
 }
 
-//アニメーション再開
 void AnimationModel::Resume()
 {
-	if (m_State == AnimationState::PAUSED) {
-		m_State = AnimationState::PLAYING;
-	}
+    if (m_State == AnimationState::PAUSED) {
+        m_State = AnimationState::PLAYING;
+    }
 }
 
-//再生スピード設定
 void AnimationModel::SetPlaySpeed(float speed)
 {
-	m_PlaySpeed = speed;
+    m_PlaySpeed = speed;
 }
 
-//フレームを直接設定
 void AnimationModel::SetFrame(float frame)
 {
-	m_CurrentFrame = frame;
+    m_CurrentFrame = frame;
 
-	// フレームが範囲外にならないようにクランプ
-	if (m_CurrentFrame < 0.0f) {
-		m_CurrentFrame = 0.0f;
-	}
-	if (m_CurrentFrame >= m_MaxFrame && m_MaxFrame > 0) {
-		m_CurrentFrame = (float)(m_MaxFrame - 1);
-	}
+    if (m_CurrentFrame < 0.0f) {
+        m_CurrentFrame = 0.0f;
+    }
+    if (m_CurrentFrame >= m_MaxFrame && m_MaxFrame > 0) {
+        m_CurrentFrame = (float)(m_MaxFrame - 1);
+    }
 }
 
-//ブレンド率設定
 void AnimationModel::SetBlendRate(float rate)
 {
-	m_BlendRate = rate;
-	
-	//正規の値に調整する
-	if (m_BlendRate < 0.0f) m_BlendRate = 0.0f;
-	if (m_BlendRate > 1.0f) m_BlendRate = 1.0f;
+    m_BlendRate = rate;
+
+    if (m_BlendRate < 0.0f) m_BlendRate = 0.0f;
+    if (m_BlendRate > 1.0f) m_BlendRate = 1.0f;
 }
 
-//読み込まれているアニメーション名のリストを取得
 std::vector<std::string> AnimationModel::GetAnimationNames() const
 {
-	std::vector<std::string> names;
-	for (const auto& pair : m_Animation) {
-		names.push_back(pair.first);
-	}
-	return names;
+    std::vector<std::string> names;
+    for (const auto& pair : m_Animation) {
+        names.push_back(pair.first);
+    }
+    return names;
 }
 
-//アニメーションの元の名前を取得
 std::string AnimationModel::GetOriginalAnimationName(const char* name) const
 {
-	if (m_Animation.count(name) == 0)
-		return "";
+    if (m_Animation.count(name) == 0)
+        return "";
 
-	return m_Animation.at(name).originalName;
+    return m_Animation.at(name).originalName;
 }
 
-//アニメーションが存在するかチェック
 bool AnimationModel::HasAnimation(const char* name) const
 {
-	return m_Animation.count(name) > 0;
+    return m_Animation.count(name) > 0;
 }

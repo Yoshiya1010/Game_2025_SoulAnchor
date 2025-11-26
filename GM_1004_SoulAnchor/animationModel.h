@@ -1,122 +1,99 @@
 #pragma once
 
-#include"main.h"
-#include <unordered_map>
-#include "component.h"
+#include <map>
+#include <string>
+#include <vector>
 
-
-//変形後頂点構造体
-struct DEFORM_VERTEX
-{
-	aiVector3D Position;
-	aiVector3D Normal;
-	int				BoneNum;
-	std::string		BoneName[4]; // 本来はボーンインデックスで管理するべき
-	float			BoneWeight[4];
-};
-
-//ボーン構造体
 struct BONE
 {
-	aiMatrix4x4 Matrix;
-	aiMatrix4x4 AnimationMatrix;
-	aiMatrix4x4 OffsetMatrix;
+    aiMatrix4x4 Matrix;
+    aiMatrix4x4 AnimationMatrix;
+    aiMatrix4x4 OffsetMatrix;
 };
 
-//アニメーション情報構造体
+struct DEFORM_VERTEX
+{
+    aiVector3D Position;
+    aiVector3D Normal;
+    int BoneNum;
+    std::string BoneName[4];
+    float BoneWeight[4];
+};
+
+struct NodeMeshInfo
+{
+    aiNode* node;
+    unsigned int meshIndex;
+    ID3D11Buffer* vertexBuffer;
+    std::vector<DEFORM_VERTEX> deformVertices;
+};
+
 struct AnimationInfo
 {
-	const aiScene* scene;      // アニメーションシーン
-	int animationIndex;        // FBXファイル内のアニメーションインデックス
-	std::string originalName;  // FBXファイル内の元の名前
+    const aiScene* scene;
+    unsigned int animationIndex;
+    std::string originalName;
 };
 
-//アニメーション再生状態
 enum class AnimationState
 {
-	PLAYING,  // 再生中
-	PAUSED,   // 一時停止
-	STOPPED   // 停止
+    STOPPED,
+    PLAYING,
+    PAUSED
 };
 
-class AnimationModel : public Component
+class AnimationModel
 {
 private:
-	const aiScene* m_AiScene = nullptr;
+    const aiScene* m_AiScene = nullptr;
+    std::map<std::string, BONE> m_Bone;
 
-	//アニメーション名とインデックスのマッピング
-	std::unordered_map<std::string, AnimationInfo> m_Animation;
+    std::vector<NodeMeshInfo> m_NodeMeshes;
+    ID3D11Buffer** m_IndexBuffer = nullptr;
 
-	ID3D11Buffer** m_VertexBuffer;
-	ID3D11Buffer** m_IndexBuffer;
+    std::map<std::string, ID3D11ShaderResourceView*> m_Texture;
+    std::map<std::string, AnimationInfo> m_Animation;
 
-	std::unordered_map<std::string, ID3D11ShaderResourceView*> m_Texture;
+    void CreateBone(aiNode* node);
+    void UpdateBoneMatrix(aiNode* node, aiMatrix4x4 matrix);
+    void CollectNodeMeshes(aiNode* node);
 
-	std::vector<DEFORM_VERTEX>* m_DeformVertex; //変形後頂点データ
-	std::unordered_map<std::string, BONE> m_Bone; //ボーンデータ(名前で参照)
-
-	void CreateBone(aiNode* Node);
-	void UpdateBoneMatrix(aiNode* Node, aiMatrix4x4 Matrix);
-
-	// アニメーション再生制御用のメンバー変数
-	std::string m_CurrentAnimationName;     //現在再生中のアニメーション名
-	std::string m_NextAnimationName;        //次に再生するアニメーション名
-	float m_CurrentFrame;                   //現在のフレーム
-	float m_PlaySpeed;                      //再生スピード
-	float m_BlendRate;                      //アニメーションブレンド率
-	bool m_IsLooping;                       //ループ再生のFlag
-	AnimationState m_State;                 //再生状態
-	int m_MaxFrame;                         //現在のアニメーションの最大フレーム数
+    //アニメーション状態
+    std::string m_CurrentAnimationName;
+    float m_CurrentFrame;
+    float m_PlaySpeed;
+    float m_BlendRate;
+    bool m_IsLooping;
+    AnimationState m_State;
+    unsigned int m_MaxFrame;
 
 public:
-	using Component::Component;
+    void Load(const char* FileName);
+    void LoadAnimation(const char* FileName, const char* Name);
+    void LoadAnimationByIndex(const char* FileName, int index, const char* Name);
+    void LoadAllAnimations(const char* FileName);
+    void Uninit();
+    void Update();
+    void Update(const char* AnimationName1, int Frame1, const char* AnimationName2, int Frame2, float BlendRate);
+    void Draw();
 
-	//モデルをロード
-	void Load(const char* FileName);
+    //アニメーション制御
+    void Play(const char* AnimationName, bool loop = true);
+    void Stop();
+    void Pause();
+    void Resume();
+    void SetPlaySpeed(float speed);
+    void SetFrame(float frame);
+    void SetBlendRate(float rate);
 
-	//全てのアニメーションを自動でロード 
-	void LoadAllAnimations(const char* FileName);
-
-	//アニメーションをFBXファイルから名前で検索してロード ロードしたいアニメーションを指定できる
-	void LoadAnimation(const char* FileName, const char* Name);
-
-	//FBXファイルからインデックスでアニメーションをロード(名前を指定)
-	void LoadAnimationByIndex(const char* FileName, int index, const char* Name);
-
-	void Uninit() override;
-
-	//前の更新処理　授業で作ったやつ　Updateの中で使ってる
-	//アニメーションを外部のFBXからロードしてるやつはこっち
-	void Update(const char* AnimationName1, int Frame1, const char* AnimationName2, int Frame2, float BlendRate);
-
-	//自分で作った更新のスピードなどを管理できるように変更したもの
-	void Update() override;
-
-	void Draw() override;
-
-	//アニメーション再生制御
-	void Play(const char* AnimationName, bool loop = true);  //アニメーション再生開始
-	void Stop();                                             //アニメーション停止
-	void Pause();                                            //アニメーション一時停止
-	void Resume();                                           //アニメーション再開
-	void SetPlaySpeed(float speed);                          //再生スピード設定
-	void SetFrame(float frame);                              //フレームを直接設定
-	void SetBlendRate(float rate);                           //ブレンド率設定
-
-	//アニメーション情報取得
-	float GetPlaySpeed() const { return m_PlaySpeed; }
-	float GetCurrentFrame() const { return m_CurrentFrame; }
-	int GetMaxFrame() const { return m_MaxFrame; }
-	const std::string& GetCurrentAnimationName() const { return m_CurrentAnimationName; }
-	AnimationState GetState() const { return m_State; }
-	bool IsLooping() const { return m_IsLooping; }
-
-	//読み込まれているアニメーション名のリストを取得
-	std::vector<std::string> GetAnimationNames() const;
-
-	//アニメーションの元の名前を取得
-	std::string GetOriginalAnimationName(const char* name) const;
-
-	// アニメーションが存在するかチェック
-	bool HasAnimation(const char* name) const;
+    //アニメーション情報取得
+    std::vector<std::string> GetAnimationNames() const;
+    std::string GetOriginalAnimationName(const char* name) const;
+    bool HasAnimation(const char* name) const;
+    float GetCurrentFrame() const { return m_CurrentFrame; }
+    unsigned int GetMaxFrame() const { return m_MaxFrame; }
+    AnimationState GetState() const { return m_State; }
+    bool IsLooping() const { return m_IsLooping; }
+    std::string GetCurrentAnimationName() const { return m_CurrentAnimationName; }
+    float GetPlaySpeed() const { return m_PlaySpeed; }
 };
