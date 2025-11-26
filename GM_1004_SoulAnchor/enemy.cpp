@@ -8,10 +8,10 @@
 void Enemy::Init()
 {
     m_AnimationModel = make_unique<AnimationModel>();
-    m_AnimationModel->Load("asset\\model\\GOLEM.fbx");
+    m_AnimationModel->Load("asset\\model\\Enemy\\character-skeleton.fbx");
 
     // モデルのアニメーションをロード
-    m_AnimationModel->LoadAllAnimations("asset\\model\\GOLEM.fbx");
+    m_AnimationModel->LoadAllAnimations("asset\\model\\Enemy\\character-skeleton.fbx");
 
     SetShaderType(ShaderType::UNLIT_TEXTURE);
 

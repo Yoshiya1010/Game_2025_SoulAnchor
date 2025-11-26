@@ -361,7 +361,9 @@ void AnimationModel::Uninit()
 
 	for (std::pair<const std::string, ID3D11ShaderResourceView*> pair : m_Texture)
 	{
-		pair.second->Release();
+		if (pair.second) {
+			pair.second->Release();
+		}
 	}
 
 	aiReleaseImport(m_AiScene);
