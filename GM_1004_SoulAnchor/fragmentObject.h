@@ -28,6 +28,10 @@ protected:
 
     std::unique_ptr<btTriangleMesh> m_TriMesh;
 
+
+    //破壊時の最大破片数
+    int m_MaxFragmentCount = 10;
+
 public:
     void Start() override;
 
@@ -73,6 +77,7 @@ protected:
 
     // モデルからバウンディングボックスを計算
     Vector3 CalculateModelBounds();
+    Vector3 CalculateAnimationModelBounds(AnimationModel* animModel);
 
-    Vector3 CalculateAnimationModelBounds(AnimationModel* animModel);  
+    void SetMaxFragmentCount(int count) { m_MaxFragmentCount = std::max(1, count); }
 };

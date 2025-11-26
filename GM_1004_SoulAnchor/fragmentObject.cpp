@@ -88,21 +88,16 @@ void FragmentObject::OnCollisionEnter(GameObject* other, const Vector3& hitPoint
 
 void FragmentObject::DestroyObject(const Vector3& impactPoint)
 {
-    // 既に破壊済みならスキップ
     if (m_IsDestroyed) return;
     m_IsDestroyed = true;
 
-    // シーンを取得
     Scene* scene = Manager::GetScene();
-
     if (!scene || !m_ModelRenderer) {
         SetDestroy();
         return;
     }
 
-    // モデルを取得
     MODEL* model = m_ModelRenderer->GetModel();
-
     if (!model) {
         SetDestroy();
         return;
@@ -111,29 +106,30 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
     // ワールド行列を計算
     XMMATRIX worldMatrix =
         XMMatrixScaling(m_Scale.x * m_ModelScale, m_Scale.y * m_ModelScale, m_Scale.z * m_ModelScale) *
-        XMMatrixRotationRollPitchYaw(
-            m_Rotation.x ,
-            m_Rotation.y ,
-            m_Rotation.z 
-        ) *
+        XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z) *
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 
-    // グループ化して破壊（三角形を指定個数ずつまとめて破片にする）
+    // 三角形総数を計算
+    int totalTriangles = model->CollisionIndices.size() / 3;
+
+    // m_MaxFragmentCountから適切なgroupSizeを逆算
+    int calculatedGroupSize = std::max(1, totalTriangles / m_MaxFragmentCount);
+
+    // グループ化破壊を実行
     MeshDestroyer::DestroyModelGrouped(
         model,
         worldMatrix,
         impactPoint,
         m_ExplosionForce,
         scene,
-        m_GroupSize,
+        calculatedGroupSize,  // 計算したgroupSizeを渡す
         m_Rotation,
         m_Position
     );
 
-    // 自分自身を削除
+    //自分自身を破壊
     SetDestroy();
 }
-
 void FragmentObject::LoadModel(const char* filepath)
 {
     if (!m_ModelRenderer) {
