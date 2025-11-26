@@ -114,8 +114,8 @@ void EditorObjectCreator::CreateGrass()
         position.z=((rand() % 1000) / 1000.f) * 100.0f - 50.f;
 
         // 新しいGameObjectを作成（適切なクラスに置き換える）
-        auto* grass = scene->AddGameObject<Grass>(OBJECT);
-        grass->SetPosition(Vector3{position.x,10.f,position.z});
+        auto* grass = scene->AddGameObject<Grass>(EFFECT);
+        grass->SetPosition(Vector3{position.x,12.f,position.z});
         grass->SetScale(Vector3{ 1.0f,1.0f,1.0f });
         // シーンからユニークな名前をもらう
         grass->SetName(scene->GenerateUniqueName("Grass"));

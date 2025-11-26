@@ -26,6 +26,4 @@ public:
 	{
 		return m_Gauge;
 	};
-	
-
 };
