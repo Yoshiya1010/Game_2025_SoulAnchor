@@ -457,6 +457,7 @@ public:
     // トリガー設定（物理反応なし、重なり検出のみ）
     void SetTrigger(bool isTrigger) {
         if (!m_RigidBody) return;
+        m_IsTrigger = isTrigger;
 
         if (isTrigger) {
             m_RigidBody->setCollisionFlags(
@@ -469,6 +470,8 @@ public:
             );
         }
     }
+
+
 
 	//  カスタムレイヤー設定（必要な時だけ呼ぶ）
 	void SetCollisionLayer(CollisionGroup group, int mask) {
@@ -644,9 +647,4 @@ private:
         int m_VoxelGridY = 4;
         int m_VoxelGridZ = 4;
         XMFLOAT4 m_FragmentColor = { 0.8f, 0.6f, 0.4f, 1.0f };
-
-        // publicセクションに追加（既存の関数の下）
-public:
-    // 破壊機能
-
 };

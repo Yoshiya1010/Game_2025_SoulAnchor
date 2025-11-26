@@ -25,7 +25,8 @@ enum class GameObjectTag {
 	Ground,
 	Item,
 	Anchor,
-	Chain
+	Chain,
+	Soul
 };
 
 
@@ -59,6 +60,8 @@ protected:
 
 	//モデル
 	std::string m_ModelPath;
+
+	bool m_IsTrigger = false;
 
 	ShaderType m_ShaderType=ShaderType::CUSTOM;
 public:
@@ -105,6 +108,7 @@ public:
 	// ----- 衝突コールバック（必要に応じて派生でオーバーライド） ----------
 	virtual void OnCollisionEnter(GameObject* other, const Vector3& hitPoint) {}
 	virtual void OnCollisionStay(GameObject* other, const Vector3& hitPoint) {}
+	virtual void OnTriggerEnter(GameObject* other) {}
 	virtual void OnCollisionExit(GameObject* other) {}
 
 
@@ -114,6 +118,9 @@ public:
 	void SetName(const std::string& name) { m_Name = name; }
 	const std::string& GetName() const { return m_Name; }
 
+
+	//トリガー判定取得
+	bool IsTrigger() const { return m_IsTrigger; }
 
 	void SetShaderType(ShaderType type) { m_ShaderType = type; }
 	ShaderType GetShaderType() const { return m_ShaderType; }

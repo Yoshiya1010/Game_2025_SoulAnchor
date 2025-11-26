@@ -23,6 +23,10 @@ private:
 	int   m_Cols = 1;
 	int   m_Rows = 1;
 	float m_Frame = 0.0f;
+	float m_FrameSpeed = 1.0f;
+
+	int m_Soul_Level = 1;
+	
 
 
 public:
@@ -32,6 +36,17 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	void OnTriggerEnter(GameObject* other) override;
 
+
+	void SetSoulLevel(int level)
+	{
+		m_Soul_Level = level;
+	}
+
+	int GetSoulLevel(void) { return m_Soul_Level; };
+
+
+	void GetSoulGauge();
 
 };

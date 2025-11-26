@@ -12,16 +12,9 @@
 class SoulGaugeUI : public GameObject {
 
 private:
-
-
-
 	SpriteSoulGauge *m_Gauge;
 
 	std::vector<Sprite2D*> m_GaugeMark;
-
-
-
-
 public:
 
 	void Init();
@@ -29,6 +22,10 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	SpriteSoulGauge* GetGauge(void)
+	{
+		return m_Gauge;
+	};
 	
 
 };

@@ -100,7 +100,7 @@ void Scene::Update()
 void Scene::Draw()
 {
 
-	// エフェクト設定
+	//エフェクト設定
 	PostProcessManager::ClearEffects();
 	PostProcessManager::AddEffect(PostEffectType::BLOOM);
 	PostProcessManager::AddEffect(PostEffectType::BLUR);

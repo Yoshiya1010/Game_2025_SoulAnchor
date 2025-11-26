@@ -10,6 +10,9 @@
 #include"FPSCamera.h"
 #include"scene.h"
 #include"manager.h"
+#include"FPSPlayer.h"
+#include"soulGaugeUI.h"
+
 
 void SoulObject::Init()
 {
@@ -47,11 +50,9 @@ void SoulObject::Init()
 
     Renderer::GetDevice()->CreateBuffer(&bd, &sd, &m_VertexBuffer);
 
-    //// テクスチャ読み込み
-    //m_Texture = TextureManager::Load("asset\\texture\\soul_texture\\EFF_Soul_L.png");
 
-    // テクスチャ読み込み
-    m_Texture = TextureManager::Load("asset\\texture\\sura.jpg");
+
+ 
 
     Renderer::CreateVertexShader(&m_VertexShader, &m_VertexLayout,
         "shader\\unlitTextureVS.cso");
@@ -64,20 +65,44 @@ void SoulObject::Init()
     m_Cols = 4;
 
 
-    m_Scale = Vector3({ 100.f,100.f,1.0f });
+   
 
 }
 
 void SoulObject::Start()
 {
-    CreateSphereCollider(2.0f, 0.0f);  // 半径2.0、質量0
+    CreateSphereCollider(1.0f, 0.0f);  // 半径2.0、質量0
 
     // トリガーとして設定
     SetTrigger(true);
 
     // 衝突レイヤー設定
-    m_Tag = GameObjectTag::Item;  // Itemタグを使用
+    m_Tag = GameObjectTag::Soul;  
     SetupCollisionLayer();
+
+    // テクスチャ読み込み
+    switch (m_Soul_Level)
+    {
+    case 1:
+        m_Texture = TextureManager::Load("asset\\texture\\soul_texture\\EFF_Soul_S.png");
+        m_Scale = { 2.0f,2.0f,1.0f };
+        m_FrameSpeed = 0.5f;
+        break;
+    case 2:
+        m_Texture = TextureManager::Load("asset\\texture\\soul_texture\\EFF_Soul_M.png");
+        m_Scale = { 3.0f,3.0f,1.0f };
+        m_FrameSpeed = 0.4f;
+        break;
+    case 3:
+        m_Texture = TextureManager::Load("asset\\texture\\soul_texture\\EFF_Soul_L.png");
+        m_Scale = { 5.0f,5.0f,1.0f };
+        m_FrameSpeed = 0.3f;
+        break;
+    default:
+        m_Texture = TextureManager::Load("asset\\texture\\soul_texture\\EFF_Soul_L.png");
+        break;
+    }
+ 
 }
 
 void SoulObject::Uninit()
@@ -92,7 +117,48 @@ void SoulObject::Update()
 {
     CheckAndCallStart();
 
-    m_Frame+=1;
+    //プレイヤーに向かって追尾
+    FPSPlayer* player = Manager::GetScene()->GetGameObject<FPSPlayer>();
+    if (player)
+    {
+        // カメラまでの方向ベクトルを計算
+        Vector3 playerPos = player->GetPosition();
+        Vector3 direction;
+        direction.x = playerPos.x - m_Position.x;
+        direction.y = playerPos.y - m_Position.y;
+        direction.z = playerPos.z - m_Position.z;
+
+        // 正規化
+        float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+        if (length > 0.1f)  // 距離が十分ある場合のみ移動
+        {
+            direction.x /= length;
+            direction.y /= length;
+            direction.z /= length;
+
+            // 移動速度(ソウルレベルによって速度を変える)
+            float speed = 0.1f;
+            m_Position.x += direction.x * speed;
+            m_Position.y += direction.y * speed;
+            m_Position.z += direction.z * speed;
+
+            // 物理ボディの位置も更新
+            if (m_RigidBody)
+            {
+                btTransform transform;
+                transform.setIdentity();
+                transform.setOrigin(btVector3(m_Position.x, m_Position.y, m_Position.z));
+                m_RigidBody->setWorldTransform(transform);
+            }
+        }
+    }
+    m_Frame+= m_FrameSpeed;
+
+    //ループさせる
+    if (m_Cols * m_Rows < m_Frame)
+    {
+        m_Frame = 0;
+    }
 
     if (Input::GetKeyTrigger(KK_L))
     {
@@ -101,14 +167,16 @@ void SoulObject::Update()
 
 }
 
+
 void SoulObject::Draw()
 {
     // 頂点データ書き換え
     D3D11_MAPPED_SUBRESOURCE msr;
     Renderer::GetDeviceContext()->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
-    VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
 
+    Renderer::SetDepthEnable(false);
+    VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
     float tw = 1.0f / m_Rows;  // 横方向の1コマの幅
     float th = 1.0f / m_Cols;  // 縦方向の1コマの高さ
     int frameIndex = (int)m_Frame;  // フレーム番号を整数化
@@ -138,12 +206,7 @@ void SoulObject::Draw()
     Renderer::GetDeviceContext()->Unmap(m_VertexBuffer, 0);
 
 
-    // アルファブレンディング有効化（透過処理）
-    Renderer::SetATCEnable(true);
-    // 深度バッファの書き込みを無効化（読み取りも無効化して常に描画）
-    Renderer::SetDepthEnable(false);
-    // 両面描画を有効化
-    Renderer::SetCullNone(true);
+
     // 入力レイアウト設定
     Renderer::GetDeviceContext()->IASetInputLayout(m_VertexLayout);
 
@@ -192,7 +255,27 @@ void SoulObject::Draw()
     Renderer::GetDeviceContext()->Draw(4, 0);
 
     // 設定を元に戻す
-    Renderer::SetATCEnable(false);
     Renderer::SetDepthEnable(true);
-    Renderer::SetCullNone(false);
+
+}
+
+void SoulObject::OnTriggerEnter(GameObject* other)
+{
+    // プレイヤーと接触したら破棄
+    if (other->GetTag() == GameObjectTag::Player)
+    {
+        SetDestroy();
+        GetSoulGauge();
+    }
+}
+
+void SoulObject::GetSoulGauge()
+{
+    //UIに反映させる
+    SoulGaugeUI* ui = Manager::GetScene()->GetGameObject<SoulGaugeUI>();
+    if (ui)
+    {
+        SpriteSoulGauge*gauge=ui->GetGauge();
+        gauge->SetTargetValue(gauge->GetTargetValue() + (m_Soul_Level * 10));
+    }
 }

@@ -77,6 +77,9 @@ void Explosion::Draw()
     D3D11_MAPPED_SUBRESOURCE msr;
     Renderer::GetDeviceContext()->Map(m_VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
+
+
+    Renderer::SetDepthEnable(false);
     VERTEX_3D* vertex = (VERTEX_3D*)msr.pData;
 
     float tw = 1.0f / 4;
@@ -153,4 +156,6 @@ void Explosion::Draw()
 
     // ƒ|ƒŠƒSƒ“•`‰æ
     Renderer::GetDeviceContext()->Draw(4, 0);
+
+    Renderer::SetDepthEnable(true);
 }

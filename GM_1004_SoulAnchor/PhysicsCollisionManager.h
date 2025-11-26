@@ -56,12 +56,20 @@ public:
             if (!gameObjA || !gameObjB || gameObjA == gameObjB)
                 continue;
 
+            // トリガー判定
+            if (gameObjA->IsTrigger() || gameObjB->IsTrigger())
+            {
+                gameObjA->OnTriggerEnter(gameObjB);
+                gameObjB->OnTriggerEnter(gameObjA);
+                continue;
+            }
+
             int numContacts = contactManifold->getNumContacts();
             for (int j = 0; j < numContacts; ++j)
             {
                 btManifoldPoint& pt = contactManifold->getContactPoint(j);
 
-                if (pt.getDistance() < 0.1f)  // ここは今の条件のままでOK
+                if (pt.getDistance() < 0.1f)
                 {
                     Vector3 hitPoint(
                         pt.getPositionWorldOnA().getX(),
@@ -77,14 +85,12 @@ public:
     }
 
 private:
-    // 　 メイン処理：オブジェクトの組み合わせごとに分岐
+    // メイン処理：オブジェクトの組み合わせごとに分岐
     void ProcessSpecificCollision(GameObject* objA, GameObject* objB, const Vector3& hitPoint) {
         GameObjectTag tagA = objA->GetTag();
         GameObjectTag tagB = objB->GetTag();
 
-        printf("Collision: %s (%d) <-> %s (%d)\n",
-            objA->GetName().c_str(), (int)tagA,
-            objB->GetName().c_str(), (int)tagB);
+     
 
 
 
@@ -105,12 +111,7 @@ private:
 
 
     void HandlePlayerCollectItem(GameObject* player, GameObject* item, const Vector3& hitPoint) {
-        printf("Player collected item: %s\n", item->GetName().c_str());
-
-        // アイテム取得処理（将来的に拡張）
-        // Player* playerObj = static_cast<Player*>(player);
-        // playerObj->AddItem(item->GetItemType());
-
+    
         // アイテムを消滅
         item->SetDestroy();
     }
@@ -144,9 +145,6 @@ private:
         GameObjectTag tag = obj->GetTag();
         return tag == GameObjectTag::Wall || tag == GameObjectTag::Ground;
     }
-
- 
-
 
  
 };

@@ -129,7 +129,7 @@ GameObject* EditorObjectCreator::CreateExplosion()
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
-    auto* explosion = scene->AddGameObject<Explosion>(OBJECT);
+    auto* explosion = scene->AddGameObject<Explosion>(EFFECT);
     explosion->SetPosition(Vector3{ 0.f,10.f,0.f });
     explosion->SetScale(Vector3{ 10.0f,10.0f,10.0f });
 
@@ -167,9 +167,9 @@ GameObject* EditorObjectCreator::CreateSoul() {
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
-    auto* soul = scene->AddGameObject<SoulObject>(OBJECT);
-    soul->SetPosition(Vector3{ 0.f,0.f,0.f });
-    soul->SetScale(Vector3{ 1.0f,1.0f,1.0f });
+    auto* soul = scene->AddGameObject<SoulObject>(EFFECT);
+    soul->SetPosition(Vector3{ 0.f,10.f,0.f });
+    soul->SetScale(Vector3{ 5.0f,5.0f,1.0f });
 
 
     // シーンからユニークな名前をもらう
