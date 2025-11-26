@@ -67,6 +67,9 @@ private:
     AnimationState m_State;
     unsigned int m_MaxFrame;
 
+    std::vector<XMFLOAT3> m_CollisionVertices;  // コライダー用頂点データ
+    std::vector<unsigned int> m_CollisionIndices;  // コライダー用インデックス
+
 public:
     void Load(const char* FileName);
     void LoadAnimation(const char* FileName, const char* Name);
@@ -96,4 +99,7 @@ public:
     bool IsLooping() const { return m_IsLooping; }
     std::string GetCurrentAnimationName() const { return m_CurrentAnimationName; }
     float GetPlaySpeed() const { return m_PlaySpeed; }
+
+    const std::vector<XMFLOAT3>& GetCollisionVertices() const { return m_CollisionVertices; }
+    const std::vector<unsigned int>& GetCollisionIndices() const { return m_CollisionIndices; }
 };

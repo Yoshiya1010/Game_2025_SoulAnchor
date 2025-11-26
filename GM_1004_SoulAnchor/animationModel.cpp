@@ -249,6 +249,39 @@ void AnimationModel::Load(const char* FileName)
     m_IsLooping = true;
     m_State = AnimationState::STOPPED;
     m_MaxFrame = 0;
+
+    // コライダー用データを保存
+    m_CollisionVertices.clear();
+    m_CollisionIndices.clear();
+
+    // FBXは大きいモデルが多いので0.1倍に調整（描画と同じスケール）
+    float colliderScale = 0.1f;
+
+    for (unsigned int m = 0; m < m_AiScene->mNumMeshes; m++)
+    {
+        aiMesh* mesh = m_AiScene->mMeshes[m];
+        unsigned int baseVertex = m_CollisionVertices.size();
+
+        for (unsigned int v = 0; v < mesh->mNumVertices; v++)
+        {
+            m_CollisionVertices.push_back(
+                XMFLOAT3(
+                    mesh->mVertices[v].x * colliderScale,
+                    mesh->mVertices[v].y * colliderScale,
+                    mesh->mVertices[v].z * colliderScale
+                )
+            );
+        }
+
+        for (unsigned int f = 0; f < mesh->mNumFaces; f++)
+        {
+            const aiFace* face = &mesh->mFaces[f];
+            for (unsigned int i = 0; i < face->mNumIndices; i++)
+            {
+                m_CollisionIndices.push_back(baseVertex + face->mIndices[i]);
+            }
+        }
+    }
 }
 
 void AnimationModel::CollectNodeMeshes(aiNode* node)
@@ -693,7 +726,7 @@ void AnimationModel::Update(const char* AnimationName1, int Frame1,
         bone->AnimationMatrix = aiMatrix4x4(aiVector3D(1.0f, 1.0f, 1.0f), rot, pos);
     }
 
-    //元がでかいモデルが多いので調整
+    //元がでかいモデルが多いので調整 /10してる
     aiMatrix4x4 rootMatrix = aiMatrix4x4(aiVector3D(0.1f, 0.1f, 0.1f),
         aiQuaternion((float)AI_MATH_PI, 0.0f, 0.0f), aiVector3D(0.0f, 0.0f, 0.0f));
 

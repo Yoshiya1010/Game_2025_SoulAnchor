@@ -178,6 +178,34 @@ Vector3 FragmentObject::CalculateModelBounds()
     return halfSize;
 }
 
+// CalculateModelBounds()‚ÌŒã‚É’Ç‰Á
+Vector3 FragmentObject::CalculateAnimationModelBounds(AnimationModel* animModel)
+{
+    if (!animModel) return Vector3(1.0f, 1.0f, 1.0f);
+
+    const auto& vertices = animModel->GetCollisionVertices();
+    if (vertices.empty()) return Vector3(1.0f, 1.0f, 1.0f);
+
+    XMFLOAT3 min = vertices[0];
+    XMFLOAT3 max = vertices[0];
+
+    for (const auto& vertex : vertices) {
+        if (vertex.x < min.x) min.x = vertex.x;
+        if (vertex.y < min.y) min.y = vertex.y;
+        if (vertex.z < min.z) min.z = vertex.z;
+        if (vertex.x > max.x) max.x = vertex.x;
+        if (vertex.y > max.y) max.y = vertex.y;
+        if (vertex.z > max.z) max.z = vertex.z;
+    }
+
+    Vector3 halfSize;
+    halfSize.x = (max.x - min.x) * 0.5f;
+    halfSize.y = (max.y - min.y) * 0.5f;
+    halfSize.z = (max.z - min.z) * 0.5f;
+
+    return halfSize;
+}
+
 void FragmentObject::RecreateCollider()
 {
     auto* world = PhysicsManager::GetWorld();

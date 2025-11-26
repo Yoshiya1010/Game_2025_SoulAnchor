@@ -3,7 +3,7 @@
 #include "PhysicsObject.h"
 #include "modelRenderer.h"
 #include "MeshDestroyer.h"
-
+#include"animationModel.h"
 class FragmentObject : public PhysicsObject {
 protected:
     // モデルレンダラー
@@ -73,4 +73,6 @@ protected:
 
     // モデルからバウンディングボックスを計算
     Vector3 CalculateModelBounds();
+
+    Vector3 CalculateAnimationModelBounds(AnimationModel* animModel);  
 };
