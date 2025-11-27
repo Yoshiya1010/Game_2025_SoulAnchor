@@ -2,7 +2,7 @@
 #include "enemy.h"
 #include "manager.h"
 #include "scene.h"
-#include "player.h"
+#include"FPSPlayer.h"
 #include <cmath>
 
 // ‘Ò‹@ó‘Ô
@@ -33,7 +33,7 @@ void EnemyIdleState::Enter()
 void EnemyIdleState::Update()
 {
     Scene* scene = Manager::GetScene();
-    Player* player = scene->GetGameObject<Player>();
+    FPSPlayer* player = scene->GetGameObject<FPSPlayer>();
 
     if (player)
     {
@@ -114,7 +114,7 @@ void EnemyPatrolState::Update()
     }
 
     Scene* scene = Manager::GetScene();
-    Player* player = scene->GetGameObject<Player>();
+    FPSPlayer* player = scene->GetGameObject<FPSPlayer>();
     if (player)
     {
         Vector3 playerPos = player->GetPosition();
@@ -140,18 +140,8 @@ void EnemyChaseState::Enter()
         // RunŒn‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ð’T‚·
         for (const auto& name : anims)
         {
-            if (name.find("Run") != std::string::npos ||
-                name.find("run") != std::string::npos)
-            {
-                model->Play(name.c_str(), true);
-                return;
-            }
-        }
-        // ‚È‚¯‚ê‚ÎWalk
-        for (const auto& name : anims)
-        {
-            if (name.find("Walk") != std::string::npos ||
-                name.find("walk") != std::string::npos)
+            if (name.find("Sprint") != std::string::npos ||
+                name.find("sprint") != std::string::npos)
             {
                 model->Play(name.c_str(), true);
                 return;
@@ -159,11 +149,11 @@ void EnemyChaseState::Enter()
         }
     }
 }
-
+// ’ÇÕó‘Ô
 void EnemyChaseState::Update()
 {
     Scene* scene = Manager::GetScene();
-    Player* player = scene->GetGameObject<Player>();
+    FPSPlayer* player = scene->GetGameObject<FPSPlayer>();
 
     if (!player)
     {
@@ -180,26 +170,74 @@ void EnemyChaseState::Update()
     if (distance < 2.0f)
     {
         m_Enemy->ChangeState(new EnemyAttackState(m_Enemy));
+        return;
     }
-    else if (distance > 15.0f)
+    else if (distance > 50.0f)
     {
         m_Enemy->ChangeState(new EnemyIdleState(m_Enemy));
+        return;
     }
-    else
+
+    // ƒvƒŒƒCƒ„[•ûŒü‚ðŒü‚­
+    if (direction.Length() > 0.01f)
     {
         direction.Normalize();
-        Vector3 newPos = currentPos + direction * 0.1f;
-        m_Enemy->SetPosition(newPos);
 
-        float angle = atan2f(direction.x, direction.z);
-        m_Enemy->SetRotation(Vector3(0.0f, angle, 0.0f));
+        btRigidBody* body = m_Enemy->GetRigidBody();
+        if (body)
+        {
+            // Œ»Ý‚ÌŒü‚«
+            Vector3 currentRot = m_Enemy->GetRotation();
+            float currentYaw = currentRot.y;
+
+            // –Ú•W‚ÌŒü‚«
+            float targetYaw = atan2f(direction.x, direction.z);
+
+            // Šp“x·‚ðŒvŽZi-ƒÎ ~ ƒÎ ‚Ì”ÍˆÍ‚É³‹K‰»j
+            float angleDiff = targetYaw - currentYaw;
+            while (angleDiff > XM_PI) angleDiff -= XM_2PI;
+            while (angleDiff < -XM_PI) angleDiff += XM_2PI;
+
+            // Šp‘¬“x‚ðÝ’èiŠp“x·‚É”ä—áj
+            float rotationSpeed = 5.0f; // ‰ñ“]‘¬“x‚Ì’²®’l
+            float angularVelocity = angleDiff * rotationSpeed;
+
+            // Šp‘¬“x‚ð§ŒÀi‰ñ“]‚ª‘¬‚·‚¬‚È‚¢‚æ‚¤‚Éj
+            float maxAngularVel = 3.0f;
+            if (angularVelocity > maxAngularVel) angularVelocity = maxAngularVel;
+            if (angularVelocity < -maxAngularVel) angularVelocity = -maxAngularVel;
+
+            // YŽ²‰ñ“]‚ÌŠp‘¬“x‚ðÝ’è
+            btVector3 currentAngVel = body->getAngularVelocity();
+            body->setAngularVelocity(btVector3(0, angularVelocity, 0));
+
+            // ˆÚ“®‘¬“x‚ðÝ’è
+            btVector3 velocity = body->getLinearVelocity();
+            float chaseSpeed = 2.0f;
+
+            btVector3 targetVelocity(
+                direction.x * chaseSpeed,
+                velocity.y(),
+                direction.z * chaseSpeed
+            );
+
+            body->setLinearVelocity(targetVelocity);
+            body->activate();
+        }
     }
 }
 
 void EnemyChaseState::Exit()
 {
+    // ’ÇÕI—¹Žž‚É‘¬“x‚ÆŠp‘¬“x‚ðƒŠƒZƒbƒg
+    btRigidBody* body = m_Enemy->GetRigidBody();
+    if (body)
+    {
+        btVector3 velocity = body->getLinearVelocity();
+        body->setLinearVelocity(btVector3(0, velocity.y(), 0));
+        body->setAngularVelocity(btVector3(0, 0, 0));
+    }
 }
-
 // UŒ‚ó‘Ô
 void EnemyAttackState::Enter()
 {
@@ -229,7 +267,7 @@ void EnemyAttackState::Update()
     m_AttackCooldown += 0.016f;
 
     Scene* scene = Manager::GetScene();
-    Player* player = scene->GetGameObject<Player>();
+    FPSPlayer* player = scene->GetGameObject<FPSPlayer>();
 
     if (!player)
     {
@@ -320,8 +358,7 @@ void EnemyDeadState::Enter()
         }
     }
 
-    // Ž€–SŽž‚Ì”j‰óˆ—
-    m_Enemy->DestroyObject(Vector3(0.0f, 0.0f, 0.0f), 10.0f);
+   
 }
 
 void EnemyDeadState::Update()
@@ -337,9 +374,10 @@ void EnemyDeadState::Update()
     }
 
     // ƒAƒjƒ[ƒVƒ‡ƒ“I—¹Œã‚Éíœ
-    if (animFinished || m_DeathTimer > 3.0f)
+    if (animFinished || m_DeathTimer > 1.0f)
     {
-        m_Enemy->SetDestroy();
+        // Ž€–SŽž‚Ì”j‰óˆ—
+        m_Enemy->DestroyObject(Vector3(0.0f, 0.0f, 0.0f), 10.0f);
     }
 }
 
