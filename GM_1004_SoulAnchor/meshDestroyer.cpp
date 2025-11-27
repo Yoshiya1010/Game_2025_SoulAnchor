@@ -250,13 +250,30 @@ void MeshDestroyer::DestroyModelGrouped(
                     XMVectorGetZ(localPos)
                 );
 
-                //法線も回転適用
                 XMVECTOR norm = XMLoadFloat3(&normalFloat);
                 norm = XMVector3TransformNormal(norm, rotationMatrix);
                 XMStoreFloat3(&triData.localVertices[v].Normal, norm);
 
                 triData.localVertices[v].Diffuse = XMFLOAT4(1, 1, 1, 1);
-                triData.localVertices[v].TexCoord = XMFLOAT2(v == 1 ? 1.0f : 0.0f, v == 2 ? 1.0f : 0.0f);
+
+                // 該当箇所: triData.localVertices[v].TexCoordの設定直後
+                if (indices[v] < model->CollisionTexCoords.size()) {
+                    triData.localVertices[v].TexCoord = model->CollisionTexCoords[indices[v]];
+
+                    // デバッグ（最初のグループのみ）
+                    if (subsetIdx == 0 && triangles.empty() && v == 0) {
+                        char debug[256];
+                        sprintf_s(debug, "TexCoord[%d]: U=%f, V=%f, Size=%d\n",
+                            indices[v],
+                            triData.localVertices[v].TexCoord.x,
+                            triData.localVertices[v].TexCoord.y,
+                            (int)model->CollisionTexCoords.size());
+                        OutputDebugStringA(debug);
+                    }
+                }
+                else {
+                    triData.localVertices[v].TexCoord = XMFLOAT2(v == 1 ? 1.0f : 0.0f, v == 2 ? 1.0f : 0.0f);
+                }
             }
 
             //ローカル中心を計算
@@ -350,6 +367,16 @@ void MeshDestroyer::DestroyModelGrouped(
             fragment->SetMaterial(triangles[group[0]].material);
             if (triangles[group[0]].texture) {
                 fragment->SetTexture(triangles[group[0]].texture);
+
+                // デバッグ出力
+                char debug[256];
+                sprintf_s(debug, "Fragment Texture: %p, TextureEnable: %d\n",
+                    triangles[group[0]].texture,
+                    triangles[group[0]].material.TextureEnable);
+                OutputDebugStringA(debug);
+            }
+            else {
+                OutputDebugStringA("Fragment Texture: NULL\n");
             }
 
             //爆発力

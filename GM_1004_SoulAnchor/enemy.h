@@ -11,7 +11,7 @@ private:
 
 	unique_ptr<AnimationModel> m_AnimationModel;
 
-
+	ID3D11ShaderResourceView* m_CachedTexture = nullptr;
 	
 public:
 	void Init() override;

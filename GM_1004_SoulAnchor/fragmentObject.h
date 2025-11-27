@@ -62,7 +62,6 @@ public:
     void SetDestructionThreshold(float threshold) { m_DestructionThreshold = threshold; }
     void SetGroupSize(int size) { m_GroupSize = size; }
     void SetExplosionForce(float force) { m_ExplosionForce = force; }
-  
     void SetUseTriangleMesh(bool use) { m_UseTriangleMesh = use; }
 
     // 取得用メソッド

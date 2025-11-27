@@ -8,8 +8,8 @@
 void Enemy::Init()
 {
     m_AnimationModel = make_unique<AnimationModel>();
-    m_AnimationModel->Load("asset\\model\\Enemy\\character-skeleton.fbx");
-    m_AnimationModel->LoadAllAnimations("asset\\model\\Enemy\\character-skeleton.fbx");
+    m_AnimationModel->Load("asset\\model\\Enemy\\FBX\\character-skeleton.fbx");
+    m_AnimationModel->LoadAllAnimations("asset\\model\\Enemy\\FBX\\character-skeleton.fbx");
 
     SetShaderType(ShaderType::UNLIT_TEXTURE);
 
@@ -21,8 +21,9 @@ void Enemy::Init()
         m_AnimationModel->Update();  // 初回更新で頂点を変換
     }
 
+
     //破壊用のモデルのロード
-    LoadModel("asset\\model\\Enemy\\character-skeleton.obj");
+    LoadModel("asset\\model\\Enemy\\OBJ\\character-skeleton.obj");
 
     // オプション1: Boxコライダー（動的可能、倒れる）
     m_UseTriangleMesh = false;

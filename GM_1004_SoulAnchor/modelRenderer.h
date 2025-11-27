@@ -49,6 +49,7 @@ struct MODEL
 
 	std::vector<XMFLOAT3> CollisionVertices;
 	std::vector<unsigned int> CollisionIndices;
+	std::vector<XMFLOAT2> CollisionTexCoords;
 };
 
 

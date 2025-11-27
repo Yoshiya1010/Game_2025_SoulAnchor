@@ -13,6 +13,8 @@ void TreeBlock::Init()
     // ƒ‚ƒfƒ‹‚Ìƒ[ƒh
     LoadModel("asset\\model\\BullutObject\\tree_pineTallA.obj");
 
+
+
     SetShaderType(ShaderType::TOON_SHADOW);
 
     
