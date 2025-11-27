@@ -8,7 +8,7 @@ class FragmentObject : public PhysicsObject {
 protected:
     // モデルレンダラー
     ModelRenderer* m_ModelRenderer = nullptr;
-    float m_ModelScale = 1.0f;
+   
 
     // 破壊設定
     bool m_Destructible = true;              // 破壊可能かどうか
@@ -49,7 +49,7 @@ public:
     void OnCollisionEnter(GameObject* other, const Vector3& hitPoint) override;
 
     // 破壊処理
-    virtual void DestroyObject(const Vector3& impactPoint);
+    virtual void DestroyObject(const Vector3& impactPoint, float destructionScale = 1.0f);
 
     // コライダー再作成
     void RecreateCollider() override;
@@ -62,7 +62,7 @@ public:
     void SetDestructionThreshold(float threshold) { m_DestructionThreshold = threshold; }
     void SetGroupSize(int size) { m_GroupSize = size; }
     void SetExplosionForce(float force) { m_ExplosionForce = force; }
-    void SetModelScale(float scale) { m_ModelScale = scale; }
+  
     void SetUseTriangleMesh(bool use) { m_UseTriangleMesh = use; }
 
     // 取得用メソッド

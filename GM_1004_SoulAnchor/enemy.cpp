@@ -40,6 +40,8 @@ void Enemy::Init()
     m_Started = false;
     SetTag(GameObjectTag::Ground);
     SetName("TreeBlock");
+
+   
 }
 
 void Enemy::Start()
@@ -73,7 +75,7 @@ void Enemy::Update()
 
         if (Input::GetKeyTrigger(KK_G))
         {
-            DestroyObject(Vector3());
+            DestroyObject(Vector3(),10.f);
         }
     }
 

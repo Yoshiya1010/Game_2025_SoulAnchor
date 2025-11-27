@@ -1,7 +1,3 @@
-// fragmentObject.cpp
-// 破壊機能を持つPhysicsObjectの実装
-// コライダータイプ: トライアングルメッシュ（静的） or Box（動的可能）
-
 #include "fragmentObject.h"
 #include "manager.h"
 #include "TriangleMeshBuilder.h"
@@ -86,7 +82,7 @@ void FragmentObject::OnCollisionEnter(GameObject* other, const Vector3& hitPoint
     }
 }
 
-void FragmentObject::DestroyObject(const Vector3& impactPoint)
+void FragmentObject::DestroyObject(const Vector3& impactPoint, float destructionScale)
 {
     if (m_IsDestroyed) return;
     m_IsDestroyed = true;
@@ -105,7 +101,7 @@ void FragmentObject::DestroyObject(const Vector3& impactPoint)
 
     // ワールド行列を計算
     XMMATRIX worldMatrix =
-        XMMatrixScaling(m_Scale.x * m_ModelScale, m_Scale.y * m_ModelScale, m_Scale.z * m_ModelScale) *
+        XMMatrixScaling(m_Scale.x * destructionScale, m_Scale.y * destructionScale, m_Scale.z * destructionScale) *
         XMMatrixRotationRollPitchYaw(m_Rotation.x, m_Rotation.y, m_Rotation.z) *
         XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
 
