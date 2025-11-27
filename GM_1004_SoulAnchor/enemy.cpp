@@ -3,6 +3,7 @@
 #include "modelRenderer.h"
 #include "camera.h"
 #include "input.h"
+#include"enemyState.h"
 
 
 void Enemy::Init()
@@ -42,6 +43,11 @@ void Enemy::Init()
     SetTag(GameObjectTag::Ground);
     SetName("TreeBlock");
 
+    // State‰Šú‰»
+    m_CurrentState = nullptr;
+    m_MaxHealth = 100.0f;
+    m_Health = m_MaxHealth;
+
    
 }
 
@@ -58,10 +64,22 @@ void Enemy::Start()
 
     CreateBoxCollider(m_AutoBoxHalfSize, m_mass);
     RecreateCollider();
+
+    // ‰Šúó‘Ô‚ðÝ’è
+    m_CurrentState = new EnemyIdleState(this);
+    m_CurrentState->Enter();
 }
 
 void Enemy::Uninit()
 {
+    // Stateíœ
+    if (m_CurrentState)
+    {
+        m_CurrentState->Exit();
+        delete m_CurrentState;
+        m_CurrentState = nullptr;
+    }
+
     m_AnimationModel->Uninit();
 
 }
@@ -73,10 +91,15 @@ void Enemy::Update()
     {
         m_AnimationModel->Update();
 
+        // StateXV
+        if (m_CurrentState)
+        {
+            m_CurrentState->Update();
+        }
 
         if (Input::GetKeyTrigger(KK_G))
         {
-            DestroyObject(Vector3(),10.f);
+            DestroyObject(Vector3(), 10.f);
         }
     }
 
@@ -102,4 +125,50 @@ void Enemy::Draw()
 AnimationModel* Enemy::GetAnimationModel()
 {
     return m_AnimationModel.get();
+}
+
+void Enemy::ChangeState(EnemyState* newState)
+{
+    if (m_CurrentState)
+    {
+        m_CurrentState->Exit();
+        delete m_CurrentState;
+    }
+    m_CurrentState = newState;
+    if (m_CurrentState)
+    {
+        m_CurrentState->Enter();
+    }
+}
+
+void Enemy::Damage(float damage)
+{
+    if (IsDead()) return;
+
+    m_Health -= damage;
+    if (m_Health <= 0.0f)
+    {
+        m_Health = 0.0f;
+        ChangeState(new EnemyDeadState(this));
+    }
+}
+
+const char* Enemy::GetCurrentStateName() const
+{
+    if (!m_CurrentState)
+        return "None";
+    return m_CurrentState->GetStateName();
+}
+
+void Enemy::SetHealth(float health)
+{
+    m_Health = std::max(0.0f, std::min(health, m_MaxHealth));
+
+    if (m_Health <= 0.0f && m_CurrentState)
+    {
+        if (strcmp(m_CurrentState->GetStateName(), "Dead") != 0)
+        {
+            ChangeState(new EnemyDeadState(this));
+        }
+    }
 }

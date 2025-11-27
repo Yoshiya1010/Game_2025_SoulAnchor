@@ -25,6 +25,7 @@
 #include"sun.h"
 #include"animationModel.h"
 #include "PostProcessManager.h"
+#include"enemyState.h"
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 // utf8ヘルパーマクロ
@@ -1031,6 +1032,147 @@ void ShowAnimationControlTab()
 	
 }
 
+void ShowEnemyStateTab()
+{
+	if (ImGui::BeginTabItem("Enemy State"))
+	{
+		if (!selectedObject)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+				U8("オブジェクトを選択してください"));
+			ImGui::EndTabItem();
+			return;
+		}
+
+		Enemy* enemy = dynamic_cast<Enemy*>(selectedObject);
+		if (!enemy)
+		{
+			ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+				U8("選択中のオブジェクトはEnemyではありません"));
+			ImGui::EndTabItem();
+			return;
+		}
+
+		ImGui::Text("Object: %s", selectedObject->GetName().c_str());
+		ImGui::Separator();
+
+		// 現在の状態表示
+		ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "Current State");
+
+		const char* stateName = enemy->GetCurrentStateName();
+		ImVec4 stateColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+		if (strcmp(stateName, "Patrol") == 0)
+			stateColor = ImVec4(0.5f, 0.5f, 1.0f, 1.0f);
+		else if (strcmp(stateName, "Chase") == 0)
+			stateColor = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
+		else if (strcmp(stateName, "Attack") == 0)
+			stateColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+		else if (strcmp(stateName, "Dead") == 0)
+			stateColor = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+
+		// 大きく表示
+		ImGui::PushFont(nullptr);
+		ImGui::TextColored(stateColor, "%s", stateName);
+		ImGui::PopFont();
+
+		ImGui::Separator();
+
+		// HP情報
+		ImGui::Text("Health Information");
+		float hp = enemy->GetHealth();
+		float maxHp = enemy->GetMaxHealth();
+
+		ImGui::Text("HP: %.1f / %.1f (%.0f%%)",
+			hp, maxHp, (hp / maxHp) * 100.0f);
+
+		ImGui::ProgressBar(hp / maxHp, ImVec2(-1, 30));
+
+		ImGui::Separator();
+
+		// State切り替え
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+			U8("状態を強制変更"));
+
+		if (ImGui::Button("Idle", ImVec2(-1, 30)))
+		{
+			enemy->ChangeState(new EnemyIdleState(enemy));
+		}
+
+		if (ImGui::Button("Patrol", ImVec2(-1, 30)))
+		{
+			enemy->ChangeState(new EnemyPatrolState(enemy));
+		}
+
+		if (ImGui::Button("Chase", ImVec2(-1, 30)))
+		{
+			enemy->ChangeState(new EnemyChaseState(enemy));
+		}
+
+		if (ImGui::Button("Attack", ImVec2(-1, 30)))
+		{
+			enemy->ChangeState(new EnemyAttackState(enemy));
+		}
+
+		if (ImGui::Button("Dead", ImVec2(-1, 30)))
+		{
+			enemy->ChangeState(new EnemyDeadState(enemy));
+		}
+
+		ImGui::Separator();
+
+		// ダメージテスト
+		ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
+			U8("ダメージテスト"));
+
+		static float damageAmount = 10.0f;
+		ImGui::SliderFloat(U8("ダメージ量"), &damageAmount, 1.0f, 100.0f, "%.0f");
+
+		if (ImGui::Button(U8("ダメージを与える"), ImVec2(-1, 0)))
+		{
+			enemy->Damage(damageAmount);
+		}
+
+		ImGui::Separator();
+
+		// HP操作
+		ImGui::Text(U8("HP操作"));
+
+		if (ImGui::Button(U8("HP全回復"), ImVec2(-1, 0)))
+		{
+			enemy->SetHealth(maxHp);
+		}
+
+		static float setHpAmount = 50.0f;
+		ImGui::SliderFloat("Set HP", &setHpAmount, 0.0f, maxHp, "%.0f");
+		if (ImGui::Button(U8("HPを設定"), ImVec2(-1, 0)))
+		{
+			enemy->SetHealth(setHpAmount);
+		}
+
+		ImGui::Separator();
+
+		// プレイヤーとの距離
+		Scene* scene = Manager::GetScene();
+		Player* player = scene->GetGameObject<Player>();
+		if (player)
+		{
+			Vector3 enemyPos = enemy->GetPosition();
+			Vector3 playerPos = player->GetPosition();
+			float distance = (playerPos - enemyPos).Length();
+
+			ImGui::Text(U8("プレイヤーとの距離: %.2f"), distance);
+
+			ImGui::ProgressBar(
+				std::min(distance / 20.0f, 1.0f),
+				ImVec2(-1, 0),
+				"");
+		}
+
+		ImGui::EndTabItem();
+	}
+}
+
 void ShowPropertiesWindow()
 {
 	// ウィンドウサイズ設定
@@ -1042,6 +1184,7 @@ void ShowPropertiesWindow()
 
 		ShowPropertiesTab();
 		ShowAnimationControlTab();
+		ShowEnemyStateTab();
 		ImGui::EndTabBar();
 	}
 	ImGui::End();

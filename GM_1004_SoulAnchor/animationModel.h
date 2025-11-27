@@ -70,6 +70,8 @@ private:
     std::vector<XMFLOAT3> m_CollisionVertices;  // コライダー用頂点データ
     std::vector<unsigned int> m_CollisionIndices;  // コライダー用インデックス
 
+    bool m_IsAnimationFinished = false; 
+
 public:
     void Load(const char* FileName);
     void LoadAnimation(const char* FileName, const char* Name);
@@ -101,5 +103,6 @@ public:
     float GetPlaySpeed() const { return m_PlaySpeed; }
 
     const std::vector<XMFLOAT3>& GetCollisionVertices() const { return m_CollisionVertices; }
-    const std::vector<unsigned int>& GetCollisionIndices() const { return m_CollisionIndices; }
+   const std::vector<unsigned int>& GetCollisionIndices() const { return m_CollisionIndices; }
+   bool IsAnimationFinished() const { return m_IsAnimationFinished; }
 };

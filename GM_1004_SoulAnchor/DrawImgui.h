@@ -16,3 +16,4 @@ void ShowSceneHierarchyWindow();
 void ShowPropertiesWindow();
 void ShowPropertiesTab();
 void ShowAnimationControlTab();
+void ShowEnemyStateTab();

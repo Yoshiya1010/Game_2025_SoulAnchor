@@ -91,6 +91,12 @@
     <Filter Include="ヘッダー ファイル\アンカー">
       <UniqueIdentifier>{487af759-651f-49ef-8e97-ae98c61a298e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Enemy">
+      <UniqueIdentifier>{eb7fe1d5-cfd6-4a84-82f3-5018dd61b653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Enemy">
+      <UniqueIdentifier>{3e9a0736-f47e-47cd-ad1b-e1aa0a6cb571}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -106,9 +112,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="vector3.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="bullet.cpp">
@@ -285,6 +288,12 @@
     <ClCompile Include="spriteSoulGauge.cpp">
       <Filter>ソース ファイル\プレイヤー\UI</Filter>
     </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyState.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -306,9 +315,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
@@ -493,6 +499,12 @@
     </ClInclude>
     <ClInclude Include="spriteSoulGauge.h">
       <Filter>ヘッダー ファイル\プレイヤー\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyState.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -152,6 +152,7 @@
     <ClCompile Include="editorObjectCreator.cpp" />
     <ClCompile Include="editorUICreator.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="enemyState.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="field.cpp" />
     <ClCompile Include="fpsCamera.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="editorObjectCreator.h" />
     <ClInclude Include="editorUICreator.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="enemyState.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="field.h" />
     <ClInclude Include="fpsCamera.h" />
