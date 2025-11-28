@@ -35,6 +35,8 @@ void Anchor::Init()
 
     SetTag(GameObjectTag::Anchor);
 
+    m_PullingTimer = 0.0f;
+
 
 }
 void Anchor::Start()
@@ -118,7 +120,14 @@ void Anchor::Update()
         // 引き寄せ処理（m_IsPullingがtrueの時だけ）
         if (m_IsPulling && m_Owner)
         {
-            
+            // タイマーを進める
+            m_PullingTimer += 1.0f / 60.0f;  // 60FPS想定
+
+            // 0.5秒経過したらジョイント削除
+            if (m_PullingTimer >= 1&& m_Joint)
+            {
+                Detach();
+            }
          
 
             Vector3 ownerPos = m_Owner->GetPosition();

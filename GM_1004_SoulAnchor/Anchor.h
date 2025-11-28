@@ -33,6 +33,9 @@ private:
 	GameObject* m_AttachedTarget = nullptr;
 	btFixedConstraint* m_Joint = nullptr;
 
+
+	float m_PullingTimer = 0.0f;
+
 	// プレイヤーへの参照（引き寄せ用）
 	GameObject* m_Owner = nullptr;
 
