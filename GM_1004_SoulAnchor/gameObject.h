@@ -26,15 +26,14 @@ enum class GameObjectTag {
 	Item,
 	Anchor,
 	Chain,
-	Soul
+	Soul,
+	Decoration
 };
 
 
 
 class GameObject {
 protected:
-
-	
 
 	// 基本トランスフォーム
 	Vector3 m_Position{ 0.0f, 0.0f, 0.0f };

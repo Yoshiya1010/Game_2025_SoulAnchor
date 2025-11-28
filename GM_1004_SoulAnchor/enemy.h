@@ -25,6 +25,9 @@ public:
     void Uninit() override;
     void Update() override;
     void Draw() override;
+
+    void OnCollisionEnter(GameObject* other, const Vector3& hitPoint)override;
+
     AnimationModel* GetAnimationModel();
 
     // StateêÿÇËë÷Ç¶

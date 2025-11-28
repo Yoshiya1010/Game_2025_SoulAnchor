@@ -101,11 +101,27 @@ private:
         else if (tagB == GameObjectTag::Player && tagA == GameObjectTag::Ground) {
             HandlePlayerHitGround(objB, objA, hitPoint);
         }
+        //オブジェクトとエネミー
+        else if (tagA == GameObjectTag::Enemy && tagB == GameObjectTag::Ground) {
+            HandleEnemyHitGroundWithVelocity(objA, objB, hitPoint);
+        }
+        else if (tagB == GameObjectTag::Enemy && tagA == GameObjectTag::Ground) {
+            HandleEnemyHitGroundWithVelocity(objB, objA, hitPoint);
+        }
 
-        // その他の衝突
-        else {
+        //オブジェクトとエネミー
+        else if (tagA == GameObjectTag::Anchor && tagB == GameObjectTag::Ground) {
             HandleGenericCollision(objA, objB, hitPoint);
         }
+        else if (tagB == GameObjectTag::Anchor && tagA == GameObjectTag::Ground) {
+            HandleGenericCollision(objB, objA, hitPoint);
+        }
+
+
+        //// その他の衝突
+        //else {
+        //    HandleGenericCollision(objA, objB, hitPoint);
+        //}
     }
 
 
@@ -135,6 +151,33 @@ private:
         //// 基本的なコールバック
         objA->OnCollisionEnter(objB, hitPoint);
         objB->OnCollisionEnter(objA, hitPoint);
+    }
+
+    void HandleEnemyHitGroundWithVelocity(GameObject* objA, GameObject* objB, const Vector3& hitPoint)
+    {
+        GameObject* enemyObj = (objA->GetTag() == GameObjectTag::Enemy) ? objA : objB;
+        GameObject* groundObj = (objA->GetTag() == GameObjectTag::Ground) ? objA : objB;
+
+        //グランドの速度を取得
+        PhysicsObject* physicsGround = dynamic_cast<PhysicsObject*>(groundObj);
+        if (!physicsGround) return;
+
+        btRigidBody* body = physicsGround->GetRigidBody();
+        if (!body) return;
+
+        // 速度を取得
+        btVector3 velocity = body->getLinearVelocity();
+        float speed = velocity.length();
+
+        // 速度の閾値（これ以上の速度で衝突した場合のみ処理）
+        const float speedThreshold = 3.0f;
+
+        if (speed >= speedThreshold)
+        {
+            // 一定速度以上で衝突した場合の処理
+            enemyObj->OnCollisionEnter(groundObj, hitPoint);
+            groundObj->OnCollisionEnter(enemyObj, hitPoint);
+        }
     }
 
   

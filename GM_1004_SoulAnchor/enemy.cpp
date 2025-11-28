@@ -40,7 +40,7 @@ void Enemy::Init()
     m_ColliderOffset = Vector3(0, 0.9f, 0); // ‘«Œ³‚ğŠî€‚É‚·‚éê‡
 
     m_Started = false;
-    SetTag(GameObjectTag::Ground);
+    SetTag(GameObjectTag::Enemy);
     SetName("TreeBlock");
 
     // State‰Šú‰»
@@ -172,3 +172,15 @@ void Enemy::SetHealth(float health)
         }
     }
 }
+
+
+void Enemy::OnCollisionEnter(GameObject* other, const Vector3& hitPoint)
+{
+    // Šù‚É”j‰ó‚³‚ê‚Ä‚¢‚éA‚Ü‚½‚Í”j‰ó•s‰Â”\‚Èê‡‚Í‰½‚à‚µ‚È‚¢
+    if (m_IsDestroyed || !m_Destructible) return;
+  
+
+    DestroyObject(hitPoint, 10.0f);
+}
+
+

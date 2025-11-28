@@ -388,9 +388,9 @@ void MeshDestroyer::DestroyModelGrouped(
                 Vector3 force = direction * forceMagnitude;
 
                 //‚ ‚é’ö“xƒ‰ƒ“ƒ_ƒ€‚Å‚í‚½‚·
-                force.x += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
-                force.y += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
-                force.z += (rand() % 200 - 100) / 100.0f * explosionForce * 0.3f;
+                force.x += (rand() % 200 - 100) / 100.0f * explosionForce * 1.3f;
+                force.y += (rand() % 200 - 100) / 100.0f * explosionForce * 1.3f;
+                force.z += (rand() % 200 - 100) / 100.0f * explosionForce * 1.3f;
 
                 fragment->Start();
                 if (fragment->GetRigidBody()) {
