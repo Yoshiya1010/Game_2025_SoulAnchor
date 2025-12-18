@@ -77,7 +77,7 @@ void TreeBlock::Draw()
     ID3D11ShaderResourceView* nullSRV = nullptr;
     Renderer::GetDeviceContext()->PSSetShaderResources(0, 1, &nullSRV);
 
-    // ワールド行列を設定
+     // ワールド行列を設定
     Renderer::SetWorldMatrix(
         UpdatePhysicsWithModel()
     );

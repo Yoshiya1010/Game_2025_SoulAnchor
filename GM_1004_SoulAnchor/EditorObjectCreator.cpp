@@ -44,6 +44,60 @@ GameObject* EditorObjectCreator::CreateTree(Vector3 position, Vector3 size) {
     //シーンを取得
     Scene* scene = Manager::GetScene();
     // 新しいGameObjectを作成（適切なクラスに置き換える）
+
+    for (int i = 0; i < 30; i++)
+    {
+        auto* block = scene->AddGameObject<TreeBlock>(OBJECT);
+        block->SetMass(1.0f);
+        block->SetPosition({i*1.0f,100.f,0.f});
+        block->SetScale({size.x,size.y,size.y});
+        block->SetRestitution(1.0f);
+
+
+        // シーンからユニークな名前をもらう
+        block->SetName(scene->GenerateUniqueName("TreeBlock"));
+       
+    }
+
+    for (int i = 0; i < 30; i++)
+    {
+        auto* block = scene->AddGameObject<TreeBlock>(OBJECT);
+        block->SetMass(1.0f);
+        block->SetPosition({ i * -1.0f,100.f,10.f });
+        block->SetScale({ size.x,size.y,size.y });
+        block->SetRestitution(1.0f);
+
+
+        // シーンからユニークな名前をもらう
+        block->SetName(scene->GenerateUniqueName("TreeBlock"));
+
+    }
+
+    for (int i = 0; i < 30; i++)
+    {
+        auto* block = scene->AddGameObject<TreeBlock>(OBJECT);
+        block->SetMass(1.0f);
+        block->SetPosition({ 0.0f,100.f,i * -1.f });
+        block->SetScale({ size.x,size.y,size.y });
+        block->SetRestitution(1.0f);
+
+
+        // シーンからユニークな名前をもらう
+        block->SetName(scene->GenerateUniqueName("TreeBlock"));
+
+    }
+
+    return NULL;
+
+    
+}
+
+GameObject* EditorObjectCreator::CreateTrees(Vector3 position, Vector3 size) {
+
+
+    //シーンを取得
+    Scene* scene = Manager::GetScene();
+    // 新しいGameObjectを作成（適切なクラスに置き換える）
     auto* block = scene->AddGameObject<TreeBlock>(OBJECT);
     block->SetMass(1.0f);
     block->SetPosition(position);

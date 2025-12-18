@@ -273,6 +273,13 @@ void CreateObjectTab()
 			Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
 			selectedObject = EditorObjectCreator::CreateTree(pos, Vector3(1.0f, 1.0f, 1.0f));
 		}
+
+		if (ImGui::Button("Add Trees"))
+		{
+			Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
+			selectedObject = EditorObjectCreator::CreateTree(pos, Vector3(2.0f, 2.0f, 2.0f));
+		}
+
 		if (ImGui::Button("Add RockTall_A")) {
 			Vector3 pos = EditorObjectCreator::GetSafeSpawnPosition();
 			selectedObject = EditorObjectCreator::CreateRockTall_A(pos, Vector3(1.0f, 1.0f, 1.0f));
